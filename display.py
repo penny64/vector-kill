@@ -7,7 +7,7 @@ SPRITE_GROUPS = {}
 WINDOW = pyglet.window.Window()
 DT = 1.0
 FPS = 60
-TPS = 60
+TPS = 30
 
 
 @WINDOW.event
@@ -17,6 +17,7 @@ def on_draw():
 
 
 def boot():
+	set_fps(FPS)
 	set_tps(TPS)
 
 def get_window_size():
@@ -37,6 +38,11 @@ def set_tps(tps):
 
 def get_tps():
 	return TPS
+
+def set_fps(fps):
+	global FPS
+	
+	FPS = float(fps)
 
 def get_fps():
 	return FPS*(get_clock_delta())

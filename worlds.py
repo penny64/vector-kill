@@ -38,8 +38,6 @@ def loop(dt):
 	_time = time.time()
 	_world = WORLDS[ACTIVE_WORLD]
 	
-	display.set_clock_delta(dt)
-	
 	events.trigger_event('loop')
 	
 	if _time>=_world['next_tick']:
