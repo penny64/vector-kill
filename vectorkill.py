@@ -7,18 +7,20 @@ import events
 import worlds
 
 
+def loop():
+	display.set_caption('%s - %ifps' % ('vector:KILL', round(display.get_fps())))
+
 def main():
 	events.register_event('boot', display.boot)
 	events.register_event('boot', worlds.create, world_name='game')
 	events.register_event('load', battlefield.create)
-	events.register_event('loop', worlds.loop)
+	events.register_event('loop', loop)
 	
-	events.trigger('boot')
-	events.trigger('load')
+	events.trigger_event('boot')
+	events.trigger_event('load')
 	
-	pyglet.clock.schedule(lambda _: None)
+	pyglet.clock.schedule_interval(worlds.loop, 1/60.0)
 	pyglet.app.run()
 
 if __name__ == '__main__':
 	main()
-	loop()

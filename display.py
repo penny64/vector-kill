@@ -5,51 +5,65 @@ import events
 
 SPRITE_GROUPS = {}
 WINDOW = pyglet.window.Window()
-DT = 0.1
+DT = 1.0
+FPS = 60
+TPS = 60
 
-
-def boot():
-	set_fps(60)
 
 @WINDOW.event
 def on_draw():
+	WINDOW.clear()
+	events.trigger_event('draw')
+
+
+def boot():
+	set_tps(TPS)
+
+def get_window_size():
+	return WINDOW.width, WINDOW.height
+
+def set_clock_delta(dt):
 	global DT
 	
-	DT = pyglet.clock.tick()
-	
-	WINDOW.clear()
-	events.trigger('loop')
+	DT = 1-dt
 
-def get_delta():
+def get_clock_delta():
 	return DT
+
+def set_tps(tps):
+	global TPS
+	
+	TPS = float(tps)
+
+def get_tps():
+	return TPS
+
+def get_fps():
+	return FPS*(get_clock_delta())
 
 def get_max_fps():
 	return FPS
 
-def set_fps(fps):
-	global FPS
-	
-	FPS = float(fps)
-	pyglet.clock.set_fps_limit(FPS)
-
-def get_fps():
-	return FPS*(FPS*get_delta())
-
-def get_average_fps():
-	return pyglet.clock.get_fps()
-
+def set_caption(caption):
+	WINDOW.set_caption(caption)
 
 def load_image(image_name):
 	_image = pyglet.image.load(image_name)
+	_image.anchor_x = _image.width/2
+	_image.anchor_y = _image.height/2
 	
 	return _image
 
-def create_sprite_group():
-	return pyglet.graphics.Batch()
+def create_sprite_group(group_name):
+	SPRITE_GROUPS[group_name] = {'group': pyglet.graphics.Batch(),
+	                             'sprites': []}
 
-def create_sprite(image, x, y, batch=None):
-	pyglet.sprite.Sprite(image, x, y, batch=batch)
-
-def draw_sprite_group(sprite_group):
-	sprite_group.draw()
+def create_sprite(image, x, y, group_name):
+	_group = SPRITE_GROUPS[group_name]
+	_sprite = pyglet.sprite.Sprite(image, x, y, batch=_group['group'])
+	_group['sprites'].append(_sprite)
 	
+	return _sprite
+
+def draw_sprite_group(group_name):
+	SPRITE_GROUPS[group_name]['group'].draw()
