@@ -3,6 +3,7 @@ import pyglet
 import events
 
 
+LOADED_IMAGES = {}
 SPRITE_GROUPS = {}
 WINDOW = pyglet.window.Window()
 DT = 1.0
@@ -18,6 +19,9 @@ def on_draw():
 def boot():
 	set_fps(FPS)
 	set_tps(TPS)
+
+def get_window():
+	return WINDOW
 
 def get_window_size():
 	return WINDOW.width, WINDOW.height
@@ -53,9 +57,14 @@ def set_caption(caption):
 	WINDOW.set_caption(caption)
 
 def load_image(image_name):
+	if image_name in LOADED_IMAGES:
+		return LOADED_IMAGES[image_name]
+	
 	_image = pyglet.image.load(image_name)
 	_image.anchor_x = _image.width/2
 	_image.anchor_y = _image.height/2
+	
+	LOADED_IMAGES[image_name] = _image
 	
 	return _image
 

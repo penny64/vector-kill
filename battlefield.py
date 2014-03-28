@@ -4,4 +4,6 @@ import display
 
 def create():
 	display.create_sprite_group('soldiers')
-	soldier.create()
+	
+	for i in range(50):
+		soldier.create()
