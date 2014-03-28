@@ -1,4 +1,5 @@
 import display
+import numbers
 import sprites
 import events
 import time
@@ -18,13 +19,19 @@ def create(world_name):
 	
 	WORLDS[world_name] = {'size': (1000, 1000),
 	                      'entities': [],
-	                      'next_tick': time.time()}
+	                      'last_tick': time.clock(),
+	                      'next_tick': time.clock()+1}
 	
 	if not ACTIVE_WORLD:
 		ACTIVE_WORLD = world_name
 		
 		#Dirty hack...
 		events.register_event('draw', sprites.draw)
+
+def get_interp():
+	_world = WORLDS[ACTIVE_WORLD]
+	
+	return numbers.clip((time.clock()-_world['last_tick'])/(_world['next_tick']-_world['last_tick']), 0, 1.0)
 
 def get_size():
 	return WORLDS[ACTIVE_WORLD]['size']
@@ -35,15 +42,12 @@ def register_entity(entity):
 	WORLDS[ACTIVE_WORLD]['entities'].append(entity)
 
 def loop(dt):
-	_time = time.time()
+	#TODO: time.time() on Linux!
+	_time = time.clock()
 	_world = WORLDS[ACTIVE_WORLD]
-	
-	events.trigger_event('loop')
+	_world['last_tick'] = _time
 	
 	if _time>=_world['next_tick']:
-		WORLDS[ACTIVE_WORLD]['next_tick'] = _time+(1.0/display.get_tps())
-		display.set_clock_delta(0)
+		_world['next_tick'] = _time+(1.0/display.get_tps())
 		
 		events.trigger_event('tick')
-	else:
-		display.set_clock_delta(WORLDS[ACTIVE_WORLD]['next_tick']-_time)

@@ -15,7 +15,6 @@ def on_draw():
 	WINDOW.clear()
 	events.trigger_event('draw')
 
-
 def boot():
 	set_fps(FPS)
 	set_tps(TPS)
