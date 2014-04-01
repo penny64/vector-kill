@@ -42,6 +42,10 @@ def set_tps(tps):
 def get_tps():
 	return TPS
 
+def reschedule(func, interval):
+	pyglet.clock.unschedule(func)
+	pyglet.clock.schedule_interval(func, interval)
+
 def set_fps(fps):
 	global FPS
 	

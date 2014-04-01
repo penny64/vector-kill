@@ -1,6 +1,8 @@
 from pyglet.window import key
 
 import display
+import worlds
+import events
 
 
 KEYS_HELD = None
@@ -12,7 +14,9 @@ def boot(window):
     global KEYS_HELD
     
     KEYS_HELD = key.KeyStateHandler()
+    
     window.push_handlers(KEYS_HELD)
+    events.register_event('input', system_input)
 
 def loop():
     global KEYS_RELEASED
@@ -31,15 +35,7 @@ def loop():
         
         KEYS_PRESSED[char] = _pressed_for_frames
     
-    #TODO: Fire input event here
-    if key_pressed(' '):
-        display.set_tps(60)
-        
-        print 'press'
-    elif key_held(' '):
-        print 'held'
-    elif key_released(' '):
-        print 'release'
+    events.trigger_event('input')
     
     KEYS_RELEASED = []
 
@@ -51,3 +47,15 @@ def key_released(char):
 
 def key_held(char):
     return KEYS_HELD.get(ord(char))
+
+
+def system_input():
+    if key_pressed(' '):
+        display.set_tps(60)
+        display.reschedule(worlds.loop, 1/display.get_tps())
+        
+        print 'press'
+    elif key_held(' '):
+        print 'held'
+    elif key_released(' '):
+        print 'release'
