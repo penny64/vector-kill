@@ -8,7 +8,7 @@ SPRITE_GROUPS = {}
 WINDOW = pyglet.window.Window()
 DT = 1.0
 FPS = 60
-TPS = 30
+TPS = 10
 
 
 @WINDOW.event

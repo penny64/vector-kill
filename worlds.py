@@ -20,7 +20,7 @@ def create(world_name):
 	WORLDS[world_name] = {'size': (1000, 1000),
 	                      'entities': [],
 	                      'last_tick': time.clock(),
-	                      'next_tick': time.clock()+1}
+	                      'next_tick': time.clock()+.000000001}
 	
 	if not ACTIVE_WORLD:
 		ACTIVE_WORLD = world_name
