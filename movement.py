@@ -9,20 +9,24 @@ def register_entity(entity):
 	entity['velocity'] = [0, 0]
 	entity['acceleration'] = 0.5
 	entity['friction'] = 0.5
+	entity['direction'] = 0
 	entity['min_velocity'] = [-1000, -1000]
 	entity['max_velocity'] = [1000, 1000]
 	entity['gravity'] = [0, .8]
 	
 	events.register_event('tick', tick, entity)
+	entities.create_event(entity, 'moved')
 	entities.create_event(entity, 'accelerate')
 	entities.create_event(entity, 'set_minimum_velocity')
 	entities.create_event(entity, 'set_maximum_velocity')
 	entities.create_event(entity, 'set_acceleration')
 	entities.create_event(entity, 'set_friction')
+	entities.create_event(entity, 'set_direction')
 	entities.register_event(entity, 'set_minimum_velocity', set_minimum_velocity)
 	entities.register_event(entity, 'set_maximum_velocity', set_maximum_velocity)
 	entities.register_event(entity, 'set_acceleration', set_acceleration)
 	entities.register_event(entity, 'set_friction', set_friction)
+	entities.register_event(entity, 'set_direction', set_direction)
 	entities.register_event(entity, 'accelerate', accelerate)
 
 def set_acceleration(entity, acceleration):
@@ -30,6 +34,9 @@ def set_acceleration(entity, acceleration):
 
 def set_friction(entity, friction):
 	entity['friction'] = friction
+
+def set_direction(entity, direction):
+	entity['direction'] = direction
 
 def set_minimum_velocity(entity, velocity):
 	entity['min_velocity'] = list(velocity)
@@ -50,3 +57,11 @@ def tick(entity):
 	entity['position'][1] += entity['velocity'][1]
 	entity['velocity'][0] *= 1-entity['friction']
 	entity['velocity'][1] *= 1-entity['friction']
+	_position_change = [entity['position'][0]-entity['last_position'][0],
+	                    entity['position'][1]-entity['last_position'][1]]
+	
+	entities.trigger_event(entity,
+	                       'moved',
+	                       last_position=entity['last_position'],
+	                       position_change=_position_change,
+					   velocity=entity['velocity'])

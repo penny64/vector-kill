@@ -6,6 +6,7 @@ import controls
 import display
 import events
 import worlds
+import ui
 
 
 def loop(dt):
@@ -20,6 +21,7 @@ def main():
 	events.register_event('boot', display.boot)
 	events.register_event('boot', controls.boot, display.get_window())
 	events.register_event('boot', worlds.create, world_name='game')
+	events.register_event('boot', ui.boot)
 	events.register_event('load', battlefield.create)
 	events.register_event('loop', controls.loop)
 	

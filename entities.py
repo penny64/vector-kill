@@ -8,6 +8,8 @@ NEXT_ENTITY_ID = 1
 
 
 def create_entity():
+	global NEXT_ENTITY_ID
+	
 	_entity = {'_id': str(NEXT_ENTITY_ID),
 	           '_events': {}}
 	
@@ -15,6 +17,8 @@ def create_entity():
 	
 	worlds.register_entity(_entity)
 	events.register_event('tick', tick, _entity)
+	
+	NEXT_ENTITY_ID += 1
 	
 	return _entity
 

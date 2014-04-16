@@ -4,7 +4,10 @@ import display
 import worlds
 import events
 
-
+NUM_2 = key.NUM_2
+NUM_4 = key.NUM_4
+NUM_6 = key.NUM_6
+NUM_8 = key.NUM_8
 KEYS_HELD = None
 KEYS_PRESSED = {}
 KEYS_RELEASED = []
@@ -39,6 +42,15 @@ def loop():
     
     KEYS_RELEASED = []
 
+def key_pressed_ord(char_ord):
+    return KEYS_PRESSED.get(char_ord) == 1
+
+def key_released_ord(char_ord):
+    return char_ord in KEYS_RELEASED
+
+def key_held_ord(char_ord):
+    return KEYS_HELD.get(char_ord)
+
 def key_pressed(char):
     return KEYS_PRESSED.get(ord(char)) == 1
 
@@ -59,9 +71,9 @@ def system_input():
         print 'held'
     elif key_released(' '):
         print 'release'
-    elif key_held('-'):
+    elif key_held('o'):
         display.CAMERA['next_zoom'] -= .1
-    elif key_held('+'):
+    elif key_held('p'):
         display.CAMERA['next_zoom'] += .1
-    elif key_held('='):
+    elif key_held('['):
         display.CAMERA['next_zoom'] = 2.5

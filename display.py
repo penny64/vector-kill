@@ -8,20 +8,23 @@ import events
 
 LOADED_IMAGES = {}
 SPRITE_GROUPS = {}
-WINDOW = pyglet.window.Window(width=1024, height=768)
+LABELS = []
+WINDOW = pyglet.window.Window(width=800, height=600)
 DT = 1.0
-FPS = 60
-TPS = 50
+FPS = 120
+TPS = 60
 CAMERA = {'center_on': [0, 0],
           'next_center_on': [400, 400],
-          'camera_move_speed': 0.025,
-          'zoom': 1,
+          'camera_move_speed': 0.01,
+          'zoom': 0,
           'next_zoom': 2.5,
           'zoom_speed': 0.025}
 
 
 @WINDOW.event
 def on_draw():
+	_window_with, _window_height = get_window_size()
+	
 	WINDOW.clear()
 	glMatrixMode(GL_PROJECTION)
 	glLoadIdentity()
@@ -31,12 +34,16 @@ def on_draw():
 	CAMERA['center_on'] = numbers.interp_velocity(CAMERA['center_on'], CAMERA['next_center_on'], CAMERA['camera_move_speed'])
 	CAMERA['zoom'] = numbers.interp(CAMERA['zoom'], CAMERA['next_zoom'], CAMERA['zoom_speed'])
 	
-	glOrtho(CAMERA['center_on'][0]-(1024*(.5*CAMERA['zoom'])),
-	        CAMERA['center_on'][0]+(1024*(.5*CAMERA['zoom'])),
-	        CAMERA['center_on'][1]+(768*(.5*CAMERA['zoom']))+765,
-	        CAMERA['center_on'][1]-(768*(.5*CAMERA['zoom']))+765, 0.0, 1.0)
+	glOrtho(CAMERA['center_on'][0]-(_window_with*(.5*CAMERA['zoom'])),
+	        CAMERA['center_on'][0]+(_window_with*(.5*CAMERA['zoom'])),
+	        CAMERA['center_on'][1]+(_window_height*(.5*CAMERA['zoom']))+_window_height,
+	        CAMERA['center_on'][1]-(_window_height*(.5*CAMERA['zoom']))+_window_height, 0.0, 1.0)
 	
-	events.trigger_event('draw')
+	while LABELS:
+		LABELS.pop(0).draw()
+	
+	events.trigger_event('draw')	
+	
 	glPopMatrix()
 
 def boot():
@@ -108,3 +115,9 @@ def create_sprite(image, x, y, group_name):
 
 def draw_sprite_group(group_name):
 	SPRITE_GROUPS[group_name]['group'].draw()
+
+def print_text(x, y, text, color=(255, 0, 255, 150)):
+	_label = pyglet.text.HTMLLabel('<b>Hello</b>, <i>world</i>', x=10, y=10)
+	_label.color = color
+	
+	LABELS.append(_label)

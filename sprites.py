@@ -46,6 +46,7 @@ def tick(entity):
 ########
 
 def set_rotation(entity, degrees):
+	entity['next_rotation'] = degrees
 	entity['sprite'].rotation = degrees
 
 def rotate_by(entity, degrees):
