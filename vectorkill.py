@@ -26,7 +26,7 @@ def main():
 	events.trigger_event('boot')
 	events.trigger_event('load')
 	
-	pyglet.clock.schedule(loop)
+	pyglet.clock.schedule_interval(loop, 1/display.get_max_fps())
 	pyglet.clock.schedule_interval(worlds.loop, 1/display.get_tps())
 	pyglet.clock.schedule_interval(window, 1/10)
 	pyglet.app.run()

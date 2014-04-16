@@ -18,6 +18,9 @@ def create_entity():
 	
 	return _entity
 
+def get_entity(entity_id):
+	return ENTITIES[entity_id]
+
 def create_event(entity, event_name):
 	entity['_events'][event_name] = []
 

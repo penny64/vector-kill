@@ -1,20 +1,43 @@
 import pyglet
 
+from pyglet.gl import *
+
+import numbers
 import events
 
 
 LOADED_IMAGES = {}
 SPRITE_GROUPS = {}
-WINDOW = pyglet.window.Window()
+WINDOW = pyglet.window.Window(width=1024, height=768)
 DT = 1.0
 FPS = 60
-TPS = 10
+TPS = 50
+CAMERA = {'center_on': [0, 0],
+          'next_center_on': [400, 400],
+          'camera_move_speed': 0.025,
+          'zoom': 1,
+          'next_zoom': 2.5,
+          'zoom_speed': 0.025}
 
 
 @WINDOW.event
 def on_draw():
 	WINDOW.clear()
+	glMatrixMode(GL_PROJECTION)
+	glLoadIdentity()
+	glPushMatrix()
+	events.trigger_event('camera')
+	
+	CAMERA['center_on'] = numbers.interp_velocity(CAMERA['center_on'], CAMERA['next_center_on'], CAMERA['camera_move_speed'])
+	CAMERA['zoom'] = numbers.interp(CAMERA['zoom'], CAMERA['next_zoom'], CAMERA['zoom_speed'])
+	
+	glOrtho(CAMERA['center_on'][0]-(1024*(.5*CAMERA['zoom'])),
+	        CAMERA['center_on'][0]+(1024*(.5*CAMERA['zoom'])),
+	        CAMERA['center_on'][1]+(768*(.5*CAMERA['zoom']))+765,
+	        CAMERA['center_on'][1]-(768*(.5*CAMERA['zoom']))+765, 0.0, 1.0)
+	
 	events.trigger_event('draw')
+	glPopMatrix()
 
 def boot():
 	set_fps(FPS)

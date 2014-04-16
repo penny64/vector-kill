@@ -59,3 +59,9 @@ def system_input():
         print 'held'
     elif key_released(' '):
         print 'release'
+    elif key_held('-'):
+        display.CAMERA['next_zoom'] -= .1
+    elif key_held('+'):
+        display.CAMERA['next_zoom'] += .1
+    elif key_held('='):
+        display.CAMERA['next_zoom'] = 2.5

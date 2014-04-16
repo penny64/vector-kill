@@ -1,6 +1,7 @@
 EVENTS = {'BOOT': [],
           'LOAD': [],
           'INPUT': [],
+          'CAMERA': [],
           'LOOP': [],
           'TICK': [],
           'DRAW': []}

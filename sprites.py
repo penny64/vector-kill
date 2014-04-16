@@ -33,8 +33,8 @@ def loop(entity):
 	_dt = worlds.get_interp()
 	
 	entity['sprite'].x = int(round(numbers.interp(entity['last_position'][0], entity['position'][0], _dt)))
-	entity['sprite'].y = numbers.interp(display.get_window_size()[1]-entity['last_position'][1],
-	                                    display.get_window_size()[1]-entity['position'][1],
+	entity['sprite'].y = numbers.interp(display.get_window_size()[1]+entity['last_position'][1],
+	                                    display.get_window_size()[1]+entity['position'][1],
 	                                    _dt)
 	entity['sprite'].rotation = numbers.interp(entity['last_rotation'], entity['next_rotation'], _dt)
 
@@ -50,4 +50,4 @@ def set_rotation(entity, degrees):
 
 def rotate_by(entity, degrees):
 	entity['rotation_speed'] = degrees
-	entity['next_rotation'] = entity['last_rotation']+degrees
+	entity['next_rotation'] = entity['last_rotation']-degrees
