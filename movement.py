@@ -3,9 +3,9 @@ import numbers
 import events
 
 
-def register_entity(entity):
-	entity['position'] = [40, 0]
-	entity['last_position'] = [100, 100]
+def register_entity(entity, x=0, y=0):
+	entity['position'] = [x, y]
+	entity['last_position'] = [x, y]
 	entity['velocity'] = [0, 0]
 	entity['acceleration'] = 0.5
 	entity['friction'] = 0.5
@@ -14,7 +14,7 @@ def register_entity(entity):
 	entity['max_velocity'] = [1000, 1000]
 	entity['gravity'] = [0, .8]
 	
-	events.register_event('tick', tick, entity)
+	entities.create_event(entity, 'tick')
 	entities.create_event(entity, 'moved')
 	entities.create_event(entity, 'accelerate')
 	entities.create_event(entity, 'set_minimum_velocity')
@@ -22,6 +22,7 @@ def register_entity(entity):
 	entities.create_event(entity, 'set_acceleration')
 	entities.create_event(entity, 'set_friction')
 	entities.create_event(entity, 'set_direction')
+	entities.register_event(entity, 'tick', tick)
 	entities.register_event(entity, 'set_minimum_velocity', set_minimum_velocity)
 	entities.register_event(entity, 'set_maximum_velocity', set_maximum_velocity)
 	entities.register_event(entity, 'set_acceleration', set_acceleration)

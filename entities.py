@@ -4,8 +4,13 @@ import events
 
 
 ENTITIES = {}
+ENTITIES_TO_DELETE = set()
 NEXT_ENTITY_ID = 1
 
+
+def boot():
+	events.register_event('tick', tick)
+	events.register_event('cleanup', cleanup)
 
 def create_entity():
 	global NEXT_ENTITY_ID
@@ -16,11 +21,14 @@ def create_entity():
 	ENTITIES[_entity['_id']] = _entity
 	
 	worlds.register_entity(_entity)
-	events.register_event('tick', tick, _entity)
+	create_event(_entity, 'delete')
 	
 	NEXT_ENTITY_ID += 1
 	
 	return _entity
+
+def delete_entity(entity):
+	ENTITIES_TO_DELETE.add(entity['_id'])
 
 def get_entity(entity_id):
 	return ENTITIES[entity_id]
@@ -35,5 +43,16 @@ def trigger_event(entity, event_name, **kwargs):
 	for event in entity['_events'][event_name]:
 		event(entity, **kwargs)
 
-def tick(entity):
-	pass
+def tick():
+	for entity in ENTITIES.values():
+		trigger_event(entity, 'tick')
+
+def cleanup():
+	global ENTITIES_TO_DELETE
+	
+	for entity_id in ENTITIES_TO_DELETE:
+		trigger_event(ENTITIES[entity_id], 'delete')
+		
+		del ENTITIES[entity_id]
+	
+	ENTITIES_TO_DELETE = set()

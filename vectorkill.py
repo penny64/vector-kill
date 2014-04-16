@@ -15,10 +15,11 @@ def loop(dt):
 	events.trigger_event('loop')
 
 def window(dt):
-	display.set_caption('%s - %ifps' % ('vector:KILL', round(display.get_fps())))
+	display.set_caption('%s - %ifps' % ('vector:kill: SUICIDE SHIPS', round(display.get_fps())))
 
 def main():
 	events.register_event('boot', display.boot)
+	events.register_event('boot', entities.boot)
 	events.register_event('boot', controls.boot, display.get_window())
 	events.register_event('boot', worlds.create, world_name='game')
 	events.register_event('boot', ui.boot)

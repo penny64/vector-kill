@@ -5,6 +5,8 @@ from pyglet.gl import *
 import numbers
 import events
 
+import time
+
 
 LOADED_IMAGES = {}
 SPRITE_GROUPS = {}
@@ -23,7 +25,7 @@ CAMERA = {'center_on': [0, 0],
 
 @WINDOW.event
 def on_draw():
-	_window_with, _window_height = get_window_size()
+	_window_width, _window_height = get_window_size()
 	
 	WINDOW.clear()
 	glMatrixMode(GL_PROJECTION)
@@ -34,21 +36,24 @@ def on_draw():
 	CAMERA['center_on'] = numbers.interp_velocity(CAMERA['center_on'], CAMERA['next_center_on'], CAMERA['camera_move_speed'])
 	CAMERA['zoom'] = numbers.interp(CAMERA['zoom'], CAMERA['next_zoom'], CAMERA['zoom_speed'])
 	
-	glOrtho(CAMERA['center_on'][0]-(_window_with*(.5*CAMERA['zoom'])),
-	        CAMERA['center_on'][0]+(_window_with*(.5*CAMERA['zoom'])),
+	glOrtho(CAMERA['center_on'][0]-(_window_width*(.5*CAMERA['zoom'])),
+	        CAMERA['center_on'][0]+(_window_width*(.5*CAMERA['zoom'])),
 	        CAMERA['center_on'][1]+(_window_height*(.5*CAMERA['zoom']))+_window_height,
 	        CAMERA['center_on'][1]-(_window_height*(.5*CAMERA['zoom']))+_window_height, 0.0, 1.0)
+	events.trigger_event('draw')
+	glPopMatrix()
+	glPushMatrix()
+	glOrtho(0, _window_width, 0, _window_height, 0.0, 1.0)
 	
-	while LABELS:
-		LABELS.pop(0).draw()
-	
-	events.trigger_event('draw')	
+	for label in LABELS:
+		label.draw()
 	
 	glPopMatrix()
 
 def boot():
 	set_fps(FPS)
 	set_tps(TPS)
+	events.register_event('tick', tick)
 
 def get_window():
 	return WINDOW
@@ -116,8 +121,27 @@ def create_sprite(image, x, y, group_name):
 def draw_sprite_group(group_name):
 	SPRITE_GROUPS[group_name]['group'].draw()
 
-def print_text(x, y, text, color=(255, 0, 255, 150)):
-	_label = pyglet.text.HTMLLabel('<b>Hello</b>, <i>world</i>', x=10, y=10)
-	_label.color = color
+def print_text(x, y, text, color=(255, 0, 255, 0), fade_in_speed=255, show_for=3, fade_out_speed=2):
+	_label = pyglet.text.HTMLLabel(text, x=x, y=y)
+	_label.color = tuple(color)
+	_label.fade_in_speed = fade_in_speed
+	_label.fade_out_speed = fade_out_speed
+	_label.show_for = show_for
+	_label.time_created = time.time()
 	
 	LABELS.append(_label)
+
+def tick():
+	_remove_labels = []
+	for label in LABELS:
+		if time.time()-label.time_created > label.show_for:
+			if label.color[3]>0:
+				label.color = (label.color[0], label.color[1], label.color[2], numbers.clip(label.color[3]-label.fade_out_speed, 0, 255))
+			else:
+				_remove_labels.append(label)
+		else:
+			if label.color[3] < 255:
+				label.color = (label.color[0], label.color[1], label.color[2], numbers.clip(label.color[3]+label.fade_in_speed, 0, 255))
+	
+	for label in _remove_labels:
+		LABELS.remove(label)

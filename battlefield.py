@@ -6,6 +6,7 @@ import events
 
 
 def create():
+	display.create_sprite_group('effects_background')
 	display.create_sprite_group('soldiers')
 	
 	_player = soldier.create()

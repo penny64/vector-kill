@@ -46,7 +46,7 @@ def get_size():
 def register_entity(entity):
 	_check_active_world()
 	
-	WORLDS[ACTIVE_WORLD]['entities'].append(entity)
+	WORLDS[ACTIVE_WORLD]['entities'].append(entity['_id'])
 
 def loop(dt):
 	#TODO: time.time() on Linux!
@@ -58,3 +58,5 @@ def loop(dt):
 		_world['next_tick'] = _time+(1.0/display.get_tps())
 		
 		events.trigger_event('tick')
+	
+	events.trigger_event('cleanup')
