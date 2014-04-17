@@ -17,18 +17,20 @@ def register_entity(entity, x=0, y=0):
 	entities.create_event(entity, 'tick')
 	entities.create_event(entity, 'moved')
 	entities.create_event(entity, 'accelerate')
+	entities.create_event(entity, 'turn')
 	entities.create_event(entity, 'set_minimum_velocity')
 	entities.create_event(entity, 'set_maximum_velocity')
 	entities.create_event(entity, 'set_acceleration')
 	entities.create_event(entity, 'set_friction')
 	entities.create_event(entity, 'set_direction')
 	entities.register_event(entity, 'tick', tick)
+	entities.register_event(entity, 'turn', turn)
+	entities.register_event(entity, 'accelerate', accelerate)
 	entities.register_event(entity, 'set_minimum_velocity', set_minimum_velocity)
 	entities.register_event(entity, 'set_maximum_velocity', set_maximum_velocity)
 	entities.register_event(entity, 'set_acceleration', set_acceleration)
 	entities.register_event(entity, 'set_friction', set_friction)
 	entities.register_event(entity, 'set_direction', set_direction)
-	entities.register_event(entity, 'accelerate', accelerate)
 
 def set_acceleration(entity, acceleration):
 	entity['acceleration'] = acceleration
@@ -51,6 +53,9 @@ def accelerate(entity, velocity):
 	entity['velocity'][0] = numbers.clip(entity['velocity'][0]+_n_vol[0], entity['min_velocity'][0], entity['max_velocity'][0])
 	entity['velocity'][1] = numbers.clip(entity['velocity'][1]+_n_vol[1], entity['min_velocity'][1], entity['max_velocity'][1])
 
+def turn(entity, degrees):
+	entities['direction'] += degrees
+
 def tick(entity):
 	entity['last_position'] = entity['position'][:]
 	entity['velocity'][1] += entity['gravity'][0]*entity['gravity'][1]
@@ -65,4 +70,4 @@ def tick(entity):
 	                       'moved',
 	                       last_position=entity['last_position'],
 	                       position_change=_position_change,
-					   velocity=entity['velocity'])
+	                       velocity=entity['velocity'])

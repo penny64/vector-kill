@@ -17,7 +17,7 @@ FPS = 120
 TPS = 60
 CAMERA = {'center_on': [0, 0],
           'next_center_on': [400, 400],
-          'camera_move_speed': 0.01,
+          'camera_move_speed': 0.05,
           'zoom': 0,
           'next_zoom': 2.5,
           'zoom_speed': 0.025}

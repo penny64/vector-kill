@@ -5,12 +5,13 @@ import events
 import worlds
 
 
-def register_entity(entity, sprite_group, sprite_name):
+def register_entity(entity, sprite_group, sprite_name, scale=1):
 	entity['image'] = display.load_image(sprite_name)
 	entity['sprite'] = display.create_sprite(entity['image'], 0, 0, sprite_group)
 	entity['last_rotation'] = 0
 	entity['next_rotation'] = 0
 	entity['rotation_speed'] = 0
+	entity['sprite'].scale = scale
 	
 	entities.create_event(entity, 'set_rotation')
 	entities.create_event(entity, 'rotate_by')
@@ -30,6 +31,7 @@ def register_entity(entity, sprite_group, sprite_name):
 def draw():
 	display.draw_sprite_group('effects_background')
 	display.draw_sprite_group('soldiers')
+	display.draw_sprite_group('effects_foreground')
 
 def loop(entity):
 	if not entity['_id'] in entities.ENTITIES:
