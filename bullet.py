@@ -29,7 +29,7 @@ def create_bullet(x, y, direction, speed, sprite_name, owner_id, life=30):
 def setup_missile(bullet):
 	_owner = entities.get_entity(bullet['owner_id'])
 	_closest_target = {'enemy_id': None, 'distance': 0}
-	bullet['sprite'].anchor_x = -32
+	bullet['sprite'].anchor_x = 0
 	bullet['sprite'].anchor_y = bullet['sprite'].height/2
 	
 	for soldier_id in entities.get_sprite_group('soldiers'):
@@ -70,9 +70,9 @@ def tick_missile(bullet):
 		                        'explosion.png',
 		                        scale=0.2,
 		                        scale_rate=.95,
-		                        fade_rate=.7,
-		                        flashes=10,
-		                        flash_chance=.5)
+		                        fade_rate=.7)
+		#flashes=10,
+		#flash_chance=.5)
 	
 	if bullet['target_pos']:
 		_direction_to = numbers.direction_to(bullet['position'], bullet['target_pos'])

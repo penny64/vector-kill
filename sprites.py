@@ -20,9 +20,7 @@ def register_entity(entity, sprite_group, sprite_name, scale=1):
 	entities.register_event(entity, 'delete', display.delete_sprite)
 	entities.register_event(entity, 'set_rotation', set_rotation)
 	entities.register_event(entity, 'rotate_by', rotate_by)
-	
-	#events.register_event('loop', tick, entity)
-	events.register_event('loop', loop, entity)
+	entities.register_event(entity, 'loop', loop)
 
 
 ###############

@@ -15,7 +15,9 @@ def loop(dt):
 	events.trigger_event('loop')
 
 def window(dt):
-	display.set_caption('%s - %ifps' % ('vector:kill: SUICIDE SHIPS', round(display.get_fps())))
+	display.set_caption('%s - %ifps - %stps' % ('vector:kill: SUICIDE SHIPS',
+	                                            round(display.get_fps()),
+	                                            entities.TICKS_PER_SECOND))
 
 def main():
 	events.register_event('boot', display.boot)
@@ -30,8 +32,8 @@ def main():
 	events.trigger_event('load')
 	
 	pyglet.clock.schedule_interval(loop, 1/display.get_max_fps())
+	pyglet.clock.schedule_interval(window, 1/10.0)
 	pyglet.clock.schedule_interval(worlds.loop, 1/display.get_tps())
-	pyglet.clock.schedule_interval(window, 1/10)
 	pyglet.app.run()
 
 if __name__ == '__main__':

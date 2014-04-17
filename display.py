@@ -108,12 +108,12 @@ def load_image(image_name):
 	return _image
 
 def create_sprite_group(group_name):
-	SPRITE_GROUPS[group_name] = {'group': pyglet.graphics.Batch(),
+	SPRITE_GROUPS[group_name] = {'batch': pyglet.graphics.Batch(),
 	                             'sprites': []}
 
 def create_sprite(image, x, y, group_name):
 	_group = SPRITE_GROUPS[group_name]
-	_sprite = pyglet.sprite.Sprite(image, x, y, batch=_group['group'])
+	_sprite = pyglet.sprite.Sprite(image, x, y, batch=_group['batch'])
 	_group['sprites'].append(_sprite)
 	
 	return _sprite
@@ -123,7 +123,7 @@ def delete_sprite(entity):
 	entity['sprite'].delete()
 
 def draw_sprite_group(group_name):
-	SPRITE_GROUPS[group_name]['group'].draw()
+	SPRITE_GROUPS[group_name]['batch'].draw()
 
 def print_text(x, y, text, color=(255, 0, 255, 0), fade_in_speed=255, show_for=3, fade_out_speed=2, center=False):
 	_label = pyglet.text.HTMLLabel(text, x=x, y=y)
@@ -140,6 +140,7 @@ def print_text(x, y, text, color=(255, 0, 255, 0), fade_in_speed=255, show_for=3
 
 def tick():
 	_remove_labels = []
+	
 	for label in LABELS:
 		if time.time()-label.time_created > label.show_for:
 			if label.color[3]>0:

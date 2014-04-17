@@ -2,15 +2,21 @@ import display
 import worlds
 import events
 
+import time
+
 
 ENTITIES = {}
 ENTITIES_TO_DELETE = set()
 NEXT_ENTITY_ID = 1
 GROUPS = {}
+TICKS_PER_SECOND = 0
+CURRENT_TICKS_PER_SECOND = 0
+LAST_TICK_TIME = time.time()
 
 
 def boot():
 	events.register_event('tick', tick)
+	events.register_event('loop', loop)
 	events.register_event('cleanup', cleanup)
 
 def create_entity():
@@ -25,6 +31,7 @@ def create_entity():
 	worlds.register_entity(_entity)
 	create_event(_entity, 'delete')
 	create_event(_entity, 'create')
+	create_event(_entity, 'loop')
 	register_event(_entity, 'delete', remove_entity_from_all_groups)
 	
 	NEXT_ENTITY_ID += 1
@@ -69,8 +76,21 @@ def trigger_event(entity, event_name, **kwargs):
 		event(entity, **kwargs)
 
 def tick():
+	global LAST_TICK_TIME, TICKS_PER_SECOND, CURRENT_TICKS_PER_SECOND
+	
 	for entity in ENTITIES.values():
 		trigger_event(entity, 'tick')
+	
+	if time.time()-LAST_TICK_TIME>=1:
+		LAST_TICK_TIME = time.time()
+		TICKS_PER_SECOND = CURRENT_TICKS_PER_SECOND
+		CURRENT_TICKS_PER_SECOND = 0
+	else:
+		CURRENT_TICKS_PER_SECOND += 1
+
+def loop():
+	for entity in ENTITIES.values():
+		trigger_event(entity, 'loop')
 
 def cleanup():
 	global ENTITIES_TO_DELETE

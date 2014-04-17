@@ -20,7 +20,6 @@ def _check_active_world():
 	if not ACTIVE_WORLD:
 		raise Exception('ACTIVE_WORLD not set.')
 
-
 def create(world_name):
 	global ACTIVE_WORLD
 	
@@ -46,7 +45,7 @@ def get_size():
 def register_entity(entity):
 	_check_active_world()
 	
-	WORLDS[ACTIVE_WORLD]['entities'].append(entity['_id'])
+	#WORLDS[ACTIVE_WORLD]['entities'].append(entity['_id'])
 
 def loop(dt):
 	#TODO: time.time() on Linux!
