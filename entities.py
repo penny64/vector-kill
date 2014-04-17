@@ -61,6 +61,9 @@ def create_event(entity, event_name):
 def register_event(entity, event_name, callback):
 	entity['_events'][event_name].append(callback)
 
+def unregister_event(entity, event_name, callback):
+	entity['_events'][event_name].remove(callback)
+
 def trigger_event(entity, event_name, **kwargs):
 	for event in entity['_events'][event_name]:
 		event(entity, **kwargs)

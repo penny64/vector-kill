@@ -8,6 +8,7 @@ import worlds
 def register_entity(entity, sprite_group, sprite_name, scale=1):
 	entity['image'] = display.load_image(sprite_name)
 	entity['sprite'] = display.create_sprite(entity['image'], 0, 0, sprite_group)
+	entity['sprite_group'] = sprite_group
 	entity['last_rotation'] = 0
 	entity['next_rotation'] = 0
 	entity['rotation_speed'] = 0
@@ -16,7 +17,7 @@ def register_entity(entity, sprite_group, sprite_name, scale=1):
 	entities.create_event(entity, 'set_rotation')
 	entities.create_event(entity, 'rotate_by')
 	entities.register_event(entity, 'tick', tick)
-	entities.register_event(entity, 'delete', delete)
+	entities.register_event(entity, 'delete', display.delete_sprite)
 	entities.register_event(entity, 'set_rotation', set_rotation)
 	entities.register_event(entity, 'rotate_by', rotate_by)
 	
@@ -51,9 +52,6 @@ def tick(entity):
 ########
 #Events#
 ########
-
-def delete(entity):
-	entity['sprite'].delete()
 
 def set_rotation(entity, degrees):
 	entity['next_rotation'] = degrees

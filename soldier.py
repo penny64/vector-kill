@@ -98,11 +98,11 @@ def explode(entity):
 		                                  friction=0.1,
 		                                  streamer=True)
 		
-		_effect['velocity'] = [entity['velocity'][0]+random.choice([-12, -10, -8, -6, 6, 8, 10, 12]),
-		                       entity['velocity'][1]+random.choice([-12, -10, -8, -6, 6, 8, 10, 12])]
+		_effect['velocity'] = [entity['velocity'][0]+random.randint(-4, 4),
+		                       entity['velocity'][1]+random.randint(-4, 4)]
 
 def shoot(entity, direction=0, speed=30):
-	bullet.create_bullet(entity['position'][0], entity['position'][1], direction, 30, 'ball_shadow.png', entity['_id'])
+	bullet.create_bullet(entity['position'][0], entity['position'][1], direction, 30, 'bullet.png', entity['_id'])
 
 def damage(entity, damage, target_id):
 	entity['hp'] -= damage

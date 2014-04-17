@@ -3,6 +3,7 @@ import soldier
 import display
 import player
 import events
+import ai
 
 
 def create():
@@ -20,4 +21,5 @@ def create():
 	
 	for i in range(1):
 		_enemy = soldier.create()
+		ai.register_entity(_enemy)
 		entities.trigger_event(_enemy, 'accelerate', velocity=[45, 45])

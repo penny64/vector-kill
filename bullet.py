@@ -29,6 +29,8 @@ def create_bullet(x, y, direction, speed, sprite_name, owner_id, life=30):
 def setup_missile(bullet):
 	_owner = entities.get_entity(bullet['owner_id'])
 	_closest_target = {'enemy_id': None, 'distance': 0}
+	bullet['sprite'].anchor_x = -32
+	bullet['sprite'].anchor_y = bullet['sprite'].height/2
 	
 	for soldier_id in entities.get_sprite_group('soldiers'):
 		if bullet['owner_id'] == soldier_id:
@@ -52,35 +54,60 @@ def setup_missile(bullet):
 	else:
 		bullet['target_pos'] = None
 	
-	bullet['direction'] = numbers.direction_to(_owner['position'], (_owner['position'][0]+_owner['velocity'][0], _owner['position'][1]+_owner['velocity'][1]))
+	bullet['direction'] = numbers.direction_to(_owner['position'],
+	                                           (_owner['position'][0]+_owner['velocity'][0],
+	                                            _owner['position'][1]+_owner['velocity'][1]))+random.randint(-6, 6)
+	entities.trigger_event(bullet, 'set_rotation', degrees=bullet['direction'])
 	bullet['engine_power'] = 100
 
 def tick_missile(bullet):
 	if random.randint(0, 4):
-		_displace = (random.randint(-1, 1),
-		             random.randint(-1, 1))
+		_displace = (random.randint(-2, 2),
+		             random.randint(-2, 2))
 		
-		effects.create_particle(bullet['position'][0]+_displace[0], bullet['position'][1]+_displace[1], 'explosion.png', scale=bullet['sprite'].scale, scale_rate=.95, fade_rate=.7)
+		effects.create_particle(bullet['position'][0]+_displace[0],
+		                        bullet['position'][1]+_displace[1],
+		                        'explosion.png',
+		                        scale=0.2,
+		                        scale_rate=.95,
+		                        fade_rate=.7,
+		                        flashes=10,
+		                        flash_chance=.5)
 	
-	if not bullet['target_pos']:
+	if bullet['target_pos']:
+		_direction_to = numbers.direction_to(bullet['position'], bullet['target_pos'])
+		_degrees_to = abs(bullet['direction']-_direction_to)
+		
+		if _degrees_to>=180:
+			_direction_to += 360
+		
+		if bullet['engine_power']>0:
+			_new_direction = numbers.interp(bullet['direction'], _direction_to, 0.1)
+			_direction_difference = abs(bullet['direction']-_new_direction)
+			_speed = 60*numbers.clip(1-(numbers.distance(bullet['position'], bullet['target_pos'])/1500), 0.3, 1.0)
+			bullet['engine_power'] -= numbers.clip(_direction_difference-10, 0, 100)
+			bullet['direction'] = _new_direction
+			bullet['velocity'] = numbers.velocity(bullet['direction'], _speed)
+			entities.trigger_event(bullet, 'set_rotation', degrees=bullet['direction'])
+	else:
+		bullet['engine_power'] -= 1
 		bullet['velocity'] = numbers.velocity(bullet['direction'], 15)
+	
+	if bullet['engine_power']<0 and bullet['engine_power']>-20:
+		bullet['engine_power'] -= 1
+	elif bullet['engine_power'] <= -20:
+		for i in range(random.randint(2, 3)):
+			_effect = effects.create_particle(bullet['position'][0]+random.randint(-2, 2),
+				                             bullet['position'][1]+random.randint(-2, 2),
+				                             'explosion.png',
+				                             background=False,
+				                             scale=random.uniform(.4, .8),
+				                             flashes=random.randint(5, 7),
+				                             flash_chance=0.7)
+			
+			_effect['velocity'] = numbers.velocity(bullet['direction']+random.randint(-12, 12), 10)
 		
-		return False
-		
-	_direction_to = numbers.direction_to(bullet['position'], bullet['target_pos'])
-	_degrees_to = abs(bullet['direction']-_direction_to)
-	
-	if _degrees_to>=180:
-		_direction_to += 360
-	
-	if bullet['engine_power']>0:
-		_new_direction = numbers.interp(bullet['direction'], _direction_to, 0.1)
-		_direction_difference = abs(bullet['direction']-_new_direction)
-		bullet['engine_power'] -= numbers.clip(_direction_difference-10, 0, 100)
-		bullet['direction'] = _new_direction
-	
-	_speed = 45*numbers.clip(1-(numbers.distance(bullet['position'], bullet['target_pos'])/1500), 0.6, 1.0)
-	bullet['velocity'] = numbers.velocity(bullet['direction'], _speed)
+		return entities.delete_entity(bullet)
 
 def hit_missile(bullet, target_id):
 	for i in range(random.randint(2, 3)):
@@ -91,6 +118,7 @@ def hit_missile(bullet, target_id):
 		                                  scale=random.uniform(.4, .8),
 		                                  flashes=random.randint(15, 25),
 		                                  flash_chance=0.7)
+		
 		_effect['velocity'] = numbers.interp_velocity(bullet['velocity'], entities.get_entity(target_id)['velocity'], .1)
 		_effect['velocity'][0] = numbers.clip(_effect['velocity'][0], -6, 6)
 		_effect['velocity'][1] = numbers.clip(_effect['velocity'][1], -6, 6)

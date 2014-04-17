@@ -40,7 +40,7 @@ def handle_camera(entity_id):
 		_enemy = _player
 	
 	_distance_to_nearest_enemy = numbers.distance(_player['position'], _enemy['position'], old=True)
-	_min_zoom = 1.5
+	_min_zoom = 2.0
 	_max_zoom = 3.0
 	
 	display.CAMERA['next_zoom'] = numbers.clip(_distance_to_nearest_enemy/400.0, _min_zoom, _max_zoom)

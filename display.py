@@ -118,6 +118,10 @@ def create_sprite(image, x, y, group_name):
 	
 	return _sprite
 
+def delete_sprite(entity):
+	SPRITE_GROUPS[entity['sprite_group']]['sprites'].remove(entity['sprite'])
+	entity['sprite'].delete()
+
 def draw_sprite_group(group_name):
 	SPRITE_GROUPS[group_name]['group'].draw()
 
