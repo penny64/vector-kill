@@ -121,13 +121,16 @@ def create_sprite(image, x, y, group_name):
 def draw_sprite_group(group_name):
 	SPRITE_GROUPS[group_name]['group'].draw()
 
-def print_text(x, y, text, color=(255, 0, 255, 0), fade_in_speed=255, show_for=3, fade_out_speed=2):
+def print_text(x, y, text, color=(255, 0, 255, 0), fade_in_speed=255, show_for=3, fade_out_speed=2, center=False):
 	_label = pyglet.text.HTMLLabel(text, x=x, y=y)
 	_label.color = tuple(color)
 	_label.fade_in_speed = fade_in_speed
 	_label.fade_out_speed = fade_out_speed
 	_label.show_for = show_for
 	_label.time_created = time.time()
+	
+	if center:
+		_label.anchor_x = 'center'
 	
 	LABELS.append(_label)
 

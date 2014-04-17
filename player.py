@@ -54,4 +54,5 @@ def handle_camera(entity_id):
 
 def score(entity, target_id):
 	display.print_text(0, 10+(len(display.LABELS)*15), 'Kill (<b>+1XP</b>)', color=(0, 240, 0, 255), show_for=1.5)
+	display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'Fragged <b>%s</b>' % target_id, color=(0, 240, 0, 255), show_for=1.5, center=True)
 	
