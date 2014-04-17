@@ -56,13 +56,22 @@ def setup_missile(bullet):
 	bullet['engine_power'] = 100
 
 def tick_missile(bullet):
+	if random.randint(0, 4):
+		_displace = (random.randint(-1, 1),
+		             random.randint(-1, 1))
+		
+		effects.create_particle(bullet['position'][0]+_displace[0], bullet['position'][1]+_displace[1], 'explosion.png', scale=bullet['sprite'].scale, scale_rate=.95, fade_rate=.7)
+	
 	if not bullet['target_pos']:
 		bullet['velocity'] = numbers.velocity(bullet['direction'], 15)
 		
 		return False
 		
 	_direction_to = numbers.direction_to(bullet['position'], bullet['target_pos'])
-	_degrees_to = bullet['direction']-_direction_to
+	_degrees_to = abs(bullet['direction']-_direction_to)
+	
+	if _degrees_to>=180:
+		_direction_to += 360
 	
 	if bullet['engine_power']>0:
 		_new_direction = numbers.interp(bullet['direction'], _direction_to, 0.1)
@@ -86,7 +95,7 @@ def hit_missile(bullet, target_id):
 		_effect['velocity'][0] = numbers.clip(_effect['velocity'][0], -6, 6)
 		_effect['velocity'][1] = numbers.clip(_effect['velocity'][1], -6, 6)
 		
-		entities.trigger_event(entities.get_entity(target_id), 'accelerate', velocity=numbers.interp_velocity(entities.get_entity(target_id)['velocity'], bullet['velocity'], .6))
+		entities.trigger_event(entities.get_entity(target_id), 'accelerate', velocity=numbers.interp_velocity(entities.get_entity(target_id)['velocity'], bullet['velocity'], .4))
 
 def tick_bullet(bullet):
 	#_entity['velocity'] = numbers.velocity(direction+random.randint(-3, 3), speed)

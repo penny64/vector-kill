@@ -38,6 +38,7 @@ def create_particle(x, y, sprite_name, background=True, scale=1, friction=0, sca
 def tick_particle(particle):
 	entities.trigger_event(particle, 'rotate_by', degrees=particle['spin'])
 	particle['sprite'].visible = True
+	particle['sprite'].opacity *= particle['fade_rate']
 	
 	if particle['flashes']>-1:
 		if random.uniform(0, 1)>1-particle['flash_chance']:
