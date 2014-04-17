@@ -53,7 +53,6 @@ def setup_missile(bullet):
 		bullet['target_pos'] = None
 	
 	bullet['direction'] = numbers.direction_to(_owner['position'], (_owner['position'][0]+_owner['velocity'][0], _owner['position'][1]+_owner['velocity'][1]))
-	
 	bullet['engine_power'] = 100
 
 def tick_missile(bullet):
@@ -83,9 +82,11 @@ def hit_missile(bullet, target_id):
 		                                  scale=random.uniform(.4, .8),
 		                                  flashes=random.randint(15, 25),
 		                                  flash_chance=0.7)
-		_effect['velocity'] = numbers.interp_velocity(bullet['velocity'], entities.get_entity(target_id)['velocity'], .2)
+		_effect['velocity'] = numbers.interp_velocity(bullet['velocity'], entities.get_entity(target_id)['velocity'], .1)
+		_effect['velocity'][0] = numbers.clip(_effect['velocity'][0], -6, 6)
+		_effect['velocity'][1] = numbers.clip(_effect['velocity'][1], -6, 6)
 		
-		entities.trigger_event(entities.get_entity(target_id), 'accelerate', velocity=numbers.interp_velocity(entities.get_entity(target_id)['velocity'], bullet['velocity'], .5))
+		entities.trigger_event(entities.get_entity(target_id), 'accelerate', velocity=numbers.interp_velocity(entities.get_entity(target_id)['velocity'], bullet['velocity'], .6))
 
 def tick_bullet(bullet):
 	#_entity['velocity'] = numbers.velocity(direction+random.randint(-3, 3), speed)

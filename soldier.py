@@ -23,6 +23,7 @@ def create():
 	entities.create_event(_soldier, 'score')
 	entities.register_event(_soldier, 'tick', tick)
 	entities.register_event(_soldier, 'kill', destroy)
+	entities.register_event(_soldier, 'delete', explode)
 	entities.register_event(_soldier, 'shoot', shoot)
 	entities.register_event(_soldier, 'hit', damage)
 	entities.register_event(_soldier, 'moved', set_direction)
@@ -67,7 +68,7 @@ def destroy(entity):
 		
 		_effect['velocity'] = numbers.interp_velocity(entity['velocity'],
 		                                              (entity['velocity'][0]+random.randint(-8, 8),
-		                                               entity['velocity'][1]+random.randint(-8, 8)), .8)
+		                                               entity['velocity'][1]+random.randint(-8, 8)), .1)
 	
 	for i in range(random.randint(1, 2)):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
@@ -83,7 +84,22 @@ def destroy(entity):
 		                                              entity['velocity'][1]+random.randint(-8, 8)), .2)
 		_effect['velocity'] = numbers.interp_velocity(entity['velocity'],
 		                                              (entity['velocity'][0]+random.randint(-8, 8),
-		                                               entity['velocity'][1]+random.randint(-8, 8)), .8)
+		                                               entity['velocity'][1]+random.randint(-8, 8)), .3)
+
+def explode(entity):
+	for i in range(random.randint(2, 4)):
+		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
+		                                  entity['position'][1]+random.randint(-20, 20),
+		                                  'smoke.png',
+		                                  background=True,
+		                                  scale=random.uniform(.5, 1.3),
+		                                  scale_min=0.05,
+		                                  scale_rate=.9,
+		                                  friction=0.1,
+		                                  streamer=True)
+		
+		_effect['velocity'] = [entity['velocity'][0]+random.choice([-12, -10, -8, -6, 6, 8, 10, 12]),
+		                       entity['velocity'][1]+random.choice([-12, -10, -8, -6, 6, 8, 10, 12])]
 
 def shoot(entity, direction=0, speed=30):
 	bullet.create_bullet(entity['position'][0], entity['position'][1], direction, 30, 'ball_shadow.png', entity['_id'])
@@ -92,6 +108,7 @@ def damage(entity, damage, target_id):
 	entity['hp'] -= damage
 	
 	if entity['hp']<=0 and entity['death_timer'] == -1:
+		entities.trigger_event(entity, 'set_friction', friction=0.05)
 		entities.trigger_event(entities.get_entity(target_id), 'score', target_id=entity['_id'])
 	
 	#entities.delete_entity(entity)
