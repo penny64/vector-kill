@@ -51,3 +51,7 @@ def handle_camera(entity_id):
 		                                                           1-(display.CAMERA['next_zoom']/_max_zoom))
 	else:
 		display.CAMERA['next_center_on'] = _player['position'][:]	
+
+def score(entity, target_id):
+	display.print_text(0, 10+(len(display.LABELS)*15), 'Kill (<b>+1XP</b>)', color=(0, 240, 0, 255), show_for=1.5)
+	

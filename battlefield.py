@@ -15,6 +15,7 @@ def create():
 
 	events.register_event('input', player.handle_input, _player['_id'])
 	events.register_event('camera', player.handle_camera, _player['_id'])
+	entities.register_event(_player, 'score', player.score)
 	entities.trigger_event(_player, 'accelerate', velocity=[45, 3])
 	
 	for i in range(1):

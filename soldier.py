@@ -20,6 +20,7 @@ def create():
 	entities.create_event(_soldier, 'shoot')
 	entities.create_event(_soldier, 'hit')
 	entities.create_event(_soldier, 'kill')
+	entities.create_event(_soldier, 'score')
 	entities.register_event(_soldier, 'tick', tick)
 	entities.register_event(_soldier, 'kill', destroy)
 	entities.register_event(_soldier, 'shoot', shoot)
@@ -89,5 +90,8 @@ def shoot(entity, direction=0, speed=30):
 
 def damage(entity, damage, target_id):
 	entity['hp'] -= damage
+	
+	if entity['hp']<=0 and entity['death_timer'] == -1:
+		entities.trigger_event(entities.get_entity(target_id), 'score', target_id=entity['_id'])
 	
 	#entities.delete_entity(entity)
