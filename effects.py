@@ -106,7 +106,7 @@ def tick_image(image):
 		image['position'] = _parent_entity['position']
 		
 		if image['rotate_with_parent']:
-			image['sprite'].rotation = _parent_entity['direction']
+			entities.trigger_event(image, 'set_rotation', degrees=_parent_entity['direction'])
 		elif image['rotate_by']:
 			entities.trigger_event(image, 'rotate_by', degrees=image['rotate_by'])
 		

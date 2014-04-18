@@ -5,17 +5,18 @@ import sprites
 import effects
 import bullet
 import events
+import ai
 
 import random
 
 
-def create(sprite_name):
+def create(sprite_name, x=0, y=0):
 	_soldier = entities.create_entity()
 	_soldier['hp'] = 10
 	_soldier['death_timer'] = -1
 	
 	entities.add_entity_to_group('soldiers', _soldier)
-	movement.register_entity(_soldier)
+	movement.register_entity(_soldier, x=x, y=y)
 	sprites.register_entity(_soldier, 'soldiers', sprite_name)
 	entities.create_event(_soldier, 'shoot')
 	entities.create_event(_soldier, 'hit')
@@ -41,8 +42,8 @@ def create_energy_ship():
 	
 	return _entity
 
-def create_eyemine():
-	_entity = create(sprite_name='eyemine_body.png')
+def create_eyemine(x=0, y=0):
+	_entity = create(x=x, y=y, sprite_name='eyemine_body.png')
 	effects.create_image(_entity['position'][0],
 	                     _entity['position'][1],
 	                     'eyemine_subbody.png',
@@ -58,8 +59,10 @@ def create_eyemine():
 	                     _entity['position'][1],
 	                     'eyemine_eye2.png',
 	                     parent_entity=_entity,
+	                     rotate_with_parent=True,
 	                     background=False)
-	
+	entities.register_event(_entity, 'hit', lambda _entity, target_id, **kwargs: ai.track_target(_entity, target_id))
+	ai.guard(_entity)
 	
 	return _entity
 
@@ -127,7 +130,6 @@ def explode(entity):
 		                                  scale_rate=.9,
 		                                  friction=0.1,
 		                                  streamer=True)
-		
 		_effect['velocity'] = [entity['velocity'][0]+random.randint(-4, 4),
 		                       entity['velocity'][1]+random.randint(-4, 4)]
 	
@@ -143,7 +145,6 @@ def explode(entity):
 		                                  streamer=True,
 		                                  streamer_chance=1,
 		                                  swerve_rate=15)
-		
 		_effect['direction'] = random.randint(0, 359)
 		_effect['velocity'] = numbers.velocity(_effect['direction'], 40)
 

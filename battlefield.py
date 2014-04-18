@@ -1,9 +1,10 @@
 import entities
-import soldier
 import display
 import player
 import events
-import ai
+import ships
+
+import random
 
 
 def create():
@@ -12,15 +13,13 @@ def create():
 	display.create_sprite_group('soldiers')
 	entities.create_entity_group('soldiers')
 	
-	_player = soldier.create_energy_ship()
+	_player = ships.create_energy_ship()
+	_player['player'] = True
 
 	events.register_event('input', player.handle_input, _player['_id'])
 	events.register_event('camera', player.handle_camera, _player['_id'])
 	entities.register_event(_player, 'score', player.score)
 	entities.trigger_event(_player, 'accelerate', velocity=[45, 3])
 	
-	for i in range(1):
-		_enemy = soldier.create_eyemine()
-		
-		ai.register_entity(_enemy)
-		entities.trigger_event(_enemy, 'accelerate', velocity=[45, 45])
+	for i in range(5):
+		_enemy = ships.create_eyemine(x=random.randint(0, 1000), y=random.randint(0, 1000))
