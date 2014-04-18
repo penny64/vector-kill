@@ -7,7 +7,7 @@ import events
 import random
 
 
-def create_particle(x, y, sprite_name, background=True, scale=1, friction=0, scale_min=0.15, direction=0, speed=0, scale_rate=1.0, fade_rate=1.0, spin=0, flashes=-1, flash_chance=0, streamer=False, swerve_rate=0, swerve_speed=25):
+def create_particle(x, y, sprite_name, background=True, scale=1, friction=0, scale_min=0.15, direction=0, speed=0, scale_rate=1.0, fade_rate=1.0, spin=0, flashes=-1, flash_chance=0, streamer=False, streamer_chance=0.3, swerve_rate=0, swerve_speed=25):
 	_entity = entities.create_entity()
 	_entity['scale_rate'] = scale_rate
 	_entity['scale_min'] = scale_min
@@ -23,6 +23,7 @@ def create_particle(x, y, sprite_name, background=True, scale=1, friction=0, sca
 	if streamer:
 		_entity['sprite_name'] = sprite_name
 		_entity['background'] = background
+		_entity['streamer_chance'] = streamer_chance
 	
 	movement.register_entity(_entity, x=x, y=y)
 	
@@ -35,6 +36,25 @@ def create_particle(x, y, sprite_name, background=True, scale=1, friction=0, sca
 	
 	entities.register_event(_entity, 'tick', tick_particle)
 	entities.trigger_event(_entity, 'set_friction', friction=friction)
+	
+	return _entity
+
+def create_image(x, y, sprite_name, parent_entity=None, rotate_by=0, rotate_with_parent=False, background=False, scale=1):
+	_entity = entities.create_entity()
+	_entity['parent_entity'] = parent_entity['_id']
+	_entity['rotate_by'] = rotate_by
+	_entity['rotate_with_parent'] = rotate_with_parent
+	
+	movement.register_entity(_entity, x=x, y=y)
+	entities.register_event(_entity, 'tick', tick_image)
+	
+	if parent_entity:
+		entities.register_event(parent_entity, 'delete', lambda parent_entity: entities.delete_entity(_entity))
+	
+	if background:
+		sprites.register_entity(_entity, 'effects_background', sprite_name, scale=scale)
+	else:
+		sprites.register_entity(_entity, 'effects_foreground', sprite_name, scale=scale)
 	
 	return _entity
 
@@ -63,7 +83,7 @@ def tick_particle(particle):
 				
 				return False
 	
-	if particle['streamer'] and not random.randint(0, 3):
+	if particle['streamer'] and random.uniform(0, 1)>1-particle['streamer_chance']:
 		_effect = create_particle(particle['position'][0],
 		                          particle['position'][1],
 		                          particle['sprite_name'],
@@ -79,3 +99,14 @@ def tick_particle(particle):
 		entities.delete_entity(particle)
 	else:
 		particle['sprite'].scale *= particle['scale_rate']
+
+def tick_image(image):
+	if image['parent_entity']:
+		_parent_entity = entities.get_entity(image['parent_entity'])
+		image['position'] = _parent_entity['position']
+		
+		if image['rotate_with_parent']:
+			image['sprite'].rotation = _parent_entity['direction']
+		elif image['rotate_by']:
+			entities.trigger_event(image, 'rotate_by', degrees=image['rotate_by'])
+		

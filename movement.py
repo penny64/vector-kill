@@ -14,7 +14,6 @@ def register_entity(entity, x=0, y=0):
 	entity['max_velocity'] = [1000, 1000]
 	entity['gravity'] = [0, .8]
 	
-	entities.create_event(entity, 'tick')
 	entities.create_event(entity, 'moved')
 	entities.create_event(entity, 'accelerate')
 	entities.create_event(entity, 'turn')

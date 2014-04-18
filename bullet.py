@@ -71,8 +71,6 @@ def tick_missile(bullet):
 		                        scale=0.2,
 		                        scale_rate=.95,
 		                        fade_rate=.7)
-		#flashes=10,
-		#flash_chance=.5)
 	
 	if bullet['target_pos']:
 		_direction_to = numbers.direction_to(bullet['position'], bullet['target_pos'])
@@ -82,9 +80,9 @@ def tick_missile(bullet):
 			_direction_to += 360
 		
 		if bullet['engine_power']>0:
-			_new_direction = numbers.interp(bullet['direction'], _direction_to, 0.1)
+			_new_direction = numbers.interp(bullet['direction'], _direction_to, 0.1)+random.randint(-4, 4)
 			_direction_difference = abs(bullet['direction']-_new_direction)
-			_speed = 60*numbers.clip(1-(numbers.distance(bullet['position'], bullet['target_pos'])/1500), 0.3, 1.0)
+			_speed = 60*numbers.clip(1-(numbers.distance(bullet['position'], bullet['target_pos'])/1100), 0.3, 1.0)
 			bullet['engine_power'] -= numbers.clip(_direction_difference-10, 0, 100)
 			bullet['direction'] = _new_direction
 			bullet['velocity'] = numbers.velocity(bullet['direction'], _speed)

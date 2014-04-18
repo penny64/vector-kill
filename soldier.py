@@ -9,14 +9,14 @@ import events
 import random
 
 
-def create():
+def create(sprite_name):
 	_soldier = entities.create_entity()
 	_soldier['hp'] = 10
 	_soldier['death_timer'] = -1
 	
 	entities.add_entity_to_group('soldiers', _soldier)
 	movement.register_entity(_soldier)
-	sprites.register_entity(_soldier, 'soldiers', 'ball.png')
+	sprites.register_entity(_soldier, 'soldiers', sprite_name)
 	entities.create_event(_soldier, 'shoot')
 	entities.create_event(_soldier, 'hit')
 	entities.create_event(_soldier, 'kill')
@@ -34,19 +34,49 @@ def create():
 	
 	return _soldier
 
-def set_direction(entity, **kwargs):
-	_direction = numbers.distance([0, 0], kwargs['position_change'])*numbers.clip(kwargs['position_change'][0], -1, 1)
-	entities.trigger_event(entity, 'rotate_by', degrees=_direction*.5)
+def create_energy_ship():
+	_entity = create(sprite_name='ball.png')
+	
+	entities.register_event(_entity, 'tick', tick_energy_ship)
+	
+	return _entity
+
+def create_eyemine():
+	_entity = create(sprite_name='eyemine_body.png')
+	effects.create_image(_entity['position'][0],
+	                     _entity['position'][1],
+	                     'eyemine_subbody.png',
+	                     parent_entity=_entity,
+	                     rotate_by=3,
+	                     background=True)
+	effects.create_image(_entity['position'][0],
+	                     _entity['position'][1],
+	                     'eyemine_eye1.png',
+	                     parent_entity=_entity,
+	                     background=False)
+	effects.create_image(_entity['position'][0],
+	                     _entity['position'][1],
+	                     'eyemine_eye2.png',
+	                     parent_entity=_entity,
+	                     background=False)
+	
+	
+	return _entity
 
 def tick(entity):
+	if entity['hp']<=0:
+		entities.trigger_event(entity, 'kill')
+
+def tick_energy_ship(entity):
 	if random.randint(0, 4):
 		_displace = (random.uniform(-entity['velocity'][0], entity['velocity'][0]),
 		             random.uniform(-entity['velocity'][1], entity['velocity'][1]))
 		
 		effects.create_particle(entity['position'][0]+_displace[0], entity['position'][1]+_displace[1], 'ball_shadow.png', scale_rate=.9)
-	
-	if entity['hp']<=0:
-		entities.trigger_event(entity, 'kill')
+
+def set_direction(entity, **kwargs):
+	_direction = numbers.distance([0, 0], kwargs['position_change'])*numbers.clip(kwargs['position_change'][0], -1, 1)
+	entities.trigger_event(entity, 'rotate_by', degrees=_direction*.5)
 
 def destroy(entity):
 	if entity['death_timer'] == -1:
@@ -100,7 +130,8 @@ def explode(entity):
 		
 		_effect['velocity'] = [entity['velocity'][0]+random.randint(-4, 4),
 		                       entity['velocity'][1]+random.randint(-4, 4)]
-		
+	
+	for i in range(random.randint(4, 6)):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
 		                                  entity['position'][1]+random.randint(-20, 20),
 		                                  'explosion.png',
@@ -110,7 +141,8 @@ def explode(entity):
 		                                  scale_rate=.91,
 		                                  friction=0,
 		                                  streamer=True,
-		                                  swerve_rate=10)
+		                                  streamer_chance=1,
+		                                  swerve_rate=15)
 		
 		_effect['direction'] = random.randint(0, 359)
 		_effect['velocity'] = numbers.velocity(_effect['direction'], 40)

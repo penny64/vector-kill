@@ -11,10 +11,10 @@ import time
 LOADED_IMAGES = {}
 SPRITE_GROUPS = {}
 LABELS = []
-WINDOW = pyglet.window.Window(width=800, height=600)
+WINDOW = pyglet.window.Window(width=800, height=600, vsync=False)
 DT = 1.0
 FPS = 120
-TPS = 120
+TPS = 60
 CAMERA = {'center_on': [0, 0],
           'next_center_on': [400, 400],
           'camera_move_speed': 0.05,

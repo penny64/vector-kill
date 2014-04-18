@@ -18,9 +18,10 @@ def loop(dt):
 	events.trigger_event('loop')
 
 def window(dt):
-	display.set_caption('%s - %ifps - %stps' % ('vector:kill: SUICIDE SHIPS',
+	display.set_caption('%s - %ifps - %stps - %s' % ('vector:kill: SUICIDE SHIPS',
 	                                            round(display.get_fps()),
-	                                            entities.TICKS_PER_SECOND))
+	                                            entities.TICKS_PER_SECOND,
+	                                            len(entities.ENTITIES)))
 
 def main():
 	events.register_event('boot', display.boot)

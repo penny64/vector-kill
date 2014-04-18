@@ -32,6 +32,7 @@ def create_entity():
 	create_event(_entity, 'delete')
 	create_event(_entity, 'create')
 	create_event(_entity, 'loop')
+	create_event(_entity, 'tick')
 	register_event(_entity, 'delete', remove_entity_from_all_groups)
 	
 	NEXT_ENTITY_ID += 1
@@ -95,9 +96,11 @@ def loop():
 def cleanup():
 	global ENTITIES_TO_DELETE
 	
-	for entity_id in ENTITIES_TO_DELETE:
-		trigger_event(ENTITIES[entity_id], 'delete')
+	while ENTITIES_TO_DELETE:
+		_entity_id = ENTITIES_TO_DELETE.pop()
 		
-		del ENTITIES[entity_id]
+		trigger_event(ENTITIES[_entity_id], 'delete')
+		
+		del ENTITIES[_entity_id]
 	
 	ENTITIES_TO_DELETE = set()
