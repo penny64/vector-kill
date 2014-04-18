@@ -14,7 +14,7 @@ LABELS = []
 WINDOW = pyglet.window.Window(width=800, height=600)
 DT = 1.0
 FPS = 120
-TPS = 60
+TPS = 120
 CAMERA = {'center_on': [0, 0],
           'next_center_on': [400, 400],
           'camera_move_speed': 0.05,

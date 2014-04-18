@@ -91,6 +91,7 @@ def tick_missile(bullet):
 			entities.trigger_event(bullet, 'set_rotation', degrees=bullet['direction'])
 	else:
 		bullet['engine_power'] -= 1
+		bullet['direction'] += random.randint(-7, 7)
 		bullet['velocity'] = numbers.velocity(bullet['direction'], 15)
 	
 	if bullet['engine_power']<0 and bullet['engine_power']>-20:

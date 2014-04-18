@@ -8,6 +8,9 @@ import events
 import worlds
 import ui
 
+import cProfile
+import sys
+
 
 def loop(dt):
 	display.set_clock_delta(dt)
@@ -37,4 +40,8 @@ def main():
 	pyglet.app.run()
 
 if __name__ == '__main__':
-	main()
+	if '--debug' in sys.argv:
+		print 'Debugging...'
+		cProfile.run('main()','profile.dat')
+	else:
+		main()

@@ -62,7 +62,7 @@ def destroy(entity):
 		                                  entity['position'][1]+random.randint(-20, 20),
 		                                  'smoke.png',
 		                                  background=True,
-		                                  scale=random.uniform(.5, 1.3),
+		                                  scale=random.uniform(.5, 1.1),
 		                                  scale_min=0.05,
 		                                  scale_rate=.98)
 		
@@ -100,6 +100,20 @@ def explode(entity):
 		
 		_effect['velocity'] = [entity['velocity'][0]+random.randint(-4, 4),
 		                       entity['velocity'][1]+random.randint(-4, 4)]
+		
+		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
+		                                  entity['position'][1]+random.randint(-20, 20),
+		                                  'explosion.png',
+		                                  background=True,
+		                                  scale=random.uniform(1.0, 1.3),
+		                                  scale_min=0.05,
+		                                  scale_rate=.91,
+		                                  friction=0,
+		                                  streamer=True,
+		                                  swerve_rate=10)
+		
+		_effect['direction'] = random.randint(0, 359)
+		_effect['velocity'] = numbers.velocity(_effect['direction'], 40)
 
 def shoot(entity, direction=0, speed=30):
 	bullet.create_bullet(entity['position'][0], entity['position'][1], direction, 30, 'bullet.png', entity['_id'])
