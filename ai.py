@@ -2,20 +2,25 @@ import entities
 
 import numbers
 
+def register_entity(entity):
+	entity['current_target'] = None
+
 def track_target(entity, target_id):
+	register_entity(entity)
+	entities.register_event(entity, 'tick', tick_track)
+	
 	entity['current_target'] = target_id
 
-	entities.register_event(entity, 'tick', tick_track)
-
 def guard(entity):
+	register_entity(entity)
 	entities.register_event(entity, 'tick', tick_guard)
 
 def tick_track(entity):
 	#_target_id = find_target(entity)
 	_target_id = entity['current_target']
 	
-	if entity['hp']<=0:
-		entities.unregister_event(entity, 'tick', tick)
+	if entity['hp']<=0 or not _target_id in entities.ENTITIES:
+		entities.unregister_event(entity, 'tick', tick_track)
 		
 		return False
 	
@@ -31,20 +36,29 @@ def tick_track(entity):
 	if _degrees_to>=180:
 		_direction_to += 360
 	
-	_new_direction = numbers.interp(entity['direction'], _direction_to, 0.1)
+	_new_direction = numbers.interp(entity['direction'], _direction_to, entity['turn_rate'])
 	_direction_difference = abs(entity['direction']-_new_direction)
 	entity['direction'] = _new_direction
-	entity['velocity'] = numbers.velocity(entity['direction'], 10)
+	entities.trigger_event(entity, 'thrust')
 
 def tick_guard(entity):
-	_target_id = find_target(entity, max_distance=500)
+	if entity['hp']<=0:
+		entities.unregister_event(entity, 'tick', tick_guard)
+		
+		return False
+	
+	if not entity['current_target']:
+		_target_id = find_target(entity, max_distance=350)
+		
+		if _target_id:
+			entities.trigger_event(entity, 'set_direction', direction=numbers.direction_to(entity['position'], entities.get_entity(_target_id)['position']))
+			track_target(entity, _target_id)
 
-
-def find_target(entity, max_distance=-1):
+def find_target(entity, max_distance=-1, player=False):
 	_closest_target = {'enemy_id': None, 'distance': 0}
 	
 	for soldier_id in entities.get_sprite_group('soldiers'):
-		if entity['_id'] == soldier_id or not 'player' in entities.get_entity(soldier_id):
+		if entity['_id'] == soldier_id or (not player and not 'player' in entities.get_entity(soldier_id)):
 			continue
 		
 		_distance = numbers.distance(entity['position'], entities.get_entity(soldier_id)['position'])

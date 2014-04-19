@@ -3,13 +3,16 @@ import numbers
 import events
 
 
-def register_entity(entity, x=0, y=0):
+def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, turn_rate=0.1):
 	entity['position'] = [x, y]
 	entity['last_position'] = [x, y]
 	entity['velocity'] = [0, 0]
-	entity['acceleration'] = 0.5
+	entity['acceleration'] = acceleration
 	entity['friction'] = 0.5
-	entity['direction'] = 0
+	entity['turn_rate'] = turn_rate
+	entity['direction'] = direction
+	entity['speed'] = speed
+	entity['current_speed'] = 0
 	entity['min_velocity'] = [-1000, -1000]
 	entity['max_velocity'] = [1000, 1000]
 	entity['gravity'] = [0, .8]
@@ -17,6 +20,7 @@ def register_entity(entity, x=0, y=0):
 	entities.create_event(entity, 'moved')
 	entities.create_event(entity, 'accelerate')
 	entities.create_event(entity, 'turn')
+	entities.create_event(entity, 'thrust')
 	entities.create_event(entity, 'set_minimum_velocity')
 	entities.create_event(entity, 'set_maximum_velocity')
 	entities.create_event(entity, 'set_acceleration')
@@ -24,6 +28,7 @@ def register_entity(entity, x=0, y=0):
 	entities.create_event(entity, 'set_direction')
 	entities.register_event(entity, 'tick', tick)
 	entities.register_event(entity, 'turn', turn)
+	entities.register_event(entity, 'thrust', thrust)
 	entities.register_event(entity, 'accelerate', accelerate)
 	entities.register_event(entity, 'set_minimum_velocity', set_minimum_velocity)
 	entities.register_event(entity, 'set_maximum_velocity', set_maximum_velocity)
@@ -53,7 +58,12 @@ def accelerate(entity, velocity):
 	entity['velocity'][1] = numbers.clip(entity['velocity'][1]+_n_vol[1], entity['min_velocity'][1], entity['max_velocity'][1])
 
 def turn(entity, degrees):
-	entities['direction'] += degrees
+	entity['direction'] += degrees
+
+def thrust(entity):
+	_thrust_velocity = numbers.velocity(entity['direction'], entity['speed'])
+	entity['velocity'][0] += numbers.interp(0, _thrust_velocity[0], entity['acceleration'])
+	entity['velocity'][1] += numbers.interp(0, _thrust_velocity[1], entity['acceleration'])
 
 def tick(entity):
 	entity['last_position'] = entity['position'][:]
@@ -62,6 +72,10 @@ def tick(entity):
 	entity['position'][1] += entity['velocity'][1]
 	entity['velocity'][0] *= 1-entity['friction']
 	entity['velocity'][1] *= 1-entity['friction']
+	_x = entity['position'][0]-entity['last_position'][0]
+	_y = entity['position'][1]-entity['last_position'][1]
+	entity['current_speed'] = numbers.distance((0, 0), (_x, _y))
+	
 	_position_change = [entity['position'][0]-entity['last_position'][0],
 	                    entity['position'][1]-entity['last_position'][1]]
 	

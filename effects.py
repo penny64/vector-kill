@@ -7,10 +7,11 @@ import events
 import random
 
 
-def create_particle(x, y, sprite_name, background=True, scale=1, friction=0, scale_min=0.15, direction=0, speed=0, scale_rate=1.0, fade_rate=1.0, spin=0, flashes=-1, flash_chance=0, streamer=False, streamer_chance=0.3, swerve_rate=0, swerve_speed=25):
+def create_particle(x, y, sprite_name, background=True, scale=1, friction=0, scale_min=0.15, scale_max=5, direction=0, speed=0, scale_rate=1.0, fade_rate=1.0, spin=0, flashes=-1, flash_chance=0, streamer=False, streamer_chance=0.3, swerve_rate=0, swerve_speed=25):
 	_entity = entities.create_entity()
 	_entity['scale_rate'] = scale_rate
 	_entity['scale_min'] = scale_min
+	_entity['scale_max'] = scale_max
 	_entity['fade_rate'] = fade_rate
 	_entity['flash_chance'] = flash_chance
 	_entity['flashes'] = flashes
@@ -33,6 +34,9 @@ def create_particle(x, y, sprite_name, background=True, scale=1, friction=0, sca
 		sprites.register_entity(_entity, 'effects_background', sprite_name, scale=scale)
 	else:
 		sprites.register_entity(_entity, 'effects_foreground', sprite_name, scale=scale)
+	
+	if swerve_rate:
+		_entity['sprite'].opacity = 0
 	
 	entities.register_event(_entity, 'tick', tick_particle)
 	entities.trigger_event(_entity, 'set_friction', friction=friction)
@@ -94,8 +98,11 @@ def tick_particle(particle):
 		
 		if particle['swerve_rate']:
 			_effect['sprite'].scale = particle['swerve_speed']/float(particle['swerve_speed_max'])
+			_effect['sprite'].opacity = 255*particle['swerve_speed']/float(particle['swerve_speed_max'])
 	
-	if particle['sprite'].scale <= particle['scale_min']:
+	if particle['sprite'].scale < particle['scale_min']:
+		entities.delete_entity(particle)
+	elif particle['sprite'].scale > particle['scale_max']:
 		entities.delete_entity(particle)
 	else:
 		particle['sprite'].scale *= particle['scale_rate']

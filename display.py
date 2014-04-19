@@ -14,7 +14,7 @@ LABELS = []
 WINDOW = pyglet.window.Window(width=800, height=600, vsync=False)
 DT = 1.0
 FPS = 120
-TPS = 60
+TPS = 120
 CAMERA = {'center_on': [0, 0],
           'next_center_on': [400, 400],
           'camera_move_speed': 0.05,
@@ -119,7 +119,13 @@ def create_sprite(image, x, y, group_name):
 	return _sprite
 
 def delete_sprite(entity):
+	if not entity['sprite'] in SPRITE_GROUPS[entity['sprite_group']]['sprites']:
+		print 'Trying to remove entity from a sprite group it isn\'t in: %s (%s)' % (entity['_id'], entity['sprite_group'])
+		
+		return False
+	
 	SPRITE_GROUPS[entity['sprite_group']]['sprites'].remove(entity['sprite'])
+	entity['sprite_group'] = None
 	entity['sprite'].delete()
 
 def draw_sprite_group(group_name):

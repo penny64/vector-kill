@@ -39,6 +39,9 @@ def create_entity():
 	
 	return _entity
 
+def delete_all():
+	ENTITIES_TO_DELETE.update(ENTITIES.keys())
+
 def delete_entity(entity):
 	ENTITIES_TO_DELETE.add(entity['_id'])
 
@@ -56,6 +59,11 @@ def add_entity_to_group(group_name, entity):
 	GROUPS[group_name].append(entity['_id'])
 
 def remove_entity_from_group(entity, group_name):
+	if not entity['_id'] in GROUPS[group_name]:
+		print 'Trying to remove entity from a group it isn\'t in: %s (%s)' % (entity['_id'], group_name)
+		
+		return False
+	
 	GROUPS[group_name].remove(entity['_id'])
 	entity['_groups'].remove(group_name)
 
@@ -98,6 +106,9 @@ def cleanup():
 	
 	while ENTITIES_TO_DELETE:
 		_entity_id = ENTITIES_TO_DELETE.pop()
+		
+		if not _entity_id in ENTITIES:
+			continue
 		
 		trigger_event(ENTITIES[_entity_id], 'delete')
 		

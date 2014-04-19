@@ -29,8 +29,10 @@ def main():
 	events.register_event('boot', controls.boot, display.get_window())
 	events.register_event('boot', worlds.create, world_name='game')
 	events.register_event('boot', ui.boot)
+	events.register_event('boot', battlefield.boot)
 	events.register_event('load', battlefield.create)
 	events.register_event('loop', controls.loop)
+	events.register_event('loop', battlefield.loop)
 	
 	events.trigger_event('boot')
 	events.trigger_event('load')
