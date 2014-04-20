@@ -64,8 +64,8 @@ def create_image(x, y, sprite_name, parent_entity=None, rotate_by=0, rotate_with
 
 def tick_particle(particle):
 	entities.trigger_event(particle, 'rotate_by', degrees=particle['spin'])
+	entities.trigger_event(particle, 'fade_by', amount=particle['fade_rate'])
 	particle['sprite'].visible = True
-	particle['sprite'].opacity *= particle['fade_rate']
 	
 	if particle['swerve_rate']:
 		particle['direction'] += (random.randint(int(round(particle['swerve_rate']*.25)), particle['swerve_rate'])*particle['swerve_speed']/float(particle['swerve_speed_max']))*random.choice([-1, 1])

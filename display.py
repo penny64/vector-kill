@@ -1,4 +1,5 @@
 import pyglet
+import rabbyt
 
 from pyglet.gl import *
 
@@ -6,8 +7,10 @@ import numbers
 import events
 
 import time
+import sys
 
 
+RABBYT = '--rabbyt' in sys.argv
 LOADED_IMAGES = {}
 SPRITE_GROUPS = {}
 LABELS = {}
@@ -28,6 +31,9 @@ CAMERA = {'center_on': [0, 0],
 @WINDOW.event
 def on_draw():
 	_window_width, _window_height = get_window_size()
+	
+	if RABBYT:
+		rabbyt.clear((.1, .1, .1))
 	
 	WINDOW.clear()
 	glMatrixMode(GL_PROJECTION)
@@ -126,7 +132,12 @@ def create_sprite_group(group_name):
 
 def create_sprite(image, x, y, group_name):
 	_group = SPRITE_GROUPS[group_name]
-	_sprite = pyglet.sprite.Sprite(image, x, y, batch=_group['batch'])
+	
+	if RABBYT:
+		_sprite = rabbyt.Sprite(image)
+	else:
+		_sprite = pyglet.sprite.Sprite(image, x, y, batch=_group['batch'])
+	
 	_group['sprites'].append(_sprite)
 	
 	return _sprite
@@ -139,10 +150,15 @@ def delete_sprite(entity):
 	
 	SPRITE_GROUPS[entity['sprite_group']]['sprites'].remove(entity['sprite'])
 	entity['sprite_group'] = None
-	entity['sprite'].delete()
+	
+	if not RABBYT:
+		entity['sprite'].delete()
 
 def draw_sprite_group(group_name):
-	SPRITE_GROUPS[group_name]['batch'].draw()
+	if RABBYT:
+		rabbyt.render_unsorted(SPRITE_GROUPS[group_name]['sprites'])
+	else:
+		SPRITE_GROUPS[group_name]['batch'].draw()
 
 def print_text(x, y, text, text_group=None, color=(255, 0, 255, 0), fade_in_speed=255, show_for=3, fade_out_speed=2, center=False):
 	global LABEL_ID

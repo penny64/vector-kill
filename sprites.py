@@ -6,7 +6,11 @@ import worlds
 
 
 def register_entity(entity, sprite_group, sprite_name, scale=1):
-	entity['image'] = display.load_image(sprite_name)
+	if display.RABBYT:
+		entity['image'] = sprite_name
+	else:
+		entity['image'] = display.load_image(sprite_name)
+	
 	entity['sprite'] = display.create_sprite(entity['image'], 0, 0, sprite_group)
 	entity['sprite_group'] = sprite_group
 	entity['last_rotation'] = 0
@@ -16,10 +20,12 @@ def register_entity(entity, sprite_group, sprite_name, scale=1):
 	
 	entities.create_event(entity, 'set_rotation')
 	entities.create_event(entity, 'rotate_by')
+	entities.create_event(entity, 'fade_by')
 	entities.register_event(entity, 'tick', tick)
 	entities.register_event(entity, 'delete', display.delete_sprite)
 	entities.register_event(entity, 'set_rotation', set_rotation)
 	entities.register_event(entity, 'rotate_by', rotate_by)
+	entities.register_event(entity, 'fade_by', fade_by)
 	entities.register_event(entity, 'loop', loop)
 
 
@@ -45,7 +51,10 @@ def loop(entity):
 	entity['sprite'].rotation = numbers.interp(entity['last_rotation'], entity['next_rotation'], _dt)
 
 def tick(entity):
-	entity['last_rotation'] = entity['sprite'].rotation
+	if display.RABBYT:
+		entity['last_rotation'] = entity['sprite'].rot
+	else:
+		entity['last_rotation'] = entity['sprite'].rotation
 
 ########
 #Events#
@@ -58,3 +67,16 @@ def set_rotation(entity, degrees):
 def rotate_by(entity, degrees):
 	entity['rotation_speed'] = degrees
 	entity['next_rotation'] = entity['last_rotation']-degrees
+
+def fade_by(entity, amount):
+	if display.RABBYT:
+		entity['sprite'].alpha *= amount
+	else:
+		entity['sprite'].opacity *= amount
+
+def get_size(sprite):
+	if display.RABBYT:
+		return (sprite.right-sprite.left, sprite.top-sprite.bottom)
+	else:
+		return sprite.width, sprite.height
+		

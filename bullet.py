@@ -32,7 +32,7 @@ def create_missile(x, y, direction, speed, sprite_name, owner_id, life=30, scale
 	_bullet = create(x, y, direction, speed, sprite_name, owner_id, life=30, turn_rate=turn_rate)
 	_owner = entities.get_entity(_bullet['owner_id'])
 	_bullet['sprite'].anchor_x = 0
-	_bullet['sprite'].anchor_y = _bullet['sprite'].height/2
+	_bullet['sprite'].anchor_y = sprites.get_size(_bullet['sprite'])[1]/2
 	_bullet['sprite'].scale = scale
 	
 	entities.register_event(_bullet, 'tick', tick_missile)
