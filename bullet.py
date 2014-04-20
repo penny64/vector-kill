@@ -4,6 +4,7 @@ import numbers
 import sprites
 import effects
 import events
+import ai
 
 import random
 
@@ -14,8 +15,11 @@ def create(x, y, direction, speed, sprite_name, owner_id, life=30, turn_rate=.15
 	movement.register_entity(_entity, x=x, y=y, direction=direction, speed=speed, turn_rate=turn_rate)
 	sprites.register_entity(_entity, 'effects_foreground', sprite_name)
 	entities.create_event(_entity, 'hit')
+	entities.create_event(_entity, 'destroy')
 	entities.register_event(_entity, 'hit', hit_missile)
 	entities.register_event(_entity, 'tick', tick)
+	entities.register_event(_entity, 'destroy', destroy)
+	entities.register_event(_entity, 'hit_edge', lambda entity: entities.trigger_event(entity, 'destroy'))
 	entities.trigger_event(_entity, 'set_friction', friction=0)
 	entities.trigger_event(_entity, 'accelerate', velocity=numbers.velocity(direction, speed))
 	
@@ -24,40 +28,63 @@ def create(x, y, direction, speed, sprite_name, owner_id, life=30, turn_rate=.15
 	
 	return _entity
 
-def create_missile(x, y, direction, speed, sprite_name, owner_id, life=30, scale=.2, turn_rate=.15):
+def create_missile(x, y, direction, speed, sprite_name, owner_id, life=30, scale=.2, turn_rate=.15, tracking=True, drunk=True):
 	_bullet = create(x, y, direction, speed, sprite_name, owner_id, life=30, turn_rate=turn_rate)
 	_owner = entities.get_entity(_bullet['owner_id'])
 	_bullet['sprite'].anchor_x = 0
 	_bullet['sprite'].anchor_y = _bullet['sprite'].height/2
 	_bullet['sprite'].scale = scale
-	_closest_target = find_target(_bullet, max_distance=1600)
 	
 	entities.register_event(_bullet, 'tick', tick_missile)
-	entities.register_event(_bullet, 'tick', tick_drunk)
 	
-	if _closest_target:
-		_bullet['target_pos'] = entities.get_entity(_closest_target)['position']
+	if drunk:
+		entities.register_event(_bullet, 'tick', tick_drunk)
+	
+	if tracking:
+		_bullet['target_id'] = ai.find_target(_owner, max_distance=1600)
 		
-		if 'player' in _owner and _owner['player']:
-			effects.create_particle(_bullet['target_pos'][0],
-				                    _bullet['target_pos'][1],
-				                    'crosshair.png',
-				                    background=False,
-				                    scale_rate=.95,
-				                    fade_rate=.98,
-				                    spin=random.choice([-3, -6, 3, 6]))
-		
-		entities.register_event(_bullet, 'tick', tick_track)
+		if _bullet['target_id']:
+			_target = entities.get_entity(_bullet['target_id'])
+			
+			entities.register_event(_bullet, 'tick', tick_track)
+			entities.register_event(_target,
+			                        'delete',
+			                        lambda target: _bullet['_id'] in entities.ENTITIES and entities.unregister_event(entities.get_entity(_bullet['_id']),
+			                                                                                                         'tick',
+			                                                                                                         tick_track))
+			
+			if 'player' in _owner and _owner['player']:
+				effects.create_particle(_target['position'][0],
+					                    _target['position'][1],
+					                    'crosshair.png',
+					                    background=False,
+					                    scale_rate=.95,
+					                    fade_rate=.98,
+					                    spin=random.choice([-3, -6, 3, 6]))
 	else:
-		_bullet['target_pos'] = None
+		_bullet['target_id'] = None
 	
 	entities.trigger_event(_bullet, 'set_rotation', degrees=_bullet['direction'])
 	_bullet['engine_power'] = 100
 	
 	return _bullet
 
+def destroy(bullet):
+	for i in range(random.randint(2, 3)):
+		_effect = effects.create_particle(bullet['position'][0]+random.randint(-2, 2),
+		                                  bullet['position'][1]+random.randint(-2, 2),
+		                                  'explosion.png',
+		                                  background=False,
+		                                  scale=random.uniform(.4, .8),
+		                                  flashes=random.randint(5, 7),
+		                                  flash_chance=0.7,
+		                                  direction=bullet['direction']+random.randint(-45, 45),
+		                                  speed=bullet['current_speed']*.5)
+	
+	return entities.delete_entity(bullet)
+
 def tick_missile(bullet):
-	if random.randint(0, 4):
+	if not random.randint(0, 3):
 		_displace = (random.randint(-2, 2),
 		             random.randint(-2, 2))
 		
@@ -71,26 +98,16 @@ def tick_missile(bullet):
 	bullet['engine_power'] -= 1
 	
 	if not bullet['engine_power']:
-		for i in range(random.randint(2, 3)):
-			_effect = effects.create_particle(bullet['position'][0]+random.randint(-2, 2),
-			                                  bullet['position'][1]+random.randint(-2, 2),
-			                                  'explosion.png',
-			                                  background=False,
-			                                  scale=random.uniform(.4, .8),
-			                                  flashes=random.randint(5, 7),
-			                                  flash_chance=0.7,
-			                                  direction=bullet['direction']+random.randint(-45, 45),
-			                                  speed=bullet['current_speed']*.5)
-		
-		return entities.delete_entity(bullet)
+		entities.trigger_event(bullet, 'destroy')
 
 def tick_drunk(bullet):
 	bullet['direction'] += random.randint(-6, 6)
-	bullet['velocity'] = numbers.velocity(bullet['direction']+random.randint(-12, 12), 10)
+	bullet['velocity'] = numbers.velocity(bullet['direction']+random.randint(-12, 12), bullet['speed'])
 
 def tick_track(bullet):
-	if bullet['target_pos']:
-		_direction_to = numbers.direction_to(bullet['position'], bullet['target_pos'])
+	if bullet['target_id']:
+		_target_pos = entities.get_entity(bullet['target_id'])['position']
+		_direction_to = numbers.direction_to(bullet['position'], _target_pos)
 		_degrees_to = abs(bullet['direction']-_direction_to)
 		
 		if _degrees_to>=180:
@@ -98,7 +115,8 @@ def tick_track(bullet):
 		
 		_new_direction = numbers.interp(bullet['direction'], _direction_to, bullet['turn_rate'])
 		_direction_difference = abs(bullet['direction']-_new_direction)
-		_speed = 60*numbers.clip(1-(numbers.distance(bullet['position'], bullet['target_pos'])/1100), 0.3, 1.0)
+		_speed = 60*numbers.clip(1-(numbers.distance(bullet['position'], _target_pos)/1100), 0.3, 1.0)
+		
 		bullet['direction'] = _new_direction
 		bullet['velocity'] = numbers.velocity(bullet['direction'], _speed)
 		entities.trigger_event(bullet, 'set_rotation', degrees=bullet['direction'])

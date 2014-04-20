@@ -23,7 +23,7 @@ def _check_active_world():
 def create(world_name):
 	global ACTIVE_WORLD
 	
-	WORLDS[world_name] = {'size': (1000, 1000),
+	WORLDS[world_name] = {'size': (3000, 3000),
 	                      'entities': [],
 	                      'last_tick': get_time(),
 	                      'next_tick': get_time()+.000001}

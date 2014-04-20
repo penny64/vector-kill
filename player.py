@@ -6,6 +6,10 @@ import numbers
 import ai
 
 
+def register_entity(entity):
+	entities.add_entity_to_group('players', entity)
+	return entity
+
 def handle_input(entity_id):
 	if not entity_id in entities.ENTITIES:
 		if controls.key_pressed(' '):
@@ -61,7 +65,7 @@ def handle_camera(entity_id):
 		
 		_center_pos = numbers.interp_velocity(_center_pos, _enemy['position'], 0.5)
 	
-	_enemy_id = ai.find_target(_player, player=True)
+	_enemy_id = ai.find_target(_player)
 	
 	if _enemy_id:
 		_enemy = entities.get_entity(_enemy_id)
@@ -71,7 +75,6 @@ def handle_camera(entity_id):
 	_distance_to_nearest_enemy = numbers.distance(_player['position'], _enemy['position'], old=True)
 	_min_zoom = 2.0
 	_max_zoom = 4.0
-	
 	display.CAMERA['next_zoom'] = numbers.clip(_distance_to_nearest_enemy/400.0, _min_zoom, _max_zoom)
 	
 	if display.CAMERA['next_zoom'] < 5:
@@ -83,7 +86,8 @@ def handle_camera(entity_id):
 
 def score(entity, target_id):
 	display.print_text(0, 10+(len(display.LABELS)*15), 'Kill (<b>+1XP</b>)', color=(0, 240, 0, 255), show_for=1.5)
-	display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'Fragged <b>%s</b>' % target_id, color=(0, 240, 0, 255), show_for=1.5, center=True)
+	display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'Fragged <b>%s</b>' % target_id, color=(0, 240, 0, 255), text_group='top_center', show_for=1.5, center=True)
 
 def delete(entity):
-	display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'GAME OVER', color=(255, 0, 0, 255), show_for=5, center=True)
+	display.clear_text_group('top_center')
+	display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'GAME OVER', text_group='top_center', color=(255, 0, 0, 255), show_for=5, center=True)

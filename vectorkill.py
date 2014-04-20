@@ -44,7 +44,6 @@ def main():
 
 if __name__ == '__main__':
 	if '--debug' in sys.argv:
-		print 'Debugging...'
 		cProfile.run('main()','profile.dat')
 	else:
 		main()

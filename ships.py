@@ -10,7 +10,7 @@ import ai
 import random
 
 
-def create(sprite_name, x=0, y=0, speed=10, turn_rate=0.1, acceleration=0.5, max_velocity=15):
+def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, acceleration=0.5, max_velocity=15):
 	_soldier = entities.create_entity()
 	_soldier['hp'] = 10
 	_soldier['death_timer'] = -1
@@ -18,15 +18,20 @@ def create(sprite_name, x=0, y=0, speed=10, turn_rate=0.1, acceleration=0.5, max
 	_soldier['turn_rate'] = turn_rate
 	
 	entities.add_entity_to_group('soldiers', _soldier)
+	
+	if group:
+		entities.add_entity_to_group(group, _soldier)
+	
 	movement.register_entity(_soldier, x=x, y=y)
 	sprites.register_entity(_soldier, 'soldiers', sprite_name)
 	entities.create_event(_soldier, 'shoot')
 	entities.create_event(_soldier, 'hit')
 	entities.create_event(_soldier, 'kill')
 	entities.create_event(_soldier, 'score')
+	entities.create_event(_soldier, 'explode')
 	entities.register_event(_soldier, 'tick', tick)
 	entities.register_event(_soldier, 'kill', destroy)
-	entities.register_event(_soldier, 'delete', explode)
+	entities.register_event(_soldier, 'explode', explode)
 	entities.register_event(_soldier, 'hit', damage)
 	entities.register_event(_soldier, 'moved', set_direction)
 	entities.trigger_event(_soldier, 'set_minimum_velocity', velocity=[-max_velocity, -max_velocity])
@@ -44,8 +49,21 @@ def create_energy_ship():
 	
 	return _entity
 
+def create_flea(x=0, y=0):
+	_entity = create(sprite_name='ball.png', group='enemies', x=x, y=y, acceleration=.2, speed=5, turn_rate=0.8)
+	_entity['current_target'] = None
+	_entity['fire_rate'] = 0
+	_entity['fire_rate_max'] = 20
+	
+	entities.register_event(_entity, 'tick', tick_energy_ship)
+	entities.register_event(_entity, 'tick', tick_flea)
+	entities.register_event(_entity, 'tick', tick_turret)
+	entities.register_event(_entity, 'shoot', shoot_turret)
+	
+	return _entity
+
 def create_eyemine(x=0, y=0):
-	_entity = create(x=x, y=y, sprite_name='eyemine_body.png', speed=15, acceleration=0.1, max_velocity=15)
+	_entity = create(x=x, y=y, group='hazards', sprite_name='eyemine_body.png', speed=25, acceleration=0.1, max_velocity=25)
 	effects.create_image(_entity['position'][0],
 	                     _entity['position'][1],
 	                     'eyemine_subbody.png',
@@ -71,35 +89,49 @@ def create_eyemine(x=0, y=0):
 	                                                                                                                       direction=numbers.direction_to(_entity['position'],
 	                                                                                                                                                      entities.get_entity(target_id)['position'])))
 	entities.register_event(_entity, 'hit', lambda _entity, target_id, **kwargs: ai.track_target(_entity, target_id))
+	entities.register_event(_entity, 'hit_edge', lambda entity: entities.trigger_event(entity, 'kill'))
 	ai.guard(_entity)
 	
 	return _entity
 
 def create_missile_turret(x=0, y=0):
-	_entity = create(x=x, y=y, sprite_name='eyemine_body.png', speed=0, acceleration=0, max_velocity=0)
+	_entity = create(x=x, y=y, sprite_name='eyemine_body.png', speed=5, acceleration=1, max_velocity=0)
 	_entity['fire_rate'] = 0
 	_entity['fire_rate_max'] = 20
 	
 	entities.register_event(_entity, 'shoot', shoot_turret)
 	entities.register_event(_entity, 'tick', tick_turret)
+	
+	entities.add_entity_to_group('hazards', _entity)
+	
+	return _entity
 
 def tick(entity):
 	if entity['hp']<=0:
 		entities.trigger_event(entity, 'kill')
 
+def tick_flea(entity):
+	if not entity['current_target']:
+		entity['current_target'] = ai.find_target(entity)
+	
+		if entity['current_target']:
+			ai.track_target(entity, entity['current_target'])
+
 def tick_energy_ship(entity):
-	if random.randint(0, 4):
+	if random.randint(0, 1):
 		_displace = (random.uniform(-entity['velocity'][0], entity['velocity'][0]),
 		             random.uniform(-entity['velocity'][1], entity['velocity'][1]))
 		
 		effects.create_particle(entity['position'][0]+_displace[0], entity['position'][1]+_displace[1], 'ball_shadow.png', scale_rate=.9)
+	
+	entity['shoot_direction'] = numbers.direction_to(entity['last_position'], entity['position'])
 
 def tick_eyemine(entity):
 	if entity['current_speed']>=35:
 		entities.trigger_event(entity, 'kill')
 		return entities.delete_entity(entity)
 	
-	for soldier_id in entities.get_sprite_group('soldiers'):
+	for soldier_id in entities.get_sprite_groups(['enemies', 'players']):
 		if entity['_id'] == soldier_id:
 			continue
 		
@@ -134,23 +166,26 @@ def set_direction(entity, **kwargs):
 	entities.trigger_event(entity, 'rotate_by', degrees=_direction*.5)
 
 def destroy(entity):
+	entity['hp'] = 0
+	
 	if entity['death_timer'] == -1:
-		entity['death_timer'] = 15
+		entity['death_timer'] = 10
 	
 	if entity['death_timer']:
 		entity['death_timer'] -= 1
 	else:
+		entities.trigger_event(entity, 'explode')
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
 		                                  entity['position'][1]+random.randint(-20, 20),
 		                                  'shockwave.png',
 		                                  background=True,
 		                                  scale=0,
 		                                  scale_min=-.1,
-		                                  scale_max=2,
+		                                  scale_max=8,
 		                                  scale_rate=1.1)
 		entities.delete_entity(entity)
 	
-	for i in range(random.randint(1, 2)):
+	for i in range(random.randint(0, 1)):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
 		                                  entity['position'][1]+random.randint(-20, 20),
 		                                  'smoke.png',
@@ -162,7 +197,7 @@ def destroy(entity):
 		                                  direction=entity['direction']+random.randint(-90, 90),
 		                                  speed=random.uniform(entity['current_speed']*.3, entity['current_speed']*.5))
 	
-	for i in range(random.randint(1, 2)):
+	for i in range(random.randint(0, 1)):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
 		                                  entity['position'][1]+random.randint(-20, 20),
 		                                  'explosion.png',
@@ -178,7 +213,7 @@ def destroy(entity):
 		                                              entity['velocity'][1]+random.randint(-8, 8)), .2)
 
 def explode(entity):
-	for i in range(random.randint(2, 4)):
+	for i in range(random.randint(0, 1)):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
 		                                  entity['position'][1]+random.randint(-20, 20),
 		                                  'smoke.png',
@@ -191,7 +226,7 @@ def explode(entity):
 		                                  direction=entity['direction']+random.randint(-90, 90),
 		                                  speed=entity['current_speed']*.7)
 	
-	for i in range(random.randint(4, 6)):
+	for i in range(random.randint(0, 3)):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
 		                                  entity['position'][1]+random.randint(-20, 20),
 		                                  'explosion.png',
@@ -207,7 +242,7 @@ def explode(entity):
 		_effect['velocity'] = numbers.velocity(_effect['direction'], 40)
 
 def shoot(entity, direction=0, speed=30):
-	bullet.create_missile(entity['position'][0], entity['position'][1], entity['direction'], 30, 'bullet.png', entity['_id'])
+	bullet.create_missile(entity['position'][0], entity['position'][1], entity['shoot_direction'], 30, 'bullet.png', entity['_id'])
 
 def damage(entity, damage, target_id):
 	entity['hp'] -= damage

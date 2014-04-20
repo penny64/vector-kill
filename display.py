@@ -10,7 +10,9 @@ import time
 
 LOADED_IMAGES = {}
 SPRITE_GROUPS = {}
-LABELS = []
+LABELS = {}
+TEXT_GROUPS = {}
+LABEL_ID = 1
 WINDOW = pyglet.window.Window(width=800, height=600, vsync=False)
 DT = 1.0
 FPS = 120
@@ -20,7 +22,7 @@ CAMERA = {'center_on': [0, 0],
           'camera_move_speed': 0.05,
           'zoom': 0,
           'next_zoom': 2.5,
-          'zoom_speed': 0.025}
+          'zoom_speed': 0.09}
 
 
 @WINDOW.event
@@ -45,7 +47,7 @@ def on_draw():
 	glPushMatrix()
 	glOrtho(0, _window_width, 0, _window_height, 0.0, 1.0)
 	
-	for label in LABELS:
+	for label in LABELS.values():
 		label.draw()
 	
 	glPopMatrix()
@@ -107,6 +109,17 @@ def load_image(image_name):
 	
 	return _image
 
+def create_text_group(group_name):
+	TEXT_GROUPS[group_name] = []
+
+def clear_text_group(group_name):
+	for label in TEXT_GROUPS[group_name]:
+		#TODO: Fix
+		if label in LABELS:
+			del LABELS[label]
+	
+	TEXT_GROUPS[group_name] = []
+
 def create_sprite_group(group_name):
 	SPRITE_GROUPS[group_name] = {'batch': pyglet.graphics.Batch(),
 	                             'sprites': []}
@@ -120,7 +133,7 @@ def create_sprite(image, x, y, group_name):
 
 def delete_sprite(entity):
 	if not entity['sprite'] in SPRITE_GROUPS[entity['sprite_group']]['sprites']:
-		print 'Trying to remove entity from a sprite group it isn\'t in: %s (%s)' % (entity['_id'], entity['sprite_group'])
+		print('Trying to remove entity from a sprite group it isn\'t in: %s (%s)' % (entity['_id'], entity['sprite_group']))
 		
 		return False
 	
@@ -131,23 +144,31 @@ def delete_sprite(entity):
 def draw_sprite_group(group_name):
 	SPRITE_GROUPS[group_name]['batch'].draw()
 
-def print_text(x, y, text, color=(255, 0, 255, 0), fade_in_speed=255, show_for=3, fade_out_speed=2, center=False):
+def print_text(x, y, text, text_group=None, color=(255, 0, 255, 0), fade_in_speed=255, show_for=3, fade_out_speed=2, center=False):
+	global LABEL_ID
+	
 	_label = pyglet.text.HTMLLabel(text, x=x, y=y)
 	_label.color = tuple(color)
 	_label.fade_in_speed = fade_in_speed
 	_label.fade_out_speed = fade_out_speed
 	_label.show_for = show_for
 	_label.time_created = time.time()
+	_label.text_group = text_group
 	
 	if center:
 		_label.anchor_x = 'center'
 	
-	LABELS.append(_label)
+	if text_group:
+		TEXT_GROUPS[text_group].append(str(LABEL_ID))
+	
+	_label._id = str(LABEL_ID)
+	LABELS[str(LABEL_ID)] = _label
+	LABEL_ID += 1
 
 def tick():
 	_remove_labels = []
 	
-	for label in LABELS:
+	for label in LABELS.values():
 		if time.time()-label.time_created > label.show_for:
 			if label.color[3]>0:
 				label.color = (label.color[0], label.color[1], label.color[2], numbers.clip(label.color[3]-label.fade_out_speed, 0, 255))
@@ -158,4 +179,4 @@ def tick():
 				label.color = (label.color[0], label.color[1], label.color[2], numbers.clip(label.color[3]+label.fade_in_speed, 0, 255))
 	
 	for label in _remove_labels:
-		LABELS.remove(label)
+		del LABELS[label._id]

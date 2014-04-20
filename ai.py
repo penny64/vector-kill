@@ -20,6 +20,7 @@ def tick_track(entity):
 	_target_id = entity['current_target']
 	
 	if entity['hp']<=0 or not _target_id in entities.ENTITIES:
+		entity['current_target'] = None
 		entities.unregister_event(entity, 'tick', tick_track)
 		
 		return False
@@ -54,11 +55,12 @@ def tick_guard(entity):
 			entities.trigger_event(entity, 'set_direction', direction=numbers.direction_to(entity['position'], entities.get_entity(_target_id)['position']))
 			track_target(entity, _target_id)
 
-def find_target(entity, max_distance=-1, player=False):
+def find_target(entity, max_distance=-1):
 	_closest_target = {'enemy_id': None, 'distance': 0}
+	_enemy_sprite_groups = [name for name in entities.GROUPS if not name in entity['_groups']]
 	
-	for soldier_id in entities.get_sprite_group('soldiers'):
-		if entity['_id'] == soldier_id or (not player and not 'player' in entities.get_entity(soldier_id)):
+	for soldier_id in entities.get_sprite_groups(_enemy_sprite_groups):
+		if entity['_id'] == soldier_id:
 			continue
 		
 		_distance = numbers.distance(entity['position'], entities.get_entity(soldier_id)['position'])

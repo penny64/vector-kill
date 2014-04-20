@@ -1,6 +1,7 @@
 import entities
 import numbers
 import events
+import worlds
 
 
 def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, turn_rate=0.1):
@@ -21,6 +22,7 @@ def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, tu
 	entities.create_event(entity, 'accelerate')
 	entities.create_event(entity, 'turn')
 	entities.create_event(entity, 'thrust')
+	entities.create_event(entity, 'hit_edge')
 	entities.create_event(entity, 'set_minimum_velocity')
 	entities.create_event(entity, 'set_maximum_velocity')
 	entities.create_event(entity, 'set_acceleration')
@@ -74,7 +76,32 @@ def tick(entity):
 	entity['velocity'][1] *= 1-entity['friction']
 	_x = entity['position'][0]-entity['last_position'][0]
 	_y = entity['position'][1]-entity['last_position'][1]
+	
+	entity['velocity'][0] = numbers.clip(entity['velocity'][0], entity['min_velocity'][0], entity['max_velocity'][0])
+	entity['velocity'][1] = numbers.clip(entity['velocity'][1], entity['min_velocity'][1], entity['max_velocity'][1])
 	entity['current_speed'] = numbers.distance((0, 0), (_x, _y))
+	
+	if entity['position'][0] > worlds.get_size()[0]:
+		entity['position'][0] = worlds.get_size()[0]
+		entity['velocity'][0] = -entity['velocity'][0]
+		
+		entities.trigger_event(entity, 'hit_edge')
+	elif entity['position'][0] < 0:
+		entity['position'][0] = 0
+		entity['velocity'][0] = -entity['velocity'][0]
+		
+		entities.trigger_event(entity, 'hit_edge')
+	
+	if entity['position'][1] > worlds.get_size()[1]:
+		entity['position'][1] = worlds.get_size()[1]
+		entity['velocity'][1] = -entity['velocity'][1]
+		
+		entities.trigger_event(entity, 'hit_edge')
+	elif entity['position'][1] < 0:
+		entity['position'][1] = 0
+		entity['velocity'][1] = -entity['velocity'][1]
+		
+		entities.trigger_event(entity, 'hit_edge')
 	
 	_position_change = [entity['position'][0]-entity['last_position'][0],
 	                    entity['position'][1]-entity['last_position'][1]]

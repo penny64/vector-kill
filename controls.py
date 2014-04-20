@@ -65,12 +65,6 @@ def system_input():
     if key_pressed(' '):
         display.set_tps(60)
         display.reschedule(worlds.loop, 1/display.get_tps())
-        
-        print 'press'
-    elif key_held(' '):
-        print 'held'
-    elif key_released(' '):
-        print 'release'
     elif key_held('o'):
         display.CAMERA['next_zoom'] -= .1
     elif key_held('p'):

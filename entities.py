@@ -33,7 +33,6 @@ def create_entity():
 	create_event(_entity, 'create')
 	create_event(_entity, 'loop')
 	create_event(_entity, 'tick')
-	register_event(_entity, 'delete', remove_entity_from_all_groups)
 	
 	NEXT_ENTITY_ID += 1
 	
@@ -54,13 +53,21 @@ def create_entity_group(group_name):
 def get_sprite_group(group_name):
 	return GROUPS[group_name]
 
+def get_sprite_groups(group_names):
+	_entities = []
+	
+	for group_name in group_names:
+		_entities.extend(GROUPS[group_name])
+	
+	return [entity_id for entity_id in _entities if entity_id in ENTITIES]
+
 def add_entity_to_group(group_name, entity):
 	entity['_groups'].append(group_name)
 	GROUPS[group_name].append(entity['_id'])
 
 def remove_entity_from_group(entity, group_name):
 	if not entity['_id'] in GROUPS[group_name]:
-		print 'Trying to remove entity from a group it isn\'t in: %s (%s)' % (entity['_id'], group_name)
+		print('Trying to remove entity from a group it isn\'t in: %s (%s)' % (entity['_id'], group_name))
 		
 		return False
 	
@@ -110,7 +117,10 @@ def cleanup():
 		if not _entity_id in ENTITIES:
 			continue
 		
-		trigger_event(ENTITIES[_entity_id], 'delete')
+		_entity = ENTITIES[_entity_id]
+		
+		trigger_event(_entity, 'delete')
+		remove_entity_from_all_groups(_entity)
 		
 		del ENTITIES[_entity_id]
 	
