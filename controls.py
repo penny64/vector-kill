@@ -68,10 +68,7 @@ def key_held(char):
 
 
 def system_input():
-	if key_pressed(' '):
-		display.set_tps(60)
-		display.reschedule(worlds.loop, 1/display.get_tps())
-	elif key_held('o'):
+	if key_held('o'):
 		display.CAMERA['next_zoom'] -= .1
 	elif key_held('p'):
 		display.CAMERA['next_zoom'] += .1
@@ -86,3 +83,8 @@ def system_input():
 			_i += 1
 		
 		display.print_text(0, display.get_window_size()[1]-(_i*14), 'Total: %s' % len(entities.ENTITIES), fade_out_speed=255)
+		_i += 1
+		
+		for group_name in display.SPRITE_GROUPS:
+			display.print_text(0, display.get_window_size()[1]-(_i*14), '%s: %s' % (group_name, len(display.SPRITE_GROUPS[group_name]['sprites'])), fade_out_speed=255)
+			_i += 1

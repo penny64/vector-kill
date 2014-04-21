@@ -50,6 +50,10 @@ def create():
 	entities.create_entity_group('effects')
 	entities.create_entity_group('bullets')
 	
+	create_player()
+	spawn_enemies()
+
+def create_player():
 	_player = ships.create_energy_ship()
 	_player['player'] = True
 	
@@ -59,8 +63,6 @@ def create():
 	events.register_event('camera', player.handle_camera, _player['_id'])
 	entities.register_event(_player, 'score', player.score)
 	entities.register_event(_player, 'delete', player.delete)
-	
-	spawn_enemies()
 
 def spawn_enemies():
 	global LEVEL
@@ -89,8 +91,8 @@ def spawn_enemies():
 		
 		if _move:
 			entities.trigger_event(_turret, 'set_direction', direction=_move_direction)
-			entities.trigger_event(_turret, 'set_minimum_velocity', velocity=[-5, 5])
-			entities.trigger_event(_turret, 'set_maximum_velocity', velocity=[-5, 5])
+			entities.trigger_event(_turret, 'set_minimum_velocity', velocity=[-5, -5])
+			entities.trigger_event(_turret, 'set_maximum_velocity', velocity=[5, 5])
 			entities.trigger_event(_turret, 'thrust')
 	
 	for i in range(1*(LEVEL-1)):

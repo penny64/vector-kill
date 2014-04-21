@@ -3,21 +3,22 @@ import entities
 import numbers
 import sprites
 import effects
+import shapes
 import events
 import ai
 
 import random
 
 
-def create(x, y, direction, speed, sprite_name, owner_id, life=30, turn_rate=.15):
+def create(x, y, direction, speed, sprite_name, owner_id, damage=3, life=30, turn_rate=.15):
 	_entity = entities.create_entity()
 	
 	movement.register_entity(_entity, x=x, y=y, direction=direction, speed=speed, turn_rate=turn_rate)
 	sprites.register_entity(_entity, 'effects_foreground', sprite_name)
 	entities.create_event(_entity, 'hit')
 	entities.create_event(_entity, 'destroy')
-	entities.register_event(_entity, 'hit', hit_missile)
 	entities.register_event(_entity, 'tick', tick)
+	entities.register_event(_entity, 'tick', tick_bullet)
 	entities.register_event(_entity, 'destroy', destroy)
 	entities.register_event(_entity, 'hit_edge', lambda entity: entities.trigger_event(entity, 'destroy'))
 	entities.trigger_event(_entity, 'set_friction', friction=0)
@@ -26,17 +27,19 @@ def create(x, y, direction, speed, sprite_name, owner_id, life=30, turn_rate=.15
 	
 	_entity['life'] = life
 	_entity['owner_id'] = owner_id
+	_entity['damage'] = damage
 	
 	return _entity
 
-def create_missile(x, y, direction, speed, sprite_name, owner_id, life=30, scale=.2, turn_rate=.15, tracking=True, drunk=True):
-	_bullet = create(x, y, direction, speed, sprite_name, owner_id, life=30, turn_rate=turn_rate)
+def create_missile(x, y, direction, speed, sprite_name, owner_id, life=3000, scale=.2, turn_rate=.15, tracking=True, drunk=True):
+	_bullet = create(x, y, direction, speed, sprite_name, owner_id, life=life, turn_rate=turn_rate)
 	_owner = entities.get_entity(_bullet['owner_id'])
 	_bullet['sprite'].anchor_x = 0
 	_bullet['sprite'].anchor_y = sprites.get_size(_bullet['sprite'])[1]/2
 	_bullet['sprite'].scale = scale
 	
 	entities.register_event(_bullet, 'tick', tick_missile)
+	entities.register_event(_bullet, 'hit', hit_missile)
 	
 	if drunk:
 		entities.register_event(_bullet, 'tick', tick_drunk)
@@ -69,6 +72,15 @@ def create_missile(x, y, direction, speed, sprite_name, owner_id, life=30, scale
 	_bullet['engine_power'] = 100
 	
 	return _bullet
+
+def create_laser(x, y, direction, owner_id, damage=12, length=20):
+	_vel = numbers.velocity(direction, length)
+	
+	for i in range(length):
+		_vel = numbers.velocity(direction, 3*(length*i))
+		_bullet = create(x+_vel[0], y+_vel[1], direction, 0, 'laser.png', owner_id, damage=damage, life=10)
+		entities.trigger_event(_bullet, 'set_rotation', degrees=direction)
+		entities.register_event(_bullet, 'hit', hit_laser)
 
 def destroy(bullet):
 	for i in range(random.randint(2, 3)):
@@ -138,6 +150,22 @@ def hit_missile(bullet, target_id):
 		
 	entities.trigger_event(entities.get_entity(target_id), 'accelerate', velocity=numbers.interp_velocity(entities.get_entity(target_id)['velocity'], bullet['velocity'], .4))
 
+def hit_laser(bullet, target_id):
+	for i in range(random.randint(2, 3)):
+		_effect = effects.create_particle(bullet['position'][0]+random.randint(-6, 6),
+		                                  bullet['position'][1]+random.randint(-6, 6),
+		                                  'explosion.png',
+		                                  background=False,
+		                                  scale=random.uniform(.4, .8),
+		                                  flashes=random.randint(15, 25),
+		                                  flash_chance=0.7)
+		
+		_effect['velocity'] = numbers.interp_velocity(bullet['velocity'], entities.get_entity(target_id)['velocity'], .1)
+		_effect['velocity'][0] = numbers.clip(_effect['velocity'][0], -6, 6)
+		_effect['velocity'][1] = numbers.clip(_effect['velocity'][1], -6, 6)
+		
+	entities.trigger_event(entities.get_entity(target_id), 'accelerate', velocity=numbers.interp_velocity(entities.get_entity(target_id)['velocity'], bullet['velocity'], .4))
+
 def find_target(entity, max_distance=-1):
 	_closest_target = {'enemy_id': None, 'distance': 0}
 	
@@ -171,5 +199,5 @@ def tick(bullet):
 			continue
 		
 		entities.trigger_event(bullet, 'hit', target_id=soldier_id)
-		entities.trigger_event(entities.get_entity(soldier_id), 'hit', damage=3, target_id=bullet['owner_id'])
+		entities.trigger_event(entities.get_entity(soldier_id), 'hit', damage=bullet['damage'], target_id=bullet['owner_id'])
 		entities.delete_entity(bullet)

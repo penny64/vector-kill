@@ -3,6 +3,7 @@ import entities
 import controls
 import display
 import numbers
+import bullet
 import ai
 
 
@@ -14,7 +15,8 @@ def handle_input(entity_id):
 	if not entity_id in entities.ENTITIES or not 'player' in entities.ENTITIES[entity_id]:
 		if controls.key_pressed(' '):
 			battlefield.clean()
-			battlefield.create()
+			battlefield.create_player()
+			battlefield.spawn_enemies()
 		
 		return False
 	
@@ -46,6 +48,9 @@ def handle_input(entity_id):
 	
 	if controls.key_held('q'):
 		entities.trigger_event(_entity, 'shoot')
+	
+	if controls.key_pressed('w'):
+		bullet.create_laser(_entity['position'][0], _entity['position'][1], _entity['shoot_direction'], _entity['_id'])
 	
 	if controls.key_held('x'):
 		battlefield.clean()
