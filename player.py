@@ -9,6 +9,7 @@ import ai
 
 def register_entity(entity):
 	entities.add_entity_to_group('players', entity)
+	
 	return entity
 
 def handle_input(entity_id):
@@ -100,8 +101,27 @@ def handle_camera(entity_id):
 
 def score(entity, target_id):
 	display.print_text(0, 10+(len(display.LABELS)*15), 'Kill (<b>+1XP</b>)', color=(0, 240, 0, 255), show_for=1.5)
-	display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'Fragged <b>%s</b>' % target_id, color=(0, 240, 0, 255), text_group='top_center', show_for=1.5, center=True)
+	#display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'Fragged <b>%s</b>' % target_id, color=(0, 240, 0, 255), text_group='top_center', show_for=1.5, center=True)
 
 def delete(entity):
 	display.clear_text_group('top_center')
 	display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'GAME OVER', text_group='top_center', color=(255, 0, 0, 255), show_for=5, center=True)
+	#NOTERIETY -= entities.get_sprite_group('enemies')
+	
+	_enemy_amount = len(entities.get_sprite_group('enemies'))
+	
+	if _enemy_amount>=3:
+		_loss_string = 'Pirates spread the news of your death...'
+	elif _enemy_amount:
+		_loss_string = 'People think a little less of you now...'
+	else:
+		_loss_string = 'Only the machines saw your death...'
+	
+	display.print_text(display.get_window_size()[0]/2,
+	                   display.get_window_size()[1]*.80,
+	                   _loss_string,
+	                   text_group='top_center',
+	                   color=(255, 0, 0, 0),
+	                   show_for=6,
+	                   fade_in_speed=4,
+	                   center=True)

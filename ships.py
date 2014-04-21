@@ -56,11 +56,13 @@ def create_flea(x=0, y=0):
 	_entity['current_target'] = None
 	_entity['fire_rate'] = 0
 	_entity['fire_rate_max'] = 20
+	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=3, recoil_time=15, tracking=False)['_id']
 	
 	entities.register_event(_entity, 'tick', tick_energy_ship)
 	entities.register_event(_entity, 'tick', tick_flea)
 	entities.register_event(_entity, 'tick', tick_turret)
-	entities.register_event(_entity, 'shoot', shoot_turret)
+	entities.register_event(_entity, 'shoot', lambda entity: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot'))
+	#entities.register_event(_entity, 'shoot', shoot_turret)
 	
 	return _entity
 
@@ -98,10 +100,9 @@ def create_eyemine(x=0, y=0):
 
 def create_missile_turret(x=0, y=0):
 	_entity = create(x=x, y=y, sprite_name='eyemine_body.png', speed=5, acceleration=1, max_velocity=0)
-	_entity['fire_rate'] = 0
-	_entity['fire_rate_max'] = 20
+	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=3, recoil_time=20, tracking=True, turn_rate=.02)['_id']
 	
-	entities.register_event(_entity, 'shoot', shoot_turret)
+	entities.register_event(_entity, 'shoot', lambda entity: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot'))
 	entities.register_event(_entity, 'tick', tick_turret)
 	
 	entities.add_entity_to_group('hazards', _entity)
@@ -147,21 +148,11 @@ def tick_eyemine(entity):
 		break
 
 def tick_turret(entity):
-	if entity['fire_rate']:
-		entity['fire_rate'] -= 1
-		
-		return False
-	
 	_target_id = ai.find_target(entity, max_distance=1600)
 	
 	if _target_id:
-		entities.trigger_event(entity, 'shoot', target_id=_target_id)
-		entity['fire_rate'] = entity['fire_rate_max']
-
-def shoot_turret(entity, target_id):
-	_direction = numbers.direction_to(entity['position'], entities.get_entity(target_id)['position'])
-	
-	bullet.create_missile(entity['position'][0], entity['position'][1], _direction, 30, 'bullet.png', entity['_id'], turn_rate=.05)
+		entity['shoot_direction'] = numbers.direction_to(entity['position'], entities.get_entity(_target_id)['position'])
+		entities.trigger_event(entity, 'shoot')
 
 def set_direction(entity, **kwargs):
 	_direction = numbers.distance([0, 0], kwargs['position_change'])*numbers.clip(kwargs['position_change'][0], -1, 1)

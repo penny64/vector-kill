@@ -3,7 +3,7 @@ import display
 import bullet
 
 
-def create(owner_id, rounds=1, recoil_time=16, reload_time=35, missile=True, hitscan=False, tracking=False):
+def create(owner_id, rounds=1, recoil_time=16, reload_time=35, turn_rate=.15, missile=True, hitscan=False, tracking=False):
 	_entity = entities.create_entity()
 	_entity['owner_id'] = owner_id
 	_entity['rounds'] = rounds
@@ -16,6 +16,7 @@ def create(owner_id, rounds=1, recoil_time=16, reload_time=35, missile=True, hit
 	_entity['hitscan'] = hitscan
 	_entity['tracking'] = tracking
 	_entity['firing'] = False
+	_entity['turn_rate'] = turn_rate
 	_entity['speed'] = 30
 	
 	entities.create_event(_entity, 'shoot')
@@ -58,13 +59,19 @@ def tick(entity):
 	
 	_owner = entities.get_entity(entity['owner_id'])
 	
+	if 'shoot_direction' in _owner:
+		_direction = _owner['shoot_direction']
+	else:
+		_direction = _owner['direction']
+	
 	if entity['missile']:
 		bullet.create_missile(_owner['position'][0],
 		                      _owner['position'][1],
-		                      _owner['shoot_direction'],
+		                      _direction,
 		                      entity['speed'],
 		                      'bullet.png',
 		                      entity['owner_id'],
+		                      turn_rate=entity['turn_rate'],
 		                      tracking=entity['tracking'])
 	
 	entity['recoil_time'] = entity['recoil_time_max']

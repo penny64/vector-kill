@@ -9,6 +9,7 @@ import random
 
 
 LEVEL = 1
+NOTERIETY = 0
 
 
 def boot():
@@ -39,6 +40,8 @@ def clean():
 	for ship_id in entities.get_sprite_group('bullets'):
 		entities.delete_entity(entities.ENTITIES[ship_id])
 	
+	display.clear_text_group('top_center')
+	
 	entities.reset()
 
 def create():
@@ -68,9 +71,6 @@ def spawn_enemies():
 	global LEVEL
 	
 	display.clear_text_group('top_center')
-	display.print_text(display.get_window_size()[0]/2,
-	                   display.get_window_size()[1]*.85,
-	                   'ENEMY FIGHTERS INBOUND', color=(0, 240, 0, 255), text_group='top_center', show_for=1.5, center=True)
 	
 	_eyemine_spawn_point = (random.randint(worlds.get_size()[0]*.25, worlds.get_size()[0]*.75),
 	                        random.randint(worlds.get_size()[1]*.25, worlds.get_size()[1]*.75))
@@ -97,11 +97,22 @@ def spawn_enemies():
 	
 	for i in range(1*(LEVEL-1)):
 		ships.create_flea(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
+		_ships = True
+	
+	if 1*(LEVEL-1):
+		display.print_text(display.get_window_size()[0]/2,
+		                   display.get_window_size()[1]*.85,
+		                   'ENEMY FIGHTERS INBOUND',
+		                   color=(0, 240, 0, 255),
+		                   text_group='top_center',
+		                   show_for=1.5,
+		                   center=True)
 	
 	LEVEL += 1
 
 def loop():
-	if len(entities.get_sprite_group('soldiers')) == 1:
-		entities.reset()
+	global NOTERIETY
+	
+	if entities.get_sprite_group('players') and not entities.get_sprite_group('enemies') and not entities.get_sprite_group('hazards'):
+		NOTERIETY += LEVEL
 		spawn_enemies()
-		
