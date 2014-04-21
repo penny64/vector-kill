@@ -1,5 +1,6 @@
 from pyglet.window import key
 
+import entities
 import display
 import worlds
 import events
@@ -19,60 +20,73 @@ KEYS_RELEASED = []
 
 
 def boot(window):
-    global KEYS_HELD
-    
-    KEYS_HELD = key.KeyStateHandler()
-    
-    window.push_handlers(KEYS_HELD)
-    events.register_event('input', system_input)
+	global KEYS_HELD
+
+	KEYS_HELD = key.KeyStateHandler()
+
+	window.push_handlers(KEYS_HELD)
+	events.register_event('input', system_input)
 
 def loop():
-    global KEYS_RELEASED
-    
-    _held = set(KEYS_HELD.keys())
-    _pressed = set(KEYS_PRESSED.keys())
-    _add_to_pressed = {key: 0 for key in _held-_pressed}
-    
-    KEYS_PRESSED.update(_add_to_pressed)
-    
-    for char in KEYS_PRESSED:
-        _pressed_for_frames = (KEYS_PRESSED[char]+1) * KEYS_HELD.get(char)
-        
-        if not _pressed_for_frames and KEYS_PRESSED[char]:
-            KEYS_RELEASED.append(char)
-        
-        KEYS_PRESSED[char] = _pressed_for_frames
-    
-    events.trigger_event('input')
-    
-    KEYS_RELEASED = []
+	global KEYS_RELEASED
+
+	_held = set(KEYS_HELD.keys())
+	_pressed = set(KEYS_PRESSED.keys())
+	_add_to_pressed = {key: 0 for key in _held-_pressed}
+
+	KEYS_PRESSED.update(_add_to_pressed)
+
+	for char in KEYS_PRESSED:
+		_pressed_for_frames = (KEYS_PRESSED[char]+1) * KEYS_HELD.get(char)
+
+		if not _pressed_for_frames and KEYS_PRESSED[char]:
+			KEYS_RELEASED.append(char)
+
+		KEYS_PRESSED[char] = _pressed_for_frames
+
+	events.trigger_event('input')
+
+	KEYS_RELEASED = []
 
 def key_pressed_ord(char_ord):
-    return KEYS_PRESSED.get(char_ord) == 1
+	return KEYS_PRESSED.get(char_ord) == 1
 
 def key_released_ord(char_ord):
-    return char_ord in KEYS_RELEASED
+	return char_ord in KEYS_RELEASED
 
 def key_held_ord(char_ord):
-    return KEYS_HELD.get(char_ord)
+	return KEYS_HELD.get(char_ord)
 
 def key_pressed(char):
-    return KEYS_PRESSED.get(ord(char)) == 1
+	return KEYS_PRESSED.get(ord(char)) == 1
 
 def key_released(char):
-    return ord(char) in KEYS_RELEASED
+	return ord(char) in KEYS_RELEASED
 
 def key_held(char):
-    return KEYS_HELD.get(ord(char))
+	return KEYS_HELD.get(ord(char))
 
 
 def system_input():
-    if key_pressed(' '):
-        display.set_tps(60)
-        display.reschedule(worlds.loop, 1/display.get_tps())
-    elif key_held('o'):
-        display.CAMERA['next_zoom'] -= .1
-    elif key_held('p'):
-        display.CAMERA['next_zoom'] += .1
-    elif key_held('['):
-        display.CAMERA['next_zoom'] = 2.5
+	if key_pressed(' '):
+		display.set_tps(60)
+		display.reschedule(worlds.loop, 1/display.get_tps())
+	elif key_held('o'):
+		display.CAMERA['next_zoom'] -= .1
+	elif key_held('p'):
+		display.CAMERA['next_zoom'] += .1
+	elif key_held('['):
+		display.CAMERA['next_zoom'] = 2.5
+	elif key_pressed('d'):
+		_entities = set(entities.ENTITIES.keys())
+		_i = 0
+		for entity_group in entities.GROUPS:
+			display.print_text(0, display.get_window_size()[1]-(_i*14), '%s: %s' % (entity_group, len(entities.GROUPS[entity_group])), fade_out_speed=255)
+			_entities -= set(entities.GROUPS[entity_group])
+			_i += 1
+		
+		display.print_text(0, display.get_window_size()[1]-(_i*14), 'Total: %s' % len(entities.ENTITIES), fade_out_speed=255)
+		
+		for entity in _entities:
+			print entities.ENTITIES[entity]
+			break

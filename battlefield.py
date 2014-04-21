@@ -23,6 +23,12 @@ def clean():
 	
 	for ship_id in entities.get_sprite_group('soldiers'):
 		entities.delete_entity(entities.ENTITIES[ship_id])
+	
+	for ship_id in entities.get_sprite_group('effects'):
+		entities.delete_entity(entities.ENTITIES[ship_id])
+	
+	for ship_id in entities.get_sprite_group('bullets'):
+		entities.delete_entity(entities.ENTITIES[ship_id])
 
 def create():
 	display.create_sprite_group('soldiers')
@@ -30,6 +36,8 @@ def create():
 	entities.create_entity_group('players')
 	entities.create_entity_group('enemies')
 	entities.create_entity_group('hazards')
+	entities.create_entity_group('effects')
+	entities.create_entity_group('bullets')
 	
 	_player = ships.create_energy_ship()
 	_player['player'] = True

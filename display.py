@@ -55,9 +55,11 @@ def on_draw():
 	        CAMERA['center_on'][1]-(_window_height*(.5*CAMERA['zoom']*.9))+_window_height, 0.0, 1.0)
 	
 	_points = []
-	for i in range(worlds.get_size()[0]/16):
+	for i in range((worlds.get_size()[0]/64)+1):
 		_points.extend((64*i, 0, 64*i, worlds.get_size()[1]))
-		_points.extend((0, 64*i, worlds.get_size()[0], 64*i))
+	
+	for i in range((worlds.get_size()[1]/64)+1):
+		_points.extend((0, 64*i, worlds.get_size()[1], 64*i))
 	
 	pyglet.graphics.draw(len(_points)/2, GL_LINES,
 	                     ('v2f', _points),

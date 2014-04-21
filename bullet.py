@@ -22,6 +22,7 @@ def create(x, y, direction, speed, sprite_name, owner_id, life=30, turn_rate=.15
 	entities.register_event(_entity, 'hit_edge', lambda entity: entities.trigger_event(entity, 'destroy'))
 	entities.trigger_event(_entity, 'set_friction', friction=0)
 	entities.trigger_event(_entity, 'accelerate', velocity=numbers.velocity(direction, speed))
+	entities.add_entity_to_group('bullets', _entity)
 	
 	_entity['life'] = life
 	_entity['owner_id'] = owner_id

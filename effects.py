@@ -27,6 +27,7 @@ def create_particle(x, y, sprite_name, background=True, scale=1, friction=0, sca
 		_entity['streamer_chance'] = streamer_chance
 	
 	movement.register_entity(_entity, x=x, y=y)
+	entities.add_entity_to_group('effects', _entity)
 	
 	_entity['velocity'] = numbers.velocity(direction, speed)
 	

@@ -20,6 +20,7 @@ def create(owner_id, rounds=1, recoil_time=16, reload_time=35, missile=True, hit
 	
 	entities.create_event(_entity, 'shoot')
 	entities.register_event(_entity, 'shoot', shoot)
+	entities.register_event(entities.get_entity(owner_id), 'delete', lambda owner_entity: entities.delete_entity(_entity))
 	
 	return _entity
 
