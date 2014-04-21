@@ -46,6 +46,9 @@ def handle_input(entity_id):
 	
 	if controls.key_held('q'):
 		entities.trigger_event(_entity, 'shoot')
+	
+	if controls.key_held('z'):
+		display.screenshot()
 
 def handle_camera(entity_id):
 	if not entity_id in entities.ENTITIES:

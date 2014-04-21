@@ -4,6 +4,7 @@ from pyglet.gl import *
 
 import numbers
 import events
+import worlds
 
 import time
 import sys
@@ -39,6 +40,7 @@ def on_draw():
 		rabbyt.clear((.1, .1, .1))
 	
 	WINDOW.clear()
+	gl.glClearColor(.1, .1, .1, 1)
 	glMatrixMode(GL_PROJECTION)
 	glLoadIdentity()
 	glPushMatrix()
@@ -47,10 +49,27 @@ def on_draw():
 	CAMERA['center_on'] = numbers.interp_velocity(CAMERA['center_on'], CAMERA['next_center_on'], CAMERA['camera_move_speed'])
 	CAMERA['zoom'] = numbers.interp(CAMERA['zoom'], CAMERA['next_zoom'], CAMERA['zoom_speed'])
 	
+	glOrtho(CAMERA['center_on'][0]-(_window_width*(.5*CAMERA['zoom']*.9)),
+	        CAMERA['center_on'][0]+(_window_width*(.5*CAMERA['zoom']*.9)),
+	        CAMERA['center_on'][1]+(_window_height*(.5*CAMERA['zoom']*.9))+_window_height,
+	        CAMERA['center_on'][1]-(_window_height*(.5*CAMERA['zoom']*.9))+_window_height, 0.0, 1.0)
+	
+	_points = []
+	for i in range(worlds.get_size()[0]/16):
+		_points.extend((64*i, 0, 64*i, worlds.get_size()[1]))
+		_points.extend((0, 64*i, worlds.get_size()[0], 64*i))
+	
+	pyglet.graphics.draw(len(_points)/2, GL_LINES,
+	                     ('v2f', _points),
+	                     ('c4f', (.07, .07, .07, 1.0) * (len(_points)/2)))
+	#events.trigger_event('draw')
+	glPopMatrix()
+	glPushMatrix()
 	glOrtho(CAMERA['center_on'][0]-(_window_width*(.5*CAMERA['zoom'])),
 	        CAMERA['center_on'][0]+(_window_width*(.5*CAMERA['zoom'])),
 	        CAMERA['center_on'][1]+(_window_height*(.5*CAMERA['zoom']))+_window_height,
 	        CAMERA['center_on'][1]-(_window_height*(.5*CAMERA['zoom']))+_window_height, 0.0, 1.0)
+	
 	events.trigger_event('draw')
 	glPopMatrix()
 	glPushMatrix()
@@ -65,6 +84,9 @@ def boot():
 	set_fps(FPS)
 	set_tps(TPS)
 	events.register_event('tick', tick)
+
+def screenshot():
+	pyglet.image.get_buffer_manager().get_color_buffer().save('screenshot.png')
 
 def get_window():
 	return WINDOW

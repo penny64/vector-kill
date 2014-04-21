@@ -33,12 +33,16 @@ def shoot(entity):
 def tick(entity):
 	entity['recoil_time'] -= 1
 	
+	if not entity['owner_id'] in entities.ENTITIES:
+		entities.unregister_event(entity, 'tick', tick)
+		
+		return False
+	
 	if entity['recoil_time']>0:
 		return False
 	elif not entity['rounds']:
 		if entity['reload_time']:
 			if entity['owner_id'] in entities.ENTITIES and 'player' in entities.get_entity(entity['owner_id']) and entity['reload_time'] == entity['reload_time_max']:
-				print 
 				display.print_text(0, 0, 'RELOADING', show_for=(entity['reload_time']/display.get_tps())*2, fade_out_speed=255)
 				
 			entity['reload_time'] -= 1

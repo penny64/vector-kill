@@ -51,7 +51,8 @@ def spawn_enemies():
 	                   display.get_window_size()[1]*.85,
 	                   'ENEMY FIGHTERS INBOUND', color=(0, 240, 0, 255), text_group='top_center', show_for=1.5, center=True)
 	
-	_eyemine_spawn_point = (random.randint(0, worlds.get_size()[0]), random.randint(0, worlds.get_size()[1]))
+	_eyemine_spawn_point = (random.randint(worlds.get_size()[0]*.25, worlds.get_size()[0]*.75),
+	                        random.randint(worlds.get_size()[1]*.25, worlds.get_size()[1]*.75))
 	for i in range(random.randint(2, 4)*LEVEL):
 		_rand_distance = 350+(120*LEVEL)
 		_x_mod = random.randint(-_rand_distance, _rand_distance)
@@ -64,7 +65,8 @@ def spawn_enemies():
 		_move_direction = random.randint(0, 359)
 	
 	for i in range(random.randint(1, 2)*LEVEL):
-		_turret = ships.create_missile_turret(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
+		_x, _y = random.randint(worlds.get_size()[0]*.25, worlds.get_size()[0]*.75), random.randint(worlds.get_size()[1]*.25, worlds.get_size()[1]*.75)
+		_turret = ships.create_missile_turret(x=_x, y=_y)
 		
 		if _move:
 			entities.trigger_event(_turret, 'set_direction', direction=_move_direction)
