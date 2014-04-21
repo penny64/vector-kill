@@ -86,7 +86,3 @@ def system_input():
 			_i += 1
 		
 		display.print_text(0, display.get_window_size()[1]-(_i*14), 'Total: %s' % len(entities.ENTITIES), fade_out_speed=255)
-		
-		for entity in _entities:
-			print entities.ENTITIES[entity]
-			break

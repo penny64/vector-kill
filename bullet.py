@@ -50,7 +50,7 @@ def create_missile(x, y, direction, speed, sprite_name, owner_id, life=30, scale
 			entities.register_event(_bullet, 'tick', tick_track)
 			entities.register_event(_target,
 			                        'delete',
-			                        lambda target: _bullet['_id'] in entities.ENTITIES and entities.unregister_event(entities.get_entity(_bullet['_id']),
+			                        lambda target: _bullet['_id'] in entities.ENTITIES and entities.unregister_event(_bullet,
 			                                                                                                         'tick',
 			                                                                                                         tick_track))
 			

@@ -11,7 +11,7 @@ def register_entity(entity):
 	return entity
 
 def handle_input(entity_id):
-	if not entity_id in entities.ENTITIES:
+	if not entity_id in entities.ENTITIES or not 'player' in entities.ENTITIES[entity_id]:
 		if controls.key_pressed(' '):
 			battlefield.clean()
 			battlefield.create()
@@ -46,6 +46,9 @@ def handle_input(entity_id):
 	
 	if controls.key_held('q'):
 		entities.trigger_event(_entity, 'shoot')
+	
+	if controls.key_held('x'):
+		battlefield.clean()
 	
 	if controls.key_held('z'):
 		display.screenshot()

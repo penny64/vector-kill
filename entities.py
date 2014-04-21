@@ -8,6 +8,9 @@ import time
 ENTITIES = {}
 ENTITIES_TO_DELETE = set()
 NEXT_ENTITY_ID = 1
+REVOKED_ENTITY_IDS_HOLDING = set()
+REVOKED_ENTITY_IDS = set()
+CLEANING = False
 GROUPS = {}
 TICKS_PER_SECOND = 0
 CURRENT_TICKS_PER_SECOND = 0
@@ -22,7 +25,13 @@ def boot():
 def create_entity():
 	global NEXT_ENTITY_ID
 	
-	_entity = {'_id': str(NEXT_ENTITY_ID),
+	if REVOKED_ENTITY_IDS:
+		_entity_id = REVOKED_ENTITY_IDS.pop()
+	else:
+		_entity_id = str(NEXT_ENTITY_ID)
+		NEXT_ENTITY_ID += 1
+	
+	_entity = {'_id': _entity_id,
 	           '_events': {},
 	           '_groups': []}
 	
@@ -34,14 +43,15 @@ def create_entity():
 	create_event(_entity, 'loop')
 	create_event(_entity, 'tick')
 	
-	NEXT_ENTITY_ID += 1
-	
 	return _entity
 
 def delete_all():
 	ENTITIES_TO_DELETE.update(ENTITIES.keys())
 
 def delete_entity(entity):
+	if not entity['_id'] in ENTITIES:
+		return False
+	
 	ENTITIES_TO_DELETE.add(entity['_id'])
 
 def get_entity(entity_id):
@@ -75,7 +85,7 @@ def remove_entity_from_group(entity, group_name):
 	entity['_groups'].remove(group_name)
 
 def remove_entity_from_all_groups(entity):
-	for group_name in entity['_groups']:
+	for group_name in entity['_groups'][:]:
 		remove_entity_from_group(entity, group_name)
 
 def create_event(entity, event_name):
@@ -108,8 +118,16 @@ def loop():
 	for entity in ENTITIES.values():
 		trigger_event(entity, 'loop')
 
+def reset():
+	global REVOKED_ENTITY_IDS_HOLDING, REVOKED_ENTITY_IDS
+	
+	REVOKED_ENTITY_IDS.update(REVOKED_ENTITY_IDS_HOLDING)
+	REVOKED_ENTITY_IDS_HOLDING = set()
+
 def cleanup():
-	global ENTITIES_TO_DELETE
+	global ENTITIES_TO_DELETE, CLEANING
+	
+	CLEANING = True
 	
 	while ENTITIES_TO_DELETE:
 		_entity_id = ENTITIES_TO_DELETE.pop()
@@ -121,7 +139,9 @@ def cleanup():
 		
 		trigger_event(_entity, 'delete')
 		remove_entity_from_all_groups(_entity)
+		REVOKED_ENTITY_IDS_HOLDING.add(_entity_id)
 		
 		del ENTITIES[_entity_id]
 	
 	ENTITIES_TO_DELETE = set()
+	CLEANING = False

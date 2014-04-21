@@ -21,7 +21,16 @@ def clean():
 	
 	LEVEL = 1
 	
-	for ship_id in entities.get_sprite_group('soldiers'):
+	#for ship_id in entities.get_sprite_group('soldiers'):
+	#	entities.delete_entity(entities.ENTITIES[ship_id])
+	
+	for ship_id in entities.get_sprite_group('players'):
+		entities.delete_entity(entities.ENTITIES[ship_id])
+	
+	for ship_id in entities.get_sprite_group('enemies'):
+		entities.delete_entity(entities.ENTITIES[ship_id])	
+	
+	for ship_id in entities.get_sprite_group('hazards'):
 		entities.delete_entity(entities.ENTITIES[ship_id])
 	
 	for ship_id in entities.get_sprite_group('effects'):
@@ -29,6 +38,8 @@ def clean():
 	
 	for ship_id in entities.get_sprite_group('bullets'):
 		entities.delete_entity(entities.ENTITIES[ship_id])
+	
+	entities.reset()
 
 def create():
 	display.create_sprite_group('soldiers')
@@ -89,5 +100,6 @@ def spawn_enemies():
 
 def loop():
 	if len(entities.get_sprite_group('soldiers')) == 1:
+		entities.reset()
 		spawn_enemies()
 		
