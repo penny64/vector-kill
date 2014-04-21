@@ -1,5 +1,6 @@
 import movement
 import entities
+import weapons
 import numbers
 import sprites
 import effects
@@ -43,9 +44,10 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 
 def create_energy_ship():
 	_entity = create(sprite_name='ball.png', acceleration=.05, turn_rate=0.3)
+	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, tracking=True)['_id']
 	
 	entities.register_event(_entity, 'tick', tick_energy_ship)
-	entities.register_event(_entity, 'shoot', shoot)
+	entities.register_event(_entity, 'shoot', lambda entity: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot'))
 	
 	return _entity
 
@@ -240,9 +242,6 @@ def explode(entity):
 		                                  swerve_rate=15)
 		_effect['direction'] = random.randint(0, 359)
 		_effect['velocity'] = numbers.velocity(_effect['direction'], 40)
-
-def shoot(entity, direction=0, speed=30):
-	bullet.create_missile(entity['position'][0], entity['position'][1], entity['shoot_direction'], 30, 'bullet.png', entity['_id'])
 
 def damage(entity, damage, target_id):
 	entity['hp'] -= damage

@@ -20,29 +20,32 @@ def handle_input(entity_id):
 	
 	_entity = entities.get_entity(entity_id)
 	
-	if controls.key_pressed('d') or controls.key_held('d'):
-		entities.trigger_event(_entity, 'accelerate', velocity=[6, 0])
+	if controls.key_pressed_ord(controls.NUM_1) or controls.key_held_ord(controls.NUM_1):
+		entities.trigger_event(_entity, 'accelerate', velocity=[-6, 6])
 	
-	if controls.key_pressed('a') or controls.key_held('a'):
-		entities.trigger_event(_entity, 'accelerate', velocity=[-6, 0])
-	
-	if controls.key_pressed('a') or controls.key_held('w'):
-		entities.trigger_event(_entity, 'accelerate', velocity=[0, -6])
-	
-	if controls.key_pressed('a') or controls.key_held('s'):
+	if controls.key_pressed_ord(controls.NUM_2) or controls.key_held_ord(controls.NUM_2):
 		entities.trigger_event(_entity, 'accelerate', velocity=[0, 6])
 	
-	if controls.key_pressed_ord(controls.NUM_2):
-		entities.trigger_event(_entity, 'shoot', direction=270)
+	if controls.key_pressed_ord(controls.NUM_3) or controls.key_held_ord(controls.NUM_3):
+		entities.trigger_event(_entity, 'accelerate', velocity=[6, 6])
 	
-	if controls.key_pressed_ord(controls.NUM_4):
-		entities.trigger_event(_entity, 'shoot', direction=180)
+	if controls.key_pressed_ord(controls.NUM_4) or controls.key_held_ord(controls.NUM_4):
+		entities.trigger_event(_entity, 'accelerate', velocity=[-6, 0])
 	
-	if controls.key_pressed_ord(controls.NUM_6):
-		entities.trigger_event(_entity, 'shoot', direction=0)
+	if controls.key_pressed_ord(controls.NUM_6) or controls.key_held_ord(controls.NUM_6):
+		entities.trigger_event(_entity, 'accelerate', velocity=[6, 0])
 	
-	if controls.key_pressed_ord(controls.NUM_8):
-		entities.trigger_event(_entity, 'shoot', direction=90)
+	if controls.key_pressed_ord(controls.NUM_7) or controls.key_held_ord(controls.NUM_7):
+		entities.trigger_event(_entity, 'accelerate', velocity=[-6, -6])
+	
+	if controls.key_pressed_ord(controls.NUM_8) or controls.key_held_ord(controls.NUM_8):
+		entities.trigger_event(_entity, 'accelerate', velocity=[0, -6])
+	
+	if controls.key_pressed_ord(controls.NUM_9) or controls.key_held_ord(controls.NUM_9):
+		entities.trigger_event(_entity, 'accelerate', velocity=[6, -6])
+	
+	if controls.key_held('q'):
+		entities.trigger_event(_entity, 'shoot')
 
 def handle_camera(entity_id):
 	if not entity_id in entities.ENTITIES:
@@ -73,8 +76,8 @@ def handle_camera(entity_id):
 		_enemy = _player
 	
 	_distance_to_nearest_enemy = numbers.distance(_player['position'], _enemy['position'], old=True)
-	_min_zoom = 2.0
-	_max_zoom = 4.0
+	_min_zoom = 3.0
+	_max_zoom = 4.5
 	display.CAMERA['next_zoom'] = numbers.clip(_distance_to_nearest_enemy/400.0, _min_zoom, _max_zoom)
 	
 	if display.CAMERA['next_zoom'] < 5:

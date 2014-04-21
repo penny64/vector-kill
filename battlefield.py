@@ -72,7 +72,7 @@ def spawn_enemies():
 			entities.trigger_event(_turret, 'set_maximum_velocity', velocity=[-5, 5])
 			entities.trigger_event(_turret, 'thrust')
 	
-	for i in range(1*LEVEL):
+	for i in range(1*(LEVEL-1)):
 		ships.create_flea(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
 	
 	LEVEL += 1

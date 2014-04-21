@@ -1,5 +1,4 @@
 import pyglet
-import rabbyt
 
 from pyglet.gl import *
 
@@ -10,7 +9,11 @@ import time
 import sys
 
 
-RABBYT = '--rabbyt' in sys.argv
+if '--rabbyt' in sys.argv:
+	RABBYT = True
+	import rabbyt
+else:
+	RABBYT = False
 LOADED_IMAGES = {}
 SPRITE_GROUPS = {}
 LABELS = {}

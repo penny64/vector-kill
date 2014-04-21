@@ -4,10 +4,15 @@ import display
 import worlds
 import events
 
+NUM_1 = key.NUM_1
 NUM_2 = key.NUM_2
+NUM_3 = key.NUM_3
 NUM_4 = key.NUM_4
+NUM_5 = key.NUM_5
 NUM_6 = key.NUM_6
+NUM_7 = key.NUM_7
 NUM_8 = key.NUM_8
+NUM_9 = key.NUM_9
 KEYS_HELD = None
 KEYS_PRESSED = {}
 KEYS_RELEASED = []
