@@ -16,6 +16,15 @@ def boot():
 	display.create_sprite_group('effects_background')
 	display.create_sprite_group('effects_foreground')
 	display.create_text_group('top_center')
+	
+	_title_text = 'VECTOR:KILL'
+	display.print_text(display.get_window_size()[0]/2,
+	                   display.get_window_size()[1]*.8,
+	                   _title_text,
+	                   color=(0, 255, 0, 100),
+	                   font_name='Thin Design',
+	                   font_size=42,
+	                   center=True)
 
 def clean():
 	global LEVEL
@@ -54,7 +63,7 @@ def create():
 	entities.create_entity_group('bullets')
 	
 	create_player()
-	spawn_enemies()
+	#spawn_enemies()
 
 def create_player():
 	_player = ships.create_energy_ship()

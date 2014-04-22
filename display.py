@@ -15,6 +15,7 @@ if '--rabbyt' in sys.argv:
 	import rabbyt
 else:
 	RABBYT = False
+
 LOADED_IMAGES = {}
 SPRITE_GROUPS = {}
 LABELS = {}
@@ -38,9 +39,10 @@ def on_draw():
 	
 	if RABBYT:
 		rabbyt.clear((.1, .1, .1))
+	else:
+		gl.glClearColor(.1, .1, .1, 1)
 	
 	WINDOW.clear()
-	gl.glClearColor(.1, .1, .1, 1)
 	glMatrixMode(GL_PROJECTION)
 	glLoadIdentity()
 	glPushMatrix()
@@ -86,6 +88,8 @@ def boot():
 	set_fps(FPS)
 	set_tps(TPS)
 	events.register_event('tick', tick)
+	
+	pyglet.font.add_file('thin_design.ttf')
 
 def screenshot():
 	pyglet.image.get_buffer_manager().get_color_buffer().save('screenshot.png')
@@ -187,7 +191,7 @@ def draw_sprite_group(group_name):
 	else:
 		SPRITE_GROUPS[group_name]['batch'].draw()
 
-def print_text(x, y, text, text_group=None, color=(255, 0, 255, 0), fade_in_speed=255, show_for=3, fade_out_speed=2, center=False):
+def print_text(x, y, text, text_group=None, font_name=None, font_size=None, color=(255, 0, 255, 0), fade_in_speed=255, show_for=3, fade_out_speed=2, center=False):
 	global LABEL_ID
 	
 	_label = pyglet.text.HTMLLabel(text, x=x, y=y)
@@ -197,6 +201,12 @@ def print_text(x, y, text, text_group=None, color=(255, 0, 255, 0), fade_in_spee
 	_label.show_for = show_for
 	_label.time_created = time.time()
 	_label.text_group = text_group
+	
+	if font_name:
+		_label.font_name = font_name
+	
+	if font_size:
+		_label.font_size = font_size
 	
 	if center:
 		_label.anchor_x = 'center'

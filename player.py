@@ -88,9 +88,9 @@ def handle_camera(entity_id):
 		_enemy = _player
 	
 	_distance_to_nearest_enemy = numbers.distance(_player['position'], _enemy['position'], old=True)
-	_min_zoom = 3.0
+	_min_zoom = 3.5
 	_max_zoom = 4.5
-	display.CAMERA['next_zoom'] = numbers.clip(_distance_to_nearest_enemy/400.0, _min_zoom, _max_zoom)
+	display.CAMERA['next_zoom'] = numbers.clip(_distance_to_nearest_enemy/300.0, _min_zoom, _max_zoom)
 	
 	if display.CAMERA['next_zoom'] < 5:
 		display.CAMERA['next_center_on'] = numbers.interp_velocity(_player['position'][:],
