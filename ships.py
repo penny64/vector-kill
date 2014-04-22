@@ -178,7 +178,7 @@ def destroy(entity):
 		                                  scale_rate=1.1)
 		entities.delete_entity(entity)
 	
-	for i in range(random.randint(0, 1)):
+	if not random.randint(0, 7):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
 		                                  entity['position'][1]+random.randint(-20, 20),
 		                                  'smoke.png',
@@ -190,7 +190,7 @@ def destroy(entity):
 		                                  direction=entity['direction']+random.randint(-90, 90),
 		                                  speed=random.uniform(entity['current_speed']*.3, entity['current_speed']*.5))
 	
-	for i in range(random.randint(0, 1)):
+	if random.randint(0, 3):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
 		                                  entity['position'][1]+random.randint(-20, 20),
 		                                  'explosion.png',
@@ -206,14 +206,15 @@ def destroy(entity):
 		                                              entity['velocity'][1]+random.randint(-8, 8)), .2)
 
 def explode(entity):
-	for i in range(random.randint(0, 1)):
+	if not random.randint(0, 3):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
 		                                  entity['position'][1]+random.randint(-20, 20),
 		                                  'smoke.png',
 		                                  background=True,
 		                                  scale=random.uniform(.5, 1.3),
-		                                  scale_min=0.05,
+		                                  scale_min=0.1,
 		                                  scale_rate=.9,
+		                                  fade_rate=.9,
 		                                  friction=0.1,
 		                                  streamer=True,
 		                                  direction=entity['direction']+random.randint(-90, 90),

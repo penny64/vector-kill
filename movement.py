@@ -1,10 +1,11 @@
 import entities
+import threads
 import numbers
 import events
 import worlds
 
 
-def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, turn_rate=0.1):
+def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, turn_rate=0.1, offload=False):
 	entity['position'] = [x, y]
 	entity['last_position'] = [x, y]
 	entity['velocity'] = [0, 0]
@@ -28,7 +29,6 @@ def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, tu
 	entities.create_event(entity, 'set_acceleration')
 	entities.create_event(entity, 'set_friction')
 	entities.create_event(entity, 'set_direction')
-	entities.register_event(entity, 'tick', tick)
 	entities.register_event(entity, 'turn', turn)
 	entities.register_event(entity, 'thrust', thrust)
 	entities.register_event(entity, 'accelerate', accelerate)
@@ -37,6 +37,11 @@ def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, tu
 	entities.register_event(entity, 'set_acceleration', set_acceleration)
 	entities.register_event(entity, 'set_friction', set_friction)
 	entities.register_event(entity, 'set_direction', set_direction)
+
+	if offload:
+		threads.register_entity(entity)
+	else:
+		entities.register_event(entity, 'tick', tick)
 
 def set_acceleration(entity, acceleration):
 	entity['acceleration'] = acceleration

@@ -4,6 +4,7 @@ import battlefield
 import entities
 import controls
 import display
+import threads
 import events
 import worlds
 import ui
@@ -33,6 +34,7 @@ def main():
 	events.register_event('load', battlefield.create)
 	events.register_event('loop', controls.loop)
 	events.register_event('loop', battlefield.loop)
+	events.register_event('tick', threads.tick)
 	
 	events.trigger_event('boot')
 	events.trigger_event('load')

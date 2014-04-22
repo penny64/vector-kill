@@ -1,5 +1,6 @@
 import movement
 import entities
+import threads
 import numbers
 import sprites
 import events
