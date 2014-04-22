@@ -42,7 +42,15 @@ def main():
 	pyglet.clock.schedule_interval(loop, 1/display.get_max_fps())
 	pyglet.clock.schedule_interval(window, 1/10.0)
 	pyglet.clock.schedule_interval(worlds.loop, 1/display.get_tps())
-	pyglet.app.run()
+	
+	if display.RABBYT:
+		while not display.WINDOW.has_exit:
+			display.lib2d.step(pyglet.clock.tick())
+			display.WINDOW.dispatch_events()
+			display.WINDOW.dispatch_event('on_draw')
+			display.WINDOW.flip()
+	else:
+		pyglet.app.run()
 
 if __name__ == '__main__':
 	if '--debug' in sys.argv:

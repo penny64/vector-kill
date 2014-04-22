@@ -9,7 +9,7 @@ import pyglet
 
 def register_entity(entity, sprite_group, sprite_name, scale=1):
 	if display.RABBYT:
-		entity['image'] = display.load_image(sprite_name).texture
+		entity['image'] = sprite_name
 	else:
 		entity['image'] = display.load_image(sprite_name)
 	
@@ -50,12 +50,12 @@ def loop(entity):
 	entity['sprite'].y = numbers.interp(display.get_window_size()[1]+entity['last_position'][1],
 	                                    display.get_window_size()[1]+entity['position'][1],
 	                                    _dt)
-	entity['sprite'].rotation = numbers.interp(entity['last_rotation'], entity['next_rotation'], _dt)
+	
+	if not display.RABBYT:
+		entity['sprite'].rotation = numbers.interp(entity['last_rotation'], entity['next_rotation'], _dt)
 
 def tick(entity):
-	if display.RABBYT:
-		entity['last_rotation'] = entity['sprite'].rot
-	else:
+	if not display.RABBYT:
 		entity['last_rotation'] = entity['sprite'].rotation
 
 ########
@@ -63,8 +63,11 @@ def tick(entity):
 ########
 
 def set_rotation(entity, degrees):
-	entity['next_rotation'] = degrees
-	entity['sprite'].rotation = degrees
+	if display.RABBYT:
+		entity['sprite'].rot(degrees)
+	else:
+		entity['next_rotation'] = degrees
+		entity['sprite'].rotation = degrees
 
 def rotate_by(entity, degrees):
 	entity['rotation_speed'] = degrees
@@ -72,7 +75,8 @@ def rotate_by(entity, degrees):
 
 def fade_by(entity, amount):
 	if display.RABBYT:
-		entity['sprite'].alpha *= amount
+		pass
+		#entity['sprite'].alpha *= amount
 	else:
 		entity['sprite'].opacity *= amount
 

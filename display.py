@@ -12,7 +12,8 @@ import sys
 
 if '--rabbyt' in sys.argv:
 	RABBYT = True
-	import rabbyt
+	#import rabbyt
+	import lib2d
 else:
 	RABBYT = False
 
@@ -38,7 +39,7 @@ def on_draw():
 	_window_width, _window_height = get_window_size()
 	
 	if RABBYT:
-		rabbyt.clear((.1, .1, .1))
+		lib2d.clear(100)
 	else:
 		gl.glClearColor(.1, .1, .1, 1)
 	
@@ -74,7 +75,11 @@ def on_draw():
 	        CAMERA['center_on'][1]+(_window_height*(.5*CAMERA['zoom']))+_window_height,
 	        CAMERA['center_on'][1]-(_window_height*(.5*CAMERA['zoom']))+_window_height, 0.0, 1.0)
 	
-	events.trigger_event('draw')
+	if RABBYT:
+		lib2d.render()
+	else:
+		events.trigger_event('draw')
+	
 	glPopMatrix()
 	glPushMatrix()
 	glOrtho(0, _window_width, 0, _window_height, 0.0, 1.0)
@@ -85,6 +90,9 @@ def on_draw():
 	glPopMatrix()
 
 def boot():
+	if RABBYT:
+		lib2d.init()
+	
 	set_fps(FPS)
 	set_tps(TPS)
 	events.register_event('tick', tick)
@@ -165,7 +173,8 @@ def create_sprite(image, x, y, group_name):
 	_group = SPRITE_GROUPS[group_name]
 	
 	if RABBYT:
-		_sprite = rabbyt.Sprite(image)
+		#_sprite = rabbyt.Sprite(image)
+		_sprite = lib2d.Sprite(image)
 	else:
 		_sprite = pyglet.sprite.Sprite(image, x, y, batch=_group['batch'])
 	
@@ -187,7 +196,8 @@ def delete_sprite(entity):
 
 def draw_sprite_group(group_name):
 	if RABBYT:
-		rabbyt.render_unsorted(SPRITE_GROUPS[group_name]['sprites'])
+		pass
+		#rabbyt.render_unsorted(SPRITE_GROUPS[group_name]['sprites'])
 	else:
 		SPRITE_GROUPS[group_name]['batch'].draw()
 
