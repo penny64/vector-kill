@@ -230,7 +230,7 @@ def explode(entity):
 		                                  scale_rate=.91,
 		                                  friction=0,
 		                                  streamer=True,
-		                                  streamer_chance=1,
+		                                  streamer_chance=.8,
 		                                  swerve_rate=15)
 		_effect['direction'] = random.randint(0, 359)
 		_effect['velocity'] = numbers.velocity(_effect['direction'], 40)

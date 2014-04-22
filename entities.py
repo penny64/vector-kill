@@ -60,7 +60,7 @@ def get_entity(entity_id):
 def create_entity_group(group_name):
 	GROUPS[group_name] = []
 
-def get_sprite_group(group_name):
+def get_entity_group(group_name):
 	return GROUPS[group_name]
 
 def get_sprite_groups(group_names):

@@ -15,46 +15,39 @@ NOTERIETY = 0
 def boot():
 	display.create_sprite_group('effects_background')
 	display.create_sprite_group('effects_foreground')
+	display.create_sprite_group('soldiers')
 	display.create_text_group('top_center')
-	
-	_title_text = 'VECTOR:KILL'
-	display.print_text(display.get_window_size()[0]/2,
-	                   display.get_window_size()[1]*.8,
-	                   _title_text,
-	                   color=(0, 255, 0, 100),
-	                   font_name='Thin Design',
-	                   font_size=42,
-	                   center=True)
 
 def clean():
 	global LEVEL
 	
 	LEVEL = 1
 	
-	#for ship_id in entities.get_sprite_group('soldiers'):
+	#for ship_id in entities.get_entity_group('soldiers'):
 	#	entities.delete_entity(entities.ENTITIES[ship_id])
 	
-	for ship_id in entities.get_sprite_group('players'):
+	for ship_id in entities.get_entity_group('players'):
 		entities.delete_entity(entities.ENTITIES[ship_id])
 	
-	for ship_id in entities.get_sprite_group('enemies'):
+	for ship_id in entities.get_entity_group('enemies'):
 		entities.delete_entity(entities.ENTITIES[ship_id])	
 	
-	for ship_id in entities.get_sprite_group('hazards'):
+	for ship_id in entities.get_entity_group('hazards'):
 		entities.delete_entity(entities.ENTITIES[ship_id])
 	
-	for ship_id in entities.get_sprite_group('effects'):
+	for ship_id in entities.get_entity_group('effects'):
 		entities.delete_entity(entities.ENTITIES[ship_id])
 	
-	for ship_id in entities.get_sprite_group('bullets'):
+	for ship_id in entities.get_entity_group('bullets'):
 		entities.delete_entity(entities.ENTITIES[ship_id])
 	
 	display.clear_text_group('top_center')
 	
 	entities.reset()
 
-def create():
-	display.create_sprite_group('soldiers')
+def create(no_player=False):
+	global LEVEL
+	
 	entities.create_entity_group('soldiers')
 	entities.create_entity_group('players')
 	entities.create_entity_group('enemies')
@@ -62,9 +55,12 @@ def create():
 	entities.create_entity_group('effects')
 	entities.create_entity_group('bullets')
 	
-	create_player()
-	#spawn_enemies()
-
+	if no_player:
+		LEVEL = 3
+		spawn_enemies()
+	else:
+		create_player()
+		
 def create_player():
 	_player = ships.create_energy_ship()
 	_player['player'] = True
@@ -110,7 +106,7 @@ def spawn_enemies():
 	
 	if 1*(LEVEL-1):
 		display.print_text(display.get_window_size()[0]/2,
-		                   display.get_window_size()[1]*.85,
+		                   display.get_window_size()[1]*.95,
 		                   'ENEMY FIGHTERS INBOUND',
 		                   color=(0, 240, 0, 255),
 		                   text_group='top_center',
@@ -122,6 +118,14 @@ def spawn_enemies():
 def loop():
 	global NOTERIETY
 	
-	if entities.get_sprite_group('players') and not entities.get_sprite_group('enemies') and not entities.get_sprite_group('hazards'):
+	if entities.get_entity_group('players') and not entities.get_entity_group('enemies') and not entities.get_entity_group('hazards'):
 		NOTERIETY += LEVEL
+		spawn_enemies()
+
+def loop_attract():
+	global LEVEL
+	
+	if not entities.get_entity_group('enemies') or not entities.get_entity_group('hazards'):
+		clean()
+		LEVEL = 3
 		spawn_enemies()

@@ -99,6 +99,9 @@ def boot():
 	
 	pyglet.font.add_file('thin_design.ttf')
 
+def shutdown():
+	pyglet.app.exit()
+
 def screenshot():
 	pyglet.image.get_buffer_manager().get_color_buffer().save('screenshot.png')
 
@@ -232,7 +235,7 @@ def tick():
 	_remove_labels = []
 	
 	for label in LABELS.values():
-		if time.time()-label.time_created > label.show_for:
+		if time.time()-label.time_created > label.show_for and not label.show_for == -1:
 			if label.color[3]>0:
 				label.color = (label.color[0], label.color[1], label.color[2], numbers.clip(label.color[3]-label.fade_out_speed, 0, 255))
 			else:

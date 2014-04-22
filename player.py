@@ -55,9 +55,6 @@ def handle_input(entity_id):
 	
 	if controls.key_held('x'):
 		battlefield.clean()
-	
-	if controls.key_held('z'):
-		display.screenshot()
 
 def handle_camera(entity_id):
 	if not entity_id in entities.ENTITIES:
@@ -69,7 +66,7 @@ def handle_camera(entity_id):
 	_player = entities.get_entity(entity_id)
 	_center_pos = _player['position'][:]
 	
-	for enemy_id in entities.get_sprite_group('soldiers'):
+	for enemy_id in entities.get_entity_group('soldiers'):
 		_enemy = entities.get_entity(enemy_id)
 		
 		if 'player' in _enemy:
@@ -106,9 +103,9 @@ def score(entity, target_id):
 def delete(entity):
 	display.clear_text_group('top_center')
 	display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'GAME OVER', text_group='top_center', color=(255, 0, 0, 255), show_for=5, center=True)
-	#NOTERIETY -= entities.get_sprite_group('enemies')
+	#NOTERIETY -= entities.get_entity_group('enemies')
 	
-	_enemy_amount = len(entities.get_sprite_group('enemies'))
+	_enemy_amount = len(entities.get_entity_group('enemies'))
 	
 	if _enemy_amount>=3:
 		_loss_string = 'Pirates spread the news of your death...'

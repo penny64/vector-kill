@@ -7,6 +7,7 @@ import display
 import threads
 import events
 import worlds
+import menu
 import ui
 
 import cProfile
@@ -30,10 +31,10 @@ def main():
 	events.register_event('boot', controls.boot, display.get_window())
 	events.register_event('boot', worlds.create, world_name='game')
 	events.register_event('boot', ui.boot)
+	events.register_event('boot', menu.boot)
 	events.register_event('boot', battlefield.boot)
-	events.register_event('load', battlefield.create)
+	events.register_event('shutdown', display.shutdown)
 	events.register_event('loop', controls.loop)
-	events.register_event('loop', battlefield.loop)
 	events.register_event('tick', threads.tick)
 	
 	events.trigger_event('boot')

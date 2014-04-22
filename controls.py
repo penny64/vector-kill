@@ -14,6 +14,11 @@ NUM_6 = key.NUM_6
 NUM_7 = key.NUM_7
 NUM_8 = key.NUM_8
 NUM_9 = key.NUM_9
+ARROW_UP = key.UP
+ARROW_DOWN = key.DOWN
+ARROW_LEFT = key.LEFT
+ARROW_RIGHT = key.RIGHT
+ENTER = key.ENTER
 KEYS_HELD = None
 KEYS_PRESSED = {}
 KEYS_RELEASED = []
@@ -88,3 +93,5 @@ def system_input():
 		for group_name in display.SPRITE_GROUPS:
 			display.print_text(0, display.get_window_size()[1]-(_i*14), '%s: %s' % (group_name, len(display.SPRITE_GROUPS[group_name]['sprites'])), fade_out_speed=255)
 			_i += 1
+	elif key_pressed('z'):
+		display.screenshot()
