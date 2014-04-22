@@ -89,17 +89,34 @@ def remove_entity_from_all_groups(entity):
 		remove_entity_from_group(entity, group_name)
 
 def create_event(entity, event_name):
-	entity['_events'][event_name] = []
+	entity['_events'][event_name] = {'events': {}, 'id': 1, 'banned': set()}
 
 def register_event(entity, event_name, callback):
-	entity['_events'][event_name].append(callback)
+	_event_structure = entity['_events'][event_name]
+	_event = {'callback': callback,
+	          'id': str(_event_structure['id'])}
+	_event_structure['events'][str(_event_structure['id'])] = _event
+	_event_structure['id'] += 1
 
 def unregister_event(entity, event_name, callback):
-	entity['_events'][event_name].remove(callback)
+	_event_structure = entity['_events'][event_name]
+	
+	for event in _event_structure['events'].values():
+		if event['callback'] == callback:
+			_event_structure['banned'].add(event['id'])
+			
+			del _event_structure['events'][event['id']]
+			return True
 
 def trigger_event(entity, event_name, **kwargs):
-	for event in entity['_events'][event_name]:
-		event(entity, **kwargs)
+	_event_structure = entity['_events'][event_name]
+	for event in _event_structure['events'].values():
+		if event['id'] in _event_structure['banned']:
+			_event_structure['banned'].remove(event['id'])
+			
+			continue
+		
+		event['callback'](entity, **kwargs)
 
 def tick():
 	global LAST_TICK_TIME, TICKS_PER_SECOND, CURRENT_TICKS_PER_SECOND

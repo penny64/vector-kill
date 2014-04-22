@@ -166,24 +166,6 @@ def hit_laser(bullet, target_id):
 		
 	entities.trigger_event(entities.get_entity(target_id), 'accelerate', velocity=numbers.interp_velocity(entities.get_entity(target_id)['velocity'], bullet['velocity'], .4))
 
-def find_target(entity, max_distance=-1):
-	_closest_target = {'enemy_id': None, 'distance': 0}
-	
-	for soldier_id in entities.get_entity_group('soldiers'):
-		if entity['owner_id'] == soldier_id:
-			continue
-		
-		_distance = numbers.distance(entity['position'], entities.get_entity(soldier_id)['position'])
-		
-		if not max_distance == -1 and _distance>max_distance:
-			continue
-		
-		if not _closest_target['enemy_id'] or _distance<_closest_target['distance']:
-			_closest_target['distance'] = _distance
-			_closest_target['enemy_id'] = soldier_id
-	
-	return _closest_target['enemy_id']
-
 def tick_bullet(bullet):
 	if bullet['life']>0:
 		bullet['life'] -= 1
@@ -191,7 +173,7 @@ def tick_bullet(bullet):
 		entities.delete_entity(bullet)
 
 def tick(bullet):
-	for soldier_id in entities.get_entity_group('soldiers'):
+	for soldier_id in entities.get_sprite_groups(['enemies', 'hazards']):
 		if bullet['owner_id'] == soldier_id:
 			continue
 		

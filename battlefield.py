@@ -15,16 +15,13 @@ NOTERIETY = 0
 def boot():
 	display.create_sprite_group('effects_background')
 	display.create_sprite_group('effects_foreground')
-	display.create_sprite_group('soldiers')
+	display.create_sprite_group('ships')
 	display.create_text_group('top_center')
 
 def clean():
 	global LEVEL
 	
 	LEVEL = 1
-	
-	#for ship_id in entities.get_entity_group('soldiers'):
-	#	entities.delete_entity(entities.ENTITIES[ship_id])
 	
 	for ship_id in entities.get_entity_group('players'):
 		entities.delete_entity(entities.ENTITIES[ship_id])
@@ -45,28 +42,28 @@ def clean():
 	
 	entities.reset()
 
-def create(no_player=False):
+def create(player=True):
 	global LEVEL
 	
-	entities.create_entity_group('soldiers')
 	entities.create_entity_group('players')
 	entities.create_entity_group('enemies')
 	entities.create_entity_group('hazards')
 	entities.create_entity_group('effects')
 	entities.create_entity_group('bullets')
 	
-	if no_player:
-		LEVEL = 3
-		spawn_enemies()
-	else:
+	if player:
 		create_player()
+		LEVEL = 1
+	else:
+		LEVEL = 3
+	
+	spawn_enemies()
 		
 def create_player():
 	_player = ships.create_energy_ship()
 	_player['player'] = True
 	
 	player.register_entity(_player)
-
 	events.register_event('input', player.handle_input, _player['_id'])
 	events.register_event('camera', player.handle_camera, _player['_id'])
 	entities.register_event(_player, 'score', player.score)
@@ -127,5 +124,4 @@ def loop_attract():
 	
 	if not entities.get_entity_group('enemies') or not entities.get_entity_group('hazards'):
 		clean()
-		LEVEL = 3
 		spawn_enemies()

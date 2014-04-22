@@ -4,7 +4,11 @@ import controls
 import display
 import numbers
 import bullet
+import events
+import menu
 import ai
+
+import time
 
 
 def register_entity(entity):
@@ -66,7 +70,7 @@ def handle_camera(entity_id):
 	_player = entities.get_entity(entity_id)
 	_center_pos = _player['position'][:]
 	
-	for enemy_id in entities.get_entity_group('soldiers'):
+	for enemy_id in entities.get_entity_group('enemies'):
 		_enemy = entities.get_entity(enemy_id)
 		
 		if 'player' in _enemy:
@@ -101,9 +105,13 @@ def score(entity, target_id):
 	#display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'Fragged <b>%s</b>' % target_id, color=(0, 240, 0, 255), text_group='top_center', show_for=1.5, center=True)
 
 def delete(entity):
+	time.sleep(1)
 	display.clear_text_group('top_center')
-	display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'GAME OVER', text_group='top_center', color=(255, 0, 0, 255), show_for=5, center=True)
 	#NOTERIETY -= entities.get_entity_group('enemies')
+	
+	events.unregister_event('input', handle_input)
+	events.unregister_event('camera', handle_camera)
+	menu.setup_menu()
 	
 	_enemy_amount = len(entities.get_entity_group('enemies'))
 	
@@ -114,8 +122,9 @@ def delete(entity):
 	else:
 		_loss_string = 'Only the machines saw your death...'
 	
+	display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.20, 'GAME OVER', text_group='top_center', color=(255, 0, 0, 255), show_for=5, center=True)
 	display.print_text(display.get_window_size()[0]/2,
-	                   display.get_window_size()[1]*.80,
+	                   display.get_window_size()[1]*.25,
 	                   _loss_string,
 	                   text_group='top_center',
 	                   color=(255, 0, 0, 0),

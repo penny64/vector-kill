@@ -37,7 +37,7 @@ def register_entity(entity, sprite_group, sprite_name, scale=1):
 
 def draw():
 	display.draw_sprite_group('effects_background')
-	display.draw_sprite_group('soldiers')
+	display.draw_sprite_group('ships')
 	display.draw_sprite_group('effects_foreground')
 
 def loop(entity):

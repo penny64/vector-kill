@@ -18,13 +18,13 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	_soldier['speed'] = speed
 	_soldier['turn_rate'] = turn_rate
 	
-	entities.add_entity_to_group('soldiers', _soldier)
-	
 	if group:
 		entities.add_entity_to_group(group, _soldier)
+	else:
+		print 'WARNING: Entity has no group!'
 	
 	movement.register_entity(_soldier, x=x, y=y)
-	sprites.register_entity(_soldier, 'soldiers', sprite_name)
+	sprites.register_entity(_soldier, 'ships', sprite_name)
 	entities.create_event(_soldier, 'shoot')
 	entities.create_event(_soldier, 'hit')
 	entities.create_event(_soldier, 'kill')
@@ -43,7 +43,7 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	return _soldier
 
 def create_energy_ship():
-	_entity = create(sprite_name='ball.png', acceleration=.05, turn_rate=0.3)
+	_entity = create(group='players', sprite_name='ball.png', acceleration=.05, turn_rate=0.3)
 	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, tracking=True)['_id']
 	
 	entities.register_event(_entity, 'tick', tick_energy_ship)
@@ -99,13 +99,13 @@ def create_eyemine(x=0, y=0):
 	return _entity
 
 def create_missile_turret(x=0, y=0):
-	_entity = create(x=x, y=y, sprite_name='eyemine_body.png', speed=5, acceleration=1, max_velocity=0)
+	_entity = create(x=x, y=y, group='hazards', sprite_name='eyemine_body.png', speed=5, acceleration=1, max_velocity=0)
 	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=3, recoil_time=20, tracking=True, turn_rate=.02)['_id']
 	
 	entities.register_event(_entity, 'shoot', lambda entity: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot'))
 	entities.register_event(_entity, 'tick', tick_turret)
 	
-	entities.add_entity_to_group('hazards', _entity)
+	#entities.add_entity_to_group('hazards', _entity)
 	
 	return _entity
 

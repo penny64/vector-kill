@@ -11,13 +11,32 @@ MENU = None
 
 
 def boot():
+	setup_menu()
+
+def control():
+	global MENU_INDEX
+	
+	if controls.key_pressed_ord(controls.ARROW_DOWN):
+		if MENU_INDEX+1<len(MENU):
+			MENU_INDEX += 1
+		
+		draw_menu()
+	elif controls.key_pressed_ord(controls.ARROW_UP):
+		if MENU_INDEX:
+			MENU_INDEX -= 1
+		
+		draw_menu()
+	elif controls.key_pressed_ord(controls.ENTER):
+		MENU[MENU_INDEX]['callback']()
+
+
+def setup_menu():
 	global MENU
 	
-	events.register_event('tick', tick)
 	events.register_event('input', control)
 	events.register_event('loop', battlefield.loop_attract)
 	events.register_event('camera', action_camera)
-	battlefield.create(no_player=True)
+	battlefield.create(player=False)
 	display.create_text_group('logo')
 	display.create_text_group('menu')
 	
@@ -37,30 +56,11 @@ def boot():
 	
 	draw_menu()
 
-def control():
-	global MENU_INDEX
-	
-	if controls.key_pressed_ord(controls.ARROW_DOWN):
-		if MENU_INDEX+1<len(MENU):
-			MENU_INDEX += 1
-		
-		draw_menu()
-	elif controls.key_pressed_ord(controls.ARROW_UP):
-		if MENU_INDEX:
-			MENU_INDEX -= 1
-		
-		draw_menu()
-	elif controls.key_pressed_ord(controls.ENTER):
-		MENU[MENU_INDEX]['callback']()
-
-def tick():
-	pass
-
 def action_camera():
 	_focus_on = entities.get_entity_group('enemies')
 	
 	if not _focus_on:
-		_focus_on = entities.get_entity_group('soldiers')
+		_focus_on = entities.get_entity_group('hazards')
 		
 	display.CAMERA['next_center_on'] = entities.get_entity(_focus_on[0])['position']
 
@@ -88,6 +88,7 @@ def start_career():
 	display.clear_text_group('logo')
 	events.unregister_event('input', control)
 	events.unregister_event('loop', battlefield.loop_attract)
+	events.unregister_event('camera', action_camera)
 	events.register_event('loop', battlefield.loop)
 	battlefield.clean()
 	battlefield.create()

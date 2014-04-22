@@ -1,12 +1,12 @@
-EVENTS = {'BOOT': {'events': {}, 'id': 1},
-          'LOAD': {'events': {}, 'id': 1},
-          'INPUT': {'events': {}, 'id': 1},
-          'CAMERA': {'events': {}, 'id': 1},
-          'LOOP': {'events': {}, 'id': 1},
-          'TICK': {'events': {}, 'id': 1},
-          'DRAW': {'events': {}, 'id': 1},
-          'CLEANUP': {'events': {}, 'id': 1},
-          'SHUTDOWN': {'events': {}, 'id': 1}}
+EVENTS = {'BOOT': {'events': {}, 'id': 1, 'banned': set()},
+          'LOAD': {'events': {}, 'id': 1, 'banned': set()},
+          'INPUT': {'events': {}, 'id': 1, 'banned': set()},
+          'CAMERA': {'events': {}, 'id': 1, 'banned': set()},
+          'LOOP': {'events': {}, 'id': 1, 'banned': set()},
+          'TICK': {'events': {}, 'id': 1, 'banned': set()},
+          'DRAW': {'events': {}, 'id': 1, 'banned': set()},
+          'CLEANUP': {'events': {}, 'id': 1, 'banned': set()},
+          'SHUTDOWN': {'events': {}, 'id': 1, 'banned': set()}}
 
 
 def register_event(event_name, callback, *args, **kargs):
@@ -26,10 +26,18 @@ def register_event(event_name, callback, *args, **kargs):
 def unregister_event(event_name, callback, *args, **kargs):
 	for event in EVENTS[event_name.upper()]['events'].values():
 		if event['callback'] == callback:
-			del EVENTS[event_name.upper()]['events'][event['id']]
+			EVENTS[event_name.upper()]['banned'].add(event['id'])
 			
+			del EVENTS[event_name.upper()]['events'][event['id']]
 			return True
+	
+	raise Exception('Event not registered.')
 
 def trigger_event(event_name):
 	for event in EVENTS[event_name.upper()]['events'].values():
+		if event['id'] in EVENTS[event_name.upper()]['banned']:
+			EVENTS[event_name.upper()]['banned'].remove(event['id'])
+			
+			continue
+		
 		event['callback'](*event['args'], **event['kargs'])
