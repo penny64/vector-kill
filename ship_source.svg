@@ -7,6 +7,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="100"
@@ -19,10 +20,15 @@
    inkscape:export-ydpi="90"
    sodipodi:docname="ship_source.svg">
   <defs
-     id="defs4" />
+     id="defs4">
+    <color-profile
+       name="sRGB"
+       xlink:href="/usr/share/color/icc/colord/sRGB.icc"
+       id="color-profile3055" />
+  </defs>
   <sodipodi:namedview
      id="base"
-     pagecolor="#36ffff"
+     pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1.0"
      inkscape:pageopacity="0"
@@ -38,8 +44,8 @@
      inkscape:window-x="1920"
      inkscape:window-y="14"
      inkscape:window-maximized="0"
-     inkscape:showpageshadow="true"
-     showborder="false" />
+     inkscape:showpageshadow="false"
+     showborder="true" />
   <metadata
      id="metadata7">
     <rdf:RDF>

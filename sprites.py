@@ -4,10 +4,12 @@ import display
 import events
 import worlds
 
+import pyglet
+
 
 def register_entity(entity, sprite_group, sprite_name, scale=1):
 	if display.RABBYT:
-		entity['image'] = sprite_name
+		entity['image'] = display.load_image(sprite_name).texture
 	else:
 		entity['image'] = display.load_image(sprite_name)
 	
