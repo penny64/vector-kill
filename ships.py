@@ -35,7 +35,6 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	entities.register_event(_soldier, 'kill', destroy)
 	entities.register_event(_soldier, 'explode', explode)
 	entities.register_event(_soldier, 'hit', damage)
-	entities.register_event(_soldier, 'moved', set_direction)
 	entities.trigger_event(_soldier, 'set_minimum_velocity', velocity=[-max_velocity, -max_velocity])
 	entities.trigger_event(_soldier, 'set_maximum_velocity', velocity=[max_velocity, max_velocity])
 	entities.trigger_event(_soldier, 'set_acceleration', acceleration=acceleration)
@@ -53,12 +52,13 @@ def create_energy_ship():
 	return _entity
 
 def create_flea(x=0, y=0):
-	_entity = create(sprite_name='ball.png', group='enemies', x=x, y=y, acceleration=.2, speed=5, turn_rate=0.8)
+	_entity = create(sprite_name='diamond_body.png', group='enemies', x=x, y=y, acceleration=.2, speed=5, turn_rate=0.8)
 	_entity['current_target'] = None
 	_entity['fire_rate'] = 0
 	_entity['fire_rate_max'] = 20
 	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=3, recoil_time=15, tracking=False)['_id']
 	
+	entities.register_event(_entity, 'moved', set_direction)
 	entities.register_event(_entity, 'tick', tick_energy_ship)
 	entities.register_event(_entity, 'tick', tick_flea)
 	entities.register_event(_entity, 'tick', tick_turret)
@@ -156,8 +156,8 @@ def tick_turret(entity):
 		entities.trigger_event(entity, 'shoot')
 
 def set_direction(entity, **kwargs):
-	_direction = numbers.distance([0, 0], kwargs['position_change'])*numbers.clip(kwargs['position_change'][0], -1, 1)
-	entities.trigger_event(entity, 'rotate_by', degrees=_direction*.5)
+	#_direction = numbers.distance([0, 0], kwargs['position_change'])*numbers.clip(kwargs['position_change'][0], -1, 1)
+	entities.trigger_event(entity, 'set_rotation', degrees=entity['direction'])
 
 def destroy(entity):
 	entity['hp'] = 0
