@@ -21,9 +21,9 @@ def loop(dt):
 
 def window(dt):
 	display.set_caption('%s - %ifps - %stps - %s' % ('vector:kill: SUICIDE SHIPS',
-	                                            round(display.get_fps()),
-	                                            entities.TICKS_PER_SECOND,
-	                                            len(entities.ENTITIES)))
+	                                                 round(display.get_fps()),
+	                                                 entities.TICKS_PER_SECOND,
+	                                                 len(entities.ENTITIES)))
 
 def main():
 	events.register_event('boot', display.boot)
@@ -33,10 +33,10 @@ def main():
 	events.register_event('boot', ui.boot)
 	events.register_event('boot', menu.boot)
 	events.register_event('boot', battlefield.boot)
-	events.register_event('shutdown', display.shutdown)
 	events.register_event('loop', controls.loop)
 	events.register_event('load', display.load)
 	events.register_event('tick', threads.tick)
+	events.register_event('shutdown', display.shutdown)
 	
 	events.trigger_event('boot')
 	events.trigger_event('load')

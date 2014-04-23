@@ -111,6 +111,7 @@ def start_career():
 	events.register_event('loop', battlefield.loop)
 	battlefield.clean()
 	battlefield.create()
+	display.CAMERA['camera_move_speed'] = 0.05
 
 def shutdown():
 	events.trigger_event('shutdown')

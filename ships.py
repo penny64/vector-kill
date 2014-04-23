@@ -221,7 +221,7 @@ def explode(entity):
 		                                  direction=entity['direction']+random.randint(-90, 90),
 		                                  speed=entity['current_speed']*.7)
 	
-	for i in range(random.randint(0, 3)):
+	for i in range(random.randint(0, 3)+('player' in entity)*2):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
 		                                  entity['position'][1]+random.randint(-20, 20),
 		                                  'explosion.png',

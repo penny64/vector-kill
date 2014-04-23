@@ -24,7 +24,6 @@ def create(world_name):
 	global ACTIVE_WORLD
 	
 	WORLDS[world_name] = {'size': (4500, 4500),
-	                      'entities': [],
 	                      'last_tick': get_time(),
 	                      'next_tick': get_time()+.000001}
 	
