@@ -158,6 +158,8 @@ def cleanup():
 		_entity_id = ENTITIES_TO_DELETE.pop()
 		
 		if not _entity_id in ENTITIES:
+			remove_entity_from_all_groups(_entity)
+			
 			continue
 		
 		_entity = ENTITIES[_entity_id]
