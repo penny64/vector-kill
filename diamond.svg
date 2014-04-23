@@ -79,7 +79,7 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="turret"
-     style="display:inline">
+     style="display:none">
     <path
        sodipodi:type="arc"
        style="fill:#447821;fill-opacity:1;stroke:#71c837;stroke-width:4.66099977;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
@@ -95,7 +95,7 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="drive"
-     style="display:inline">
+     style="display:none">
     <path
        sodipodi:type="spiral"
        style="fill:none;stroke:#71c837;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
