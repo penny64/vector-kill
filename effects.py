@@ -47,7 +47,7 @@ def create_particle(x, y, sprite_name, background=True, scale=1, rotation=0, fri
 	return _entity
 
 def create_image(x, y, sprite_name, parent_entity=None, rotate_by=0, rotate_with_parent=False, background=False, scale=1):
-	_entity = entities.create_entity()
+	_entity = entities.create_entity(group='effects')
 	_entity['parent_entity'] = parent_entity['_id']
 	_entity['rotate_by'] = rotate_by
 	_entity['rotate_with_parent'] = rotate_with_parent

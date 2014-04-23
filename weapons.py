@@ -4,7 +4,7 @@ import bullet
 
 
 def create(owner_id, rounds=1, recoil_time=16, reload_time=35, turn_rate=.15, missile=True, hitscan=False, tracking=False):
-	_entity = entities.create_entity()
+	_entity = entities.create_entity(group='weapons')
 	_entity['owner_id'] = owner_id
 	_entity['rounds'] = rounds
 	_entity['max_rounds'] = rounds

@@ -57,7 +57,7 @@ def tick_guard(entity):
 
 def find_target(entity, max_distance=-1):
 	_closest_target = {'enemy_id': None, 'distance': 0}
-	_enemy_sprite_groups = [name for name in entities.GROUPS if not name in entity['_groups'] and not name in ['effects', 'bullets']]
+	_enemy_sprite_groups = [name for name in entities.GROUPS if not name in entity['_groups'] and not name in ['effects', 'bullets', 'weapons']]
 	
 	for soldier_id in entities.get_sprite_groups(_enemy_sprite_groups):
 		if entity['_id'] == soldier_id:

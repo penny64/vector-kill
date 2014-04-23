@@ -88,6 +88,16 @@ def system_input():
 			_i += 1
 		
 		display.print_text(0, display.get_window_size()[1]-(_i*14), 'Total: %s' % len(entities.ENTITIES), fade_out_speed=255)
+		print 'Stranded ents:', len(_entities)
+		
+		for entity in _entities:
+			_entity = entities.ENTITIES[entity]
+			import pprint
+			pp = pprint.PrettyPrinter(indent=4)
+			
+			print pp.pprint(_entity)
+			break
+		
 		_i += 1
 		
 		for group_name in display.SPRITE_GROUPS:

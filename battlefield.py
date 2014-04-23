@@ -38,6 +38,9 @@ def clean():
 	for ship_id in entities.get_entity_group('bullets'):
 		entities.delete_entity(entities.ENTITIES[ship_id])
 	
+	for ship_id in entities.get_entity_group('weapons'):
+		entities.delete_entity(entities.ENTITIES[ship_id])
+	
 	display.clear_text_group('top_center')
 	
 	entities.reset()
@@ -50,6 +53,7 @@ def create(player=True):
 	entities.create_entity_group('hazards')
 	entities.create_entity_group('effects')
 	entities.create_entity_group('bullets')
+	entities.create_entity_group('weapons')
 	
 	if player:
 		create_player()

@@ -22,7 +22,7 @@ def boot():
 	events.register_event('loop', loop)
 	events.register_event('cleanup', cleanup)
 
-def create_entity():
+def create_entity(group=None):
 	global NEXT_ENTITY_ID
 	
 	if REVOKED_ENTITY_IDS:
@@ -33,7 +33,8 @@ def create_entity():
 	
 	_entity = {'_id': _entity_id,
 	           '_events': {},
-	           '_groups': []}
+	           '_groups': [],
+	           '_groups_orig': []}
 	
 	ENTITIES[_entity['_id']] = _entity
 	
@@ -43,6 +44,9 @@ def create_entity():
 	create_event(_entity, 'loop')
 	create_event(_entity, 'tick')
 	
+	if group:
+		add_entity_to_group(group, _entity)
+	
 	return _entity
 
 def delete_all():
@@ -50,6 +54,8 @@ def delete_all():
 
 def delete_entity(entity):
 	if not entity['_id'] in ENTITIES:
+		print 'Trying to delete deleted item?'
+		
 		return False
 	
 	ENTITIES_TO_DELETE.add(entity['_id'])
@@ -73,11 +79,13 @@ def get_sprite_groups(group_names):
 
 def add_entity_to_group(group_name, entity):
 	entity['_groups'].append(group_name)
+	entity['_groups_orig'].append(group_name)
 	GROUPS[group_name].append(entity['_id'])
 
 def remove_entity_from_group(entity, group_name):
 	if not entity['_id'] in GROUPS[group_name]:
 		print('Trying to remove entity from a group it isn\'t in: %s (%s)' % (entity['_id'], group_name))
+		entity['_groups'].remove(group_name)
 		
 		return False
 	
