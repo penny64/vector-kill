@@ -66,6 +66,7 @@ def set_rotation(entity, degrees):
 	if display.RABBYT:
 		entity['sprite'].rot(degrees)
 	else:
+		entity['last_rotation'] = degrees
 		entity['next_rotation'] = degrees
 		entity['sprite'].rotation = degrees
 

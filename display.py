@@ -26,6 +26,7 @@ WINDOW = pyglet.window.Window(width=800, height=600, vsync=False)
 DT = 1.0
 FPS = 120
 TPS = 120
+LEVEL_GRID = []
 CAMERA = {'center_on': [0, 0],
           'next_center_on': [400, 400],
           'camera_move_speed': 0.05,
@@ -57,16 +58,9 @@ def on_draw():
 	        CAMERA['center_on'][1]+(_window_height*(.5*CAMERA['zoom']*.9))+_window_height,
 	        CAMERA['center_on'][1]-(_window_height*(.5*CAMERA['zoom']*.9))+_window_height, 0.0, 1.0)
 	
-	_points = []
-	for i in range((worlds.get_size()[0]/64)+1):
-		_points.extend((64*i, 0, 64*i, worlds.get_size()[1]))
-	
-	for i in range((worlds.get_size()[1]/64)+1):
-		_points.extend((0, 64*i, worlds.get_size()[1], 64*i))
-	
-	pyglet.graphics.draw(len(_points)/2, GL_LINES,
-	                     ('v2f', _points),
-	                     ('c4f', (.07, .07, .07, 1.0) * (len(_points)/2)))
+	pyglet.graphics.draw(len(LEVEL_GRID)/2, GL_LINES,
+	                     ('v2f', LEVEL_GRID),
+	                     ('c4f', (.07, .07, .07, 1.0) * (len(LEVEL_GRID)/2)))
 	#events.trigger_event('draw')
 	glPopMatrix()
 	glPushMatrix()
@@ -96,8 +90,16 @@ def boot():
 	set_fps(FPS)
 	set_tps(TPS)
 	events.register_event('tick', tick)
-	
 	pyglet.font.add_file('thin_design.ttf')
+
+def load():
+	global LEVEL_GRID
+	
+	for i in range((worlds.get_size()[0]/64)+1):
+		LEVEL_GRID.extend((64*i, 0, 64*i, worlds.get_size()[1]))
+	
+	for i in range((worlds.get_size()[1]/64)+1):
+		LEVEL_GRID.extend((0, 64*i, worlds.get_size()[1], 64*i))
 
 def shutdown():
 	pyglet.app.exit()

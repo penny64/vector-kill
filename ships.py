@@ -11,10 +11,11 @@ import ai
 import random
 
 
-def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, acceleration=0.5, max_velocity=15):
+def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, acceleration=0.5, max_velocity=15, death_time=10):
 	_soldier = entities.create_entity()
 	_soldier['hp'] = 10
 	_soldier['death_timer'] = -1
+	_soldier['death_timer_max'] = death_time
 	_soldier['speed'] = speed
 	_soldier['turn_rate'] = turn_rate
 	
@@ -43,7 +44,7 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	return _soldier
 
 def create_energy_ship():
-	_entity = create(group='players', sprite_name='ball.png', acceleration=.05, turn_rate=0.3)
+	_entity = create(group='players', sprite_name='ball.png', acceleration=.05, turn_rate=0.3, death_time=35)
 	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, tracking=True)['_id']
 	
 	entities.register_event(_entity, 'tick', tick_energy_ship)
@@ -121,13 +122,13 @@ def tick_flea(entity):
 			ai.track_target(entity, entity['current_target'])
 
 def tick_energy_ship(entity):
+	entity['shoot_direction'] = numbers.direction_to(entity['last_position'], entity['position'])
+	
 	if random.randint(0, 1):
 		_displace = (random.uniform(-entity['velocity'][0], entity['velocity'][0]),
 		             random.uniform(-entity['velocity'][1], entity['velocity'][1]))
 		
-		effects.create_particle(entity['position'][0]+_displace[0], entity['position'][1]+_displace[1], 'ball_shadow.png', scale_rate=.9)
-	
-	entity['shoot_direction'] = numbers.direction_to(entity['last_position'], entity['position'])
+		effects.create_particle(entity['position'][0]+_displace[0], entity['position'][1]+_displace[1], 'streamer.png', scale_rate=.9, direction=entity['shoot_direction'], rotation=entity['shoot_direction'])
 
 def tick_eyemine(entity):
 	if entity['current_speed']>=35:
@@ -162,7 +163,7 @@ def destroy(entity):
 	entity['hp'] = 0
 	
 	if entity['death_timer'] == -1:
-		entity['death_timer'] = 10
+		entity['death_timer'] = entity['death_timer_max']
 	
 	if entity['death_timer']:
 		entity['death_timer'] -= 1

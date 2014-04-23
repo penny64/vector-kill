@@ -28,28 +28,28 @@ def handle_input(entity_id):
 	_entity = entities.get_entity(entity_id)
 	
 	if controls.key_pressed_ord(controls.NUM_1) or controls.key_held_ord(controls.NUM_1):
-		entities.trigger_event(_entity, 'accelerate', velocity=[-6, 6])
+		entities.trigger_event(_entity, 'accelerate', velocity=[-8, 8])
 	
 	if controls.key_pressed_ord(controls.NUM_2) or controls.key_held_ord(controls.NUM_2):
-		entities.trigger_event(_entity, 'accelerate', velocity=[0, 6])
+		entities.trigger_event(_entity, 'accelerate', velocity=[0, 8])
 	
 	if controls.key_pressed_ord(controls.NUM_3) or controls.key_held_ord(controls.NUM_3):
-		entities.trigger_event(_entity, 'accelerate', velocity=[6, 6])
+		entities.trigger_event(_entity, 'accelerate', velocity=[8, 8])
 	
 	if controls.key_pressed_ord(controls.NUM_4) or controls.key_held_ord(controls.NUM_4):
-		entities.trigger_event(_entity, 'accelerate', velocity=[-6, 0])
+		entities.trigger_event(_entity, 'accelerate', velocity=[-8, 0])
 	
 	if controls.key_pressed_ord(controls.NUM_6) or controls.key_held_ord(controls.NUM_6):
-		entities.trigger_event(_entity, 'accelerate', velocity=[6, 0])
+		entities.trigger_event(_entity, 'accelerate', velocity=[8, 0])
 	
 	if controls.key_pressed_ord(controls.NUM_7) or controls.key_held_ord(controls.NUM_7):
-		entities.trigger_event(_entity, 'accelerate', velocity=[-6, -6])
+		entities.trigger_event(_entity, 'accelerate', velocity=[-8, -8])
 	
 	if controls.key_pressed_ord(controls.NUM_8) or controls.key_held_ord(controls.NUM_8):
-		entities.trigger_event(_entity, 'accelerate', velocity=[0, -6])
+		entities.trigger_event(_entity, 'accelerate', velocity=[0, -8])
 	
 	if controls.key_pressed_ord(controls.NUM_9) or controls.key_held_ord(controls.NUM_9):
-		entities.trigger_event(_entity, 'accelerate', velocity=[6, -6])
+		entities.trigger_event(_entity, 'accelerate', velocity=[8, -8])
 	
 	if controls.key_held('q'):
 		entities.trigger_event(_entity, 'shoot')
@@ -70,33 +70,35 @@ def handle_camera(entity_id):
 	_player = entities.get_entity(entity_id)
 	_center_pos = _player['position'][:]
 	
-	for enemy_id in entities.get_entity_group('enemies'):
-		_enemy = entities.get_entity(enemy_id)
+	if _player['death_timer'] == -1:
+		for enemy_id in entities.get_entity_group('enemies'):
+			_enemy = entities.get_entity(enemy_id)
+			
+			if 'player' in _enemy:
+				continue
+			
+			if numbers.distance(_player['position'], _enemy['position'])>=1200:
+				continue
+			
+			_center_pos = numbers.interp_velocity(_center_pos, _enemy['position'], 0.5)
 		
-		if 'player' in _enemy:
-			continue
+		_enemy_id = ai.find_target(_player)
 		
-		if numbers.distance(_player['position'], _enemy['position'])>=1200:
-			continue
+		if _enemy_id:
+			_enemy = entities.get_entity(_enemy_id)
+		else:
+			_enemy = _player
 		
-		_center_pos = numbers.interp_velocity(_center_pos, _enemy['position'], 0.5)
-	
-	_enemy_id = ai.find_target(_player)
-	
-	if _enemy_id:
-		_enemy = entities.get_entity(_enemy_id)
+		_distance_to_nearest_enemy = numbers.distance(_player['position'], _enemy['position'], old=True)
+		_min_zoom = 3.5
+		_max_zoom = 4.5
+		display.CAMERA['next_zoom'] = numbers.clip(_distance_to_nearest_enemy/300.0, _min_zoom, _max_zoom)
 	else:
-		_enemy = _player
-	
-	_distance_to_nearest_enemy = numbers.distance(_player['position'], _enemy['position'], old=True)
-	_min_zoom = 3.5
-	_max_zoom = 4.5
-	display.CAMERA['next_zoom'] = numbers.clip(_distance_to_nearest_enemy/300.0, _min_zoom, _max_zoom)
+		display.CAMERA['zoom_speed'] = .05
+		display.CAMERA['next_zoom'] = 1.5
 	
 	if display.CAMERA['next_zoom'] < 5:
-		display.CAMERA['next_center_on'] = numbers.interp_velocity(_player['position'][:],
-		                                                           _center_pos,
-		                                                           1-(display.CAMERA['next_zoom']/_max_zoom))
+		display.CAMERA['next_center_on'] = _center_pos
 	else:
 		display.CAMERA['next_center_on'] = _player['position'][:]	
 
@@ -105,8 +107,14 @@ def score(entity, target_id):
 	#display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'Fragged <b>%s</b>' % target_id, color=(0, 240, 0, 255), text_group='top_center', show_for=1.5, center=True)
 
 def delete(entity):
-	time.sleep(1)
+	time.sleep(.75)
 	display.clear_text_group('top_center')
+	
+	#TODO: Let menu take over
+	display.CAMERA['zoom_speed'] = .09
+	display.CAMERA['next_zoom'] = 4.5
+	display.CAMERA['camera_move_speed'] = 0.02
+	
 	#NOTERIETY -= entities.get_entity_group('enemies')
 	
 	events.unregister_event('input', handle_input)

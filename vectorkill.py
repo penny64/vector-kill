@@ -35,6 +35,7 @@ def main():
 	events.register_event('boot', battlefield.boot)
 	events.register_event('shutdown', display.shutdown)
 	events.register_event('loop', controls.loop)
+	events.register_event('load', display.load)
 	events.register_event('tick', threads.tick)
 	
 	events.trigger_event('boot')

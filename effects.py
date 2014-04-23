@@ -8,7 +8,7 @@ import events
 import random
 
 
-def create_particle(x, y, sprite_name, background=True, scale=1, friction=0, scale_min=0.15, scale_max=5, direction=0, speed=0, scale_rate=1.0, fade_rate=1.0, spin=0, flashes=-1, flash_chance=0, streamer=False, streamer_chance=0.3, swerve_rate=0, swerve_speed=25):
+def create_particle(x, y, sprite_name, background=True, scale=1, rotation=0, friction=0, scale_min=0.15, scale_max=5, direction=0, speed=0, scale_rate=1.0, fade_rate=1.0, spin=0, flashes=-1, flash_chance=0, streamer=False, streamer_chance=0.3, swerve_rate=0, swerve_speed=25):
 	_entity = entities.create_entity()
 	_entity['scale_rate'] = scale_rate
 	_entity['scale_min'] = scale_min
@@ -42,6 +42,7 @@ def create_particle(x, y, sprite_name, background=True, scale=1, friction=0, sca
 	
 	entities.register_event(_entity, 'tick', tick_particle)
 	entities.trigger_event(_entity, 'set_friction', friction=friction)
+	entities.trigger_event(_entity, 'set_rotation', degrees=rotation)
 	
 	return _entity
 
@@ -90,15 +91,22 @@ def tick_particle(particle):
 				return False
 	
 	if particle['streamer'] and random.uniform(0, 1)>1-particle['streamer_chance']:
+		if particle['swerve_rate']:
+			_image = 'streamer.png'
+		else:
+			_image = particle['sprite_name']
+		
 		_effect = create_particle(particle['position'][0],
 		                          particle['position'][1],
-		                          particle['sprite_name'],
+		                          _image,
 		                          background=particle['background'],
+		                          direction=particle['direction'],
 		                          scale=particle['sprite'].scale,
 		                          scale_min=particle['scale_min'],
 		                          scale_rate=particle['scale_rate'])
 		
 		if particle['swerve_rate']:
+			entities.trigger_event(_effect, 'set_rotation', degrees=particle['direction'])
 			_effect['sprite'].scale = particle['swerve_speed']/float(particle['swerve_speed_max'])
 			_effect['sprite'].opacity = 255*particle['swerve_speed']/float(particle['swerve_speed_max'])
 	

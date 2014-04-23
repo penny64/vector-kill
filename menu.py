@@ -5,9 +5,14 @@ import display
 import events
 import worlds
 
+import random
+
 
 MENU_INDEX = 0
 MENU = None
+CAMERA_TIME = 30
+CAMERA_MODES = ['hover', 'follow']
+CAMERA_MODE = random.choice(CAMERA_MODES)
 
 
 def boot():
@@ -57,12 +62,26 @@ def setup_menu():
 	draw_menu()
 
 def action_camera():
-	_focus_on = entities.get_entity_group('enemies')
+	global CAMERA_TIME, CAMERA_MODE
 	
-	if not _focus_on:
-		_focus_on = entities.get_entity_group('hazards')
+	if CAMERA_MODE == 'hover':
+		display.CAMERA['next_center_on'] = [worlds.get_size()[0]/2, worlds.get_size()[1]/2]
+		display.CAMERA['next_zoom'] = 5.0
+	
+	elif CAMERA_MODE == 'follow':
+		_focus_on = entities.get_entity_group('enemies')
 		
-	display.CAMERA['next_center_on'] = entities.get_entity(_focus_on[0])['position']
+		if not _focus_on:
+			_focus_on = entities.get_entity_group('hazards')
+		
+		display.CAMERA['next_center_on'] = entities.get_entity(_focus_on[0])['position'][:]
+		display.CAMERA['next_zoom'] = 2.5
+	
+	CAMERA_TIME -= 1
+	
+	if not CAMERA_TIME:
+		CAMERA_MODE = random.choice(CAMERA_MODES)
+		CAMERA_TIME = random.randint(120, 200)
 
 def draw_menu():
 	_i = 0

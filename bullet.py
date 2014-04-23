@@ -173,7 +173,7 @@ def tick_bullet(bullet):
 		entities.delete_entity(bullet)
 
 def tick(bullet):
-	for soldier_id in entities.get_sprite_groups(['enemies', 'hazards']):
+	for soldier_id in entities.get_sprite_groups(['enemies', 'hazards', 'players']):
 		if bullet['owner_id'] == soldier_id:
 			continue
 		
