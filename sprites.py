@@ -48,8 +48,8 @@ def loop(entity):
 	#	return False
 	
 	if not entity['smooth_draw']:
-		entity['sprite'].x = entity['position'][0]
-		entity['sprite'].y = display.get_window_size()[1]+entity['position'][1]
+		entity['sprite'].set_position(entity['position'][0],
+		                              display.get_window_size()[1]+entity['position'][1])
 		entity['sprite'].rotation = entity['next_rotation']
 		
 		entities.unregister_event(entity, 'loop', loop)
@@ -58,10 +58,10 @@ def loop(entity):
 	
 	_dt = worlds.get_interp()
 	
-	entity['sprite'].x = int(round(numbers.interp(entity['last_position'][0], entity['position'][0], _dt)))
-	entity['sprite'].y = numbers.interp(display.get_window_size()[1]+entity['last_position'][1],
-	                                    display.get_window_size()[1]+entity['position'][1],
-	                                    _dt)
+	entity['sprite'].set_position(int(round(numbers.interp(entity['last_position'][0], entity['position'][0], _dt))),
+	                              numbers.interp(display.get_window_size()[1]+entity['last_position'][1],
+	                                             display.get_window_size()[1]+entity['position'][1],
+	                                             _dt))
 	
 	if not display.RABBYT:
 		entity['sprite'].rotation = numbers.interp(entity['last_rotation'], entity['next_rotation'], _dt)

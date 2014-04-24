@@ -57,7 +57,7 @@ def create(player=True):
 		create_player()
 		LEVEL = 1
 	else:
-		LEVEL = 3
+		LEVEL = 30
 	
 	spawn_enemies()
 		
