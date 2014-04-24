@@ -63,7 +63,7 @@ def setup_menu():
 	                   display.get_window_size()[1]*.20,
 	                   'Next unlock:',
 	                   text_group='bot_center',
-	                   color=(255, 255, 255, 255),
+	                   color=(238, 221, 130, 255),
 	                   show_for=-1,
 	                   center=True)
 	
@@ -121,6 +121,7 @@ def draw_menu():
 def start_career():
 	display.clear_text_group('menu')
 	display.clear_text_group('logo')
+	display.clear_text_group('bot_center')
 	events.unregister_event('input', control)
 	events.unregister_event('loop', battlefield.loop_attract)
 	events.unregister_event('camera', action_camera)

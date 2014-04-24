@@ -7,7 +7,7 @@ import worlds
 import pyglet
 
 
-def register_entity(entity, sprite_group, sprite_name, scale=1):
+def register_entity(entity, sprite_group, sprite_name, scale=1, smooth_draw=True):
 	if display.RABBYT:
 		entity['image'] = sprite_name
 	else:
@@ -19,11 +19,14 @@ def register_entity(entity, sprite_group, sprite_name, scale=1):
 	entity['next_rotation'] = 0
 	entity['rotation_speed'] = 0
 	entity['sprite'].scale = scale
+	entity['smooth_draw'] = smooth_draw
 	
+	entities.create_event(entity, 'redraw')
 	entities.create_event(entity, 'set_rotation')
 	entities.create_event(entity, 'rotate_by')
 	entities.create_event(entity, 'fade_by')
 	entities.register_event(entity, 'tick', tick)
+	entities.register_event(entity, 'redraw', lambda _entity: entities.register_event(_entity, 'loop', loop))
 	entities.register_event(entity, 'delete', display.delete_sprite)
 	entities.register_event(entity, 'set_rotation', set_rotation)
 	entities.register_event(entity, 'rotate_by', rotate_by)
@@ -41,7 +44,16 @@ def draw():
 	display.draw_sprite_group('effects_foreground')
 
 def loop(entity):
-	if not entity['_id'] in entities.ENTITIES:
+	#if not entity['_id'] in entities.ENTITIES:
+	#	return False
+	
+	if not entity['smooth_draw']:
+		entity['sprite'].x = entity['position'][0]
+		entity['sprite'].y = display.get_window_size()[1]+entity['position'][1]
+		entity['sprite'].rotation = entity['next_rotation']
+		
+		entities.unregister_event(entity, 'loop', loop)
+		
 		return False
 	
 	_dt = worlds.get_interp()

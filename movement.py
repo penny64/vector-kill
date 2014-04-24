@@ -29,6 +29,7 @@ def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, tu
 	entities.create_event(entity, 'set_acceleration')
 	entities.create_event(entity, 'set_friction')
 	entities.create_event(entity, 'set_direction')
+	entities.create_event(entity, 'set_speed')
 	entities.register_event(entity, 'turn', turn)
 	entities.register_event(entity, 'thrust', thrust)
 	entities.register_event(entity, 'accelerate', accelerate)
@@ -37,6 +38,7 @@ def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, tu
 	entities.register_event(entity, 'set_acceleration', set_acceleration)
 	entities.register_event(entity, 'set_friction', set_friction)
 	entities.register_event(entity, 'set_direction', set_direction)
+	entities.register_event(entity, 'set_speed', set_speed)
 
 	if offload:
 		threads.register_entity(entity)
@@ -51,6 +53,9 @@ def set_friction(entity, friction):
 
 def set_direction(entity, direction):
 	entity['direction'] = direction
+
+def set_speed(entity, speed):
+	entity['speed'] = speed
 
 def set_minimum_velocity(entity, velocity):
 	entity['min_velocity'] = list(velocity)
@@ -111,8 +116,9 @@ def tick(entity):
 	_position_change = [entity['position'][0]-entity['last_position'][0],
 	                    entity['position'][1]-entity['last_position'][1]]
 	
-	entities.trigger_event(entity,
-	                       'moved',
-	                       last_position=entity['last_position'],
-	                       position_change=_position_change,
-	                       velocity=entity['velocity'])
+	if not entity['position'] == entity['last_position']:
+		entities.trigger_event(entity,
+			                  'moved',
+			                  last_position=entity['last_position'],
+			                  position_change=_position_change,
+		                       velocity=entity['velocity'])

@@ -29,13 +29,23 @@ def create_particle(x, y, sprite_name, background=True, scale=1, rotation=0, fri
 	
 	movement.register_entity(_entity, x=x, y=y)
 	entities.add_entity_to_group('effects', _entity)
+	entities.trigger_event(_entity, 'set_direction', direction=direction)
+	entities.trigger_event(_entity, 'set_speed', speed=speed)
+	entities.trigger_event(_entity, 'thrust')
 	
-	_entity['velocity'] = numbers.velocity(direction, speed)
+	if _entity['speed']:
+		_smooth_draw = True
+	else:
+		_smooth_draw = False
+		entities.register_event(_entity, 'moved', lambda entity, **kwargs: entities.trigger_event(entity, 'redraw'))
+		
+		#TODO: Hack
+		entities.register_event(_entity, 'moved', lambda entity, **kwargs: entities.unregister_event(entity, 'tick', movement.tick))
 	
 	if background:
-		sprites.register_entity(_entity, 'effects_background', sprite_name, scale=scale)
+		sprites.register_entity(_entity, 'effects_background', sprite_name, scale=scale, smooth_draw=_smooth_draw)
 	else:
-		sprites.register_entity(_entity, 'effects_foreground', sprite_name, scale=scale)
+		sprites.register_entity(_entity, 'effects_foreground', sprite_name, scale=scale, smooth_draw=_smooth_draw)
 	
 	if swerve_rate:
 		_entity['sprite'].opacity = 0

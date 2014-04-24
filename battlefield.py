@@ -48,8 +48,6 @@ def clean():
 	for ship_id in entities.get_entity_group('weapons'):
 		entities.delete_entity(entities.ENTITIES[ship_id])
 	
-	display.clear_text_group('bot_center')
-	
 	entities.reset()
 
 def create(player=True):
@@ -75,8 +73,6 @@ def create_player():
 
 def spawn_enemies():
 	global LEVEL
-	
-	display.clear_text_group('bot_center')
 	
 	if not LEVEL % 4:
 		for i in range(1*(LEVEL-1)):
