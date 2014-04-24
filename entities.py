@@ -54,7 +54,6 @@ def delete_all():
 
 def delete_entity(entity):
 	if not entity['_id'] in ENTITIES:
-		print 'Trying to delete deleted item?'
 		
 		return False
 	
@@ -64,6 +63,9 @@ def get_entity(entity_id):
 	return ENTITIES[entity_id]
 
 def create_entity_group(group_name):
+	if group_name in GROUPS:
+		raise Exception('Trying to create duplicate entity group:' % group_name)
+	
 	GROUPS[group_name] = []
 
 def get_entity_group(group_name):

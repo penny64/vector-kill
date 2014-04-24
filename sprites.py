@@ -53,6 +53,11 @@ def loop(entity):
 	
 	if not display.RABBYT:
 		entity['sprite'].rotation = numbers.interp(entity['last_rotation'], entity['next_rotation'], _dt)
+		
+		if entity['sprite'].rotation>359:
+			entity['sprite'].rotation = entity['sprite'].rotation-359
+		elif entity['sprite'].rotation<-1:
+			entity['sprite'].rotation = 359-entity['sprite'].rotation
 
 def tick(entity):
 	if not display.RABBYT:

@@ -59,6 +59,22 @@ def setup_menu():
 	                   show_for=-1,
 	                   text_group='logo')
 	
+	display.print_text(display.get_window_size()[0]/2,
+	                   display.get_window_size()[1]*.20,
+	                   'Next unlock:',
+	                   text_group='bot_center',
+	                   color=(255, 255, 255, 255),
+	                   show_for=-1,
+	                   center=True)
+	
+	display.print_text(display.get_window_size()[0]/2,
+	                   display.get_window_size()[1]*.15,
+	                   'Ivan\'s Chaingun',
+	                   text_group='bot_center',
+	                   color=(255, 215, 0, 255),
+	                   show_for=-1,
+	                   center=True)
+	
 	draw_menu()
 
 def action_camera():

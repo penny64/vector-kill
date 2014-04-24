@@ -102,13 +102,13 @@ def handle_camera(entity_id):
 	else:
 		display.CAMERA['next_center_on'] = _player['position'][:]	
 
-def score(entity, target_id):
-	display.print_text(0, 10+(len(display.LABELS)*15), 'Kill (<b>+1XP</b>)', color=(0, 240, 0, 255), show_for=1.5)
-	#display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'Fragged <b>%s</b>' % target_id, color=(0, 240, 0, 255), text_group='top_center', show_for=1.5, center=True)
+def score(entity, target_id, amount=0, text=''):
+	display.print_text(0, 10+(len(display.LABELS)*15), '%s (<b>+%s</b>)' % (text, amount), color=(0, 240, 0, 255), show_for=1.5)
+	#display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'Fragged <b>%s</b>' % target_id, color=(0, 240, 0, 255), text_group='bot_center', show_for=1.5, center=True)
 
 def delete(entity):
 	time.sleep(.75)
-	display.clear_text_group('top_center')
+	display.clear_text_group('bot_center')
 	
 	#TODO: Let menu take over
 	display.CAMERA['zoom_speed'] = .09
@@ -130,11 +130,10 @@ def delete(entity):
 	else:
 		_loss_string = 'Only the machines saw your death...'
 	
-	display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.20, 'GAME OVER', text_group='top_center', color=(255, 0, 0, 255), show_for=5, center=True)
 	display.print_text(display.get_window_size()[0]/2,
 	                   display.get_window_size()[1]*.25,
 	                   _loss_string,
-	                   text_group='top_center',
+	                   text_group='bot_center',
 	                   color=(255, 0, 0, 0),
 	                   show_for=6,
 	                   fade_in_speed=4,

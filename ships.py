@@ -63,7 +63,6 @@ def create_flea(x=0, y=0):
 	entities.register_event(_entity, 'tick', tick_flea)
 	entities.register_event(_entity, 'tick', tick_turret)
 	entities.register_event(_entity, 'shoot', lambda entity: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot'))
-	#entities.register_event(_entity, 'shoot', shoot_turret)
 	
 	return _entity
 
@@ -135,6 +134,11 @@ def tick_eyemine(entity):
 		entities.trigger_event(entity, 'kill')
 		return entities.delete_entity(entity)
 	
+	if entity['current_target'] and entity['current_target'] in entities.ENTITIES:
+		_target_object = entities.get_entity(entity['current_target'])
+	else:
+		_target_object = None
+	
 	for soldier_id in entities.get_sprite_groups(['enemies', 'players']):
 		if entity['_id'] == soldier_id:
 			continue
@@ -142,8 +146,16 @@ def tick_eyemine(entity):
 		if numbers.distance(entity['position'], entities.get_entity(soldier_id)['position'], old=True)>50:
 			continue
 		
+		if _target_object and not entity['current_target'] == soldier_id and 'player' in _target_object:
+			entities.trigger_event(_target_object,
+			                       'score',
+			                       target_id=entity['_id'],
+			                       amount=10,
+			                       text='Creative Escape')
+		
 		entities.trigger_event(entities.get_entity(soldier_id), 'hit', damage=6, target_id=entity['_id'])
 		entities.trigger_event(entity, 'kill')
+		entities.trigger_event(entity, 'explode')
 		entities.delete_entity(entity)
 		
 		break
@@ -243,6 +255,17 @@ def damage(entity, damage, target_id):
 		entities.trigger_event(entity, 'set_friction', friction=0.05)
 		
 		if target_id in entities.ENTITIES:
-			entities.trigger_event(entities.get_entity(target_id), 'score', target_id=entity['_id'])
-	
-	#entities.delete_entity(entity)
+			entities.trigger_event(entities.get_entity(target_id),
+			                       'score',
+			                       target_id=entity['_id'],
+			                       amount=5,
+			                       text='Kill')
+	elif entity['hp']<0:
+		_text = 'Overkill'
+		
+		if target_id in entities.ENTITIES:
+			entities.trigger_event(entities.get_entity(target_id),
+			                       'score',
+			                       target_id=entity['_id'],
+			                       amount=2*abs(entity['hp']),
+			                       text=_text)

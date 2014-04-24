@@ -16,7 +16,14 @@ def boot():
 	display.create_sprite_group('effects_background')
 	display.create_sprite_group('effects_foreground')
 	display.create_sprite_group('ships')
-	display.create_text_group('top_center')
+	display.create_text_group('bot_center')
+	
+	entities.create_entity_group('players')
+	entities.create_entity_group('enemies')
+	entities.create_entity_group('hazards')
+	entities.create_entity_group('effects')
+	entities.create_entity_group('bullets')
+	entities.create_entity_group('weapons')
 
 def clean():
 	global LEVEL
@@ -41,19 +48,12 @@ def clean():
 	for ship_id in entities.get_entity_group('weapons'):
 		entities.delete_entity(entities.ENTITIES[ship_id])
 	
-	display.clear_text_group('top_center')
+	display.clear_text_group('bot_center')
 	
 	entities.reset()
 
 def create(player=True):
 	global LEVEL
-	
-	entities.create_entity_group('players')
-	entities.create_entity_group('enemies')
-	entities.create_entity_group('hazards')
-	entities.create_entity_group('effects')
-	entities.create_entity_group('bullets')
-	entities.create_entity_group('weapons')
 	
 	if player:
 		create_player()
@@ -76,7 +76,18 @@ def create_player():
 def spawn_enemies():
 	global LEVEL
 	
-	display.clear_text_group('top_center')
+	display.clear_text_group('bot_center')
+	
+	if not LEVEL % 4:
+		for i in range(1*(LEVEL-1)):
+			ships.create_flea(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
+		
+		LEVEL += 1
+		
+		return False
+	
+	for i in range(1*(LEVEL-1)):
+		ships.create_flea(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
 	
 	_eyemine_spawn_point = (random.randint(worlds.get_size()[0]*.25, worlds.get_size()[0]*.75),
 	                        random.randint(worlds.get_size()[1]*.25, worlds.get_size()[1]*.75))
@@ -101,16 +112,12 @@ def spawn_enemies():
 			entities.trigger_event(_turret, 'set_maximum_velocity', velocity=[5, 5])
 			entities.trigger_event(_turret, 'thrust')
 	
-	for i in range(1*(LEVEL-1)):
-		ships.create_flea(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
-		_ships = True
-	
 	if 1*(LEVEL-1):
 		display.print_text(display.get_window_size()[0]/2,
 		                   display.get_window_size()[1]*.95,
 		                   'ENEMY FIGHTERS INBOUND',
 		                   color=(0, 240, 0, 255),
-		                   text_group='top_center',
+		                   text_group='bot_center',
 		                   show_for=1.5,
 		                   center=True)
 	
@@ -128,4 +135,5 @@ def loop_attract():
 	
 	if not entities.get_entity_group('enemies') or not entities.get_entity_group('hazards'):
 		clean()
+		LEVEL = 3
 		spawn_enemies()
