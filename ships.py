@@ -126,8 +126,19 @@ def tick_energy_ship(entity):
 	if random.randint(0, 1):
 		_displace = (random.uniform(-entity['velocity'][0], entity['velocity'][0]),
 		             random.uniform(-entity['velocity'][1], entity['velocity'][1]))
+		_effect_direction = numbers.direction_to(entity['position'],
+		                                         (entity['position'][0]+(entity['velocity'][0]*6),
+		                                          entity['position'][1]+(entity['velocity'][1]*6)))
+		_effect_direction += (abs(entity['shoot_direction']-_effect_direction)*numbers.clip(_effect_direction, -1, 1))*5
 		
-		effects.create_particle(entity['position'][0]+_displace[0], entity['position'][1]+_displace[1], 'streamer.png', scale_rate=.9, direction=entity['shoot_direction'], rotation=entity['shoot_direction'])
+		effects.create_particle(entity['position'][0]+_displace[0],
+		                        entity['position'][1]+_displace[1],
+		                        'streamer.png',
+		                        scale_rate=.9,
+		                        speed=-entity['current_speed'],
+		                        friction=0.1,
+		                        direction=_effect_direction+random.randint(-5, 5),
+		                        rotation=_effect_direction)
 
 def tick_eyemine(entity):
 	if entity['current_speed']>=35:
@@ -168,7 +179,6 @@ def tick_turret(entity):
 		entities.trigger_event(entity, 'shoot')
 
 def set_direction(entity, **kwargs):
-	#_direction = numbers.distance([0, 0], kwargs['position_change'])*numbers.clip(kwargs['position_change'][0], -1, 1)
 	entities.trigger_event(entity, 'set_rotation', degrees=entity['direction'])
 
 def destroy(entity):
@@ -198,7 +208,7 @@ def destroy(entity):
 		                                  background=True,
 		                                  scale=random.uniform(.5, 1.1),
 		                                  scale_min=0.05,
-		                                  scale_rate=.96,
+		                                  scale_rate=.9,
 		                                  friction=0.3,
 		                                  direction=entity['direction']+random.randint(-90, 90),
 		                                  speed=random.uniform(entity['current_speed']*.3, entity['current_speed']*.5))
