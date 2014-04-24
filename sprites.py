@@ -48,9 +48,9 @@ def loop(entity):
 	#	return False
 	
 	if not entity['smooth_draw']:
-		entity['sprite'].set_position(entity['position'][0],
-		                              display.get_window_size()[1]+entity['position'][1])
-		entity['sprite'].rotation = entity['next_rotation']
+		entity['sprite'].set_position_and_rotate(entity['position'][0],
+		                              display.get_window_size()[1]+entity['position'][1],
+		                              entity['next_rotation'])
 		
 		entities.unregister_event(entity, 'loop', loop)
 		
@@ -58,18 +58,24 @@ def loop(entity):
 	
 	_dt = worlds.get_interp()
 	
-	entity['sprite'].set_position(int(round(numbers.interp(entity['last_position'][0], entity['position'][0], _dt))),
-	                              numbers.interp(display.get_window_size()[1]+entity['last_position'][1],
-	                                             display.get_window_size()[1]+entity['position'][1],
-	                                             _dt))
+	#entity['sprite'].set_position(int(round(numbers.interp(entity['last_position'][0], entity['position'][0], _dt))),
+	#                              numbers.interp(display.get_window_size()[1]+entity['last_position'][1],
+	#                                             display.get_window_size()[1]+entity['position'][1],
+	#                                             _dt))
 	
 	if not display.RABBYT:
-		entity['sprite'].rotation = numbers.interp(entity['last_rotation'], entity['next_rotation'], _dt)
+		_rot = numbers.interp(entity['last_rotation'], entity['next_rotation'], _dt)
 		
-		if entity['sprite'].rotation>359:
-			entity['sprite'].rotation = entity['sprite'].rotation-359
-		elif entity['sprite'].rotation<-1:
-			entity['sprite'].rotation = 359-entity['sprite'].rotation
+		if _rot>359:
+			_rot = _rot-359
+		elif _rot<-1:
+			_rot = 359-_rot
+
+	entity['sprite'].set_position_and_rotate(int(round(numbers.interp(entity['last_position'][0], entity['position'][0], _dt))),
+	                                         numbers.interp(display.get_window_size()[1]+entity['last_position'][1],
+	                                                        display.get_window_size()[1]+entity['position'][1],
+	                                                        _dt),
+	                                         _rot)
 
 def tick(entity):
 	if not display.RABBYT:
@@ -85,7 +91,6 @@ def set_rotation(entity, degrees):
 	else:
 		entity['last_rotation'] = degrees
 		entity['next_rotation'] = degrees
-		entity['sprite'].rotation = degrees
 
 def rotate_by(entity, degrees):
 	entity['rotation_speed'] = degrees

@@ -35,6 +35,14 @@ CAMERA = {'center_on': [0, 0],
           'zoom_speed': 0.09}
 
 
+class Sprite(pyglet.sprite.Sprite):
+	def set_position_and_rotate(self, x, y, degrees):
+		self._x = x
+		self._y = y
+		self._rotation = degrees
+		self._update_position()
+
+
 @WINDOW.event
 def on_draw():
 	_window_width, _window_height = get_window_size()
@@ -181,7 +189,7 @@ def create_sprite(image, x, y, group_name):
 		#_sprite = rabbyt.Sprite(image)
 		_sprite = lib2d.Sprite(image)
 	else:
-		_sprite = pyglet.sprite.Sprite(image, x, y, batch=_group['batch'])
+		_sprite = Sprite(image, x, y, batch=_group['batch'])
 	
 	_group['sprites'].append(_sprite)
 	
