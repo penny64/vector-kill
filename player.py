@@ -104,7 +104,9 @@ def handle_camera(entity_id):
 
 def score(entity, target_id, amount=0, text=''):
 	display.print_text(0, 10+(len(display.LABELS)*15), '%s (<b>+%s</b>)' % (text, amount), color=(0, 240, 0, 255), show_for=1.5)
-	#display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.85, 'Fragged <b>%s</b>' % target_id, color=(0, 240, 0, 255), text_group='bot_center', show_for=1.5, center=True)
+	
+	if target_id in entities.ENTITIES and abs(entity['shoot_direction']-numbers.direction_to(entity['position'], entities.get_entity(target_id)['position']))<45:
+		display.print_text(0, 10+(len(display.LABELS)*15), 'FRENZY!!!', color=(0, 240, 0, 255), show_for=1.5)
 
 def delete(entity):
 	time.sleep(.75)
