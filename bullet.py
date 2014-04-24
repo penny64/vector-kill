@@ -10,7 +10,7 @@ import ai
 import random
 
 
-def create(x, y, direction, speed, sprite_name, owner_id, damage=3, life=30, turn_rate=.15):
+def create(x, y, direction, speed, sprite_name, owner_id, damage=3, life=30, turn_rate=.15, radius=50):
 	_entity = entities.create_entity()
 	
 	movement.register_entity(_entity, x=x, y=y, direction=direction, speed=speed, turn_rate=turn_rate)
@@ -22,17 +22,29 @@ def create(x, y, direction, speed, sprite_name, owner_id, damage=3, life=30, tur
 	entities.register_event(_entity, 'destroy', destroy)
 	entities.register_event(_entity, 'hit_edge', lambda entity: entities.trigger_event(entity, 'destroy'))
 	entities.trigger_event(_entity, 'set_friction', friction=0)
-	entities.trigger_event(_entity, 'accelerate', velocity=numbers.velocity(direction, speed))
+	entities.trigger_event(_entity, 'thrust')
 	entities.add_entity_to_group('bullets', _entity)
 	
 	_entity['life'] = life
 	_entity['owner_id'] = owner_id
 	_entity['damage'] = damage
+	_entity['damage_radius'] = radius
 	
 	return _entity
 
-def create_missile(x, y, direction, speed, sprite_name, owner_id, life=3000, scale=.2, turn_rate=.15, tracking=True, drunk=True):
-	_bullet = create(x, y, direction, speed, sprite_name, owner_id, life=life, turn_rate=turn_rate)
+def create_bullet(x, y, direction, speed, sprite_name, owner_id, life=3000, scale=.2, radius=50):
+	_bullet = create(x, y, direction, speed, sprite_name, owner_id, life=life)
+	_owner = entities.get_entity(_bullet['owner_id'])
+	_bullet['sprite'].anchor_x = 0
+	_bullet['sprite'].anchor_y = sprites.get_size(_bullet['sprite'])[1]/2
+	_bullet['sprite'].scale = scale
+	
+	entities.trigger_event(_bullet, 'set_rotation', degrees=_bullet['direction'])
+	
+	return _bullet
+
+def create_missile(x, y, direction, speed, sprite_name, owner_id, life=3000, scale=.2, turn_rate=.15, tracking=True, drunk=True, radius=50):
+	_bullet = create(x, y, direction, speed, sprite_name, owner_id, life=life, turn_rate=turn_rate, radius=radius)
 	_owner = entities.get_entity(_bullet['owner_id'])
 	_bullet['sprite'].anchor_x = 0
 	_bullet['sprite'].anchor_y = sprites.get_size(_bullet['sprite'])[1]/2
@@ -68,7 +80,6 @@ def create_missile(x, y, direction, speed, sprite_name, owner_id, life=3000, sca
 	else:
 		_bullet['target_id'] = None
 	
-	entities.trigger_event(_bullet, 'set_rotation', degrees=_bullet['direction'])
 	_bullet['engine_power'] = 100
 	
 	return _bullet
@@ -112,6 +123,8 @@ def tick_missile(bullet):
 	
 	if not bullet['engine_power']:
 		entities.trigger_event(bullet, 'destroy')
+	
+	entities.trigger_event(bullet, 'set_rotation', degrees=bullet['direction'])
 
 def tick_drunk(bullet):
 	bullet['direction'] += random.randint(-6, 6)
@@ -177,7 +190,7 @@ def tick(bullet):
 		if bullet['owner_id'] == soldier_id:
 			continue
 		
-		if numbers.distance(bullet['position'], entities.get_entity(soldier_id)['position'], old=True)>50:
+		if numbers.distance(bullet['position'], entities.get_entity(soldier_id)['position'], old=True)>bullet['damage_radius']:
 			continue
 		
 		entities.trigger_event(bullet, 'hit', target_id=soldier_id)

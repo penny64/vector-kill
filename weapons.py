@@ -2,8 +2,10 @@ import entities
 import display
 import bullet
 
+import random
 
-def create(owner_id, rounds=1, recoil_time=16, reload_time=35, turn_rate=.15, missile=True, hitscan=False, tracking=False):
+
+def create(owner_id, rounds=1, recoil_time=16, reload_time=35, turn_rate=.15, speed=30, bullet=False, missile=True, hitscan=False, tracking=False, damage_radius=50):
 	_entity = entities.create_entity(group='weapons')
 	_entity['owner_id'] = owner_id
 	_entity['rounds'] = rounds
@@ -12,12 +14,14 @@ def create(owner_id, rounds=1, recoil_time=16, reload_time=35, turn_rate=.15, mi
 	_entity['recoil_time_max'] = recoil_time
 	_entity['reload_time'] = reload_time
 	_entity['reload_time_max'] = reload_time
+	_entity['bullet'] = bullet
 	_entity['missile'] = missile
 	_entity['hitscan'] = hitscan
 	_entity['tracking'] = tracking
 	_entity['firing'] = False
 	_entity['turn_rate'] = turn_rate
-	_entity['speed'] = 30
+	_entity['speed'] = speed
+	_entity['damage_radius'] = damage_radius
 	
 	entities.create_event(_entity, 'shoot')
 	entities.register_event(_entity, 'shoot', shoot)
@@ -72,7 +76,18 @@ def tick(entity):
 		                      'bullet.png',
 		                      entity['owner_id'],
 		                      turn_rate=entity['turn_rate'],
-		                      tracking=entity['tracking'])
+		                      tracking=entity['tracking'],
+		                      radius=entity['damage_radius'])
+	
+	if entity['bullet']:
+		bullet.create_bullet(_owner['position'][0],
+		                     _owner['position'][1],
+		                     _direction+random.randint(-8, 8),
+		                     entity['speed'],
+		                     'bullet.png',
+		                     entity['owner_id'],
+		                     scale=.6,
+		                     radius=entity['damage_radius'])
 	
 	entity['recoil_time'] = entity['recoil_time_max']
 	entity['rounds'] -= 1

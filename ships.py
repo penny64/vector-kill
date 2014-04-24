@@ -11,9 +11,9 @@ import ai
 import random
 
 
-def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, acceleration=0.5, max_velocity=15, death_time=10):
+def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, acceleration=0.5, max_velocity=15, death_time=10, hp=10):
 	_soldier = entities.create_entity()
-	_soldier['hp'] = 10
+	_soldier['hp'] = hp
 	_soldier['death_timer'] = -1
 	_soldier['death_timer_max'] = death_time
 	_soldier['speed'] = speed
@@ -43,8 +43,9 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	return _soldier
 
 def create_energy_ship():
-	_entity = create(group='players', sprite_name='ball.png', acceleration=.05, turn_rate=0.3, death_time=35)
-	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, tracking=True)['_id']
+	_entity = create(group='players', sprite_name='ball.png', acceleration=.05, turn_rate=0.3, death_time=35, hp=30)
+	#_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, tracking=True)['_id']
+	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=2, recoil_time=0, reload_time=1, speed=125, missile=False, bullet=True, damage_radius=150)['_id']
 	
 	entities.register_event(_entity, 'tick', tick_energy_ship)
 	entities.register_event(_entity, 'shoot', lambda entity: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot'))
