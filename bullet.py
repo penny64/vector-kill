@@ -37,8 +37,8 @@ def create_bullet(x, y, direction, speed, sprite_name, owner_id, life=3000, scal
 	_owner = entities.get_entity(_bullet['owner_id'])
 	_bullet['sprite'].anchor_x = 0
 	_bullet['sprite'].anchor_y = sprites.get_size(_bullet['sprite'])[1]/2
-	_bullet['sprite'].scale = scale
 	
+	entities.trigger_event(_bullet, 'set_scale', scale=scale)
 	entities.trigger_event(_bullet, 'set_rotation', degrees=_bullet['direction'])
 	
 	return _bullet
@@ -48,8 +48,8 @@ def create_missile(x, y, direction, speed, sprite_name, owner_id, life=3000, sca
 	_owner = entities.get_entity(_bullet['owner_id'])
 	_bullet['sprite'].anchor_x = 0
 	_bullet['sprite'].anchor_y = sprites.get_size(_bullet['sprite'])[1]/2
-	_bullet['sprite'].scale = scale
 	
+	entities.trigger_event(_bullet, 'set_scale', scale=scale)
 	entities.register_event(_bullet, 'tick', tick_missile)
 	entities.register_event(_bullet, 'hit', hit_missile)
 	

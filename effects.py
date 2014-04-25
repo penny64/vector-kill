@@ -121,7 +121,7 @@ def tick_particle(particle):
 		
 		if particle['swerve_rate']:
 			entities.trigger_event(_effect, 'set_rotation', degrees=particle['direction'])
-			_effect['sprite'].scale = particle['swerve_speed']/float(particle['swerve_speed_max'])
+			entities.trigger_event(_effect, 'set_scale', scale=particle['swerve_speed']/float(particle['swerve_speed_max']))
 			_effect['sprite'].opacity = 255*particle['swerve_speed']/float(particle['swerve_speed_max'])
 	
 	if not particle['scale_rate'] == 1:
@@ -130,7 +130,7 @@ def tick_particle(particle):
 		elif particle['sprite'].scale > particle['scale_max']:
 			entities.delete_entity(particle)
 		else:
-			particle['sprite'].scale *= particle['scale_rate']
+			entities.trigger_event(particle, 'set_scale', scale=particle['sprite'].scale*particle['scale_rate'])
 
 def tick_image(image):
 	if image['parent_entity']:

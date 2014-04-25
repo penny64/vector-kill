@@ -59,6 +59,16 @@ def create_flea(x=0, y=0):
 	_entity['fire_rate_max'] = 20
 	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=3, recoil_time=15, tracking=False)['_id']
 	
+	effects.create_image(_entity['position'][0],
+	                     _entity['position'][1],
+	                     'diamond_turret.png',
+	                     parent_entity=_entity)
+	effects.create_image(_entity['position'][0],
+	                     _entity['position'][1],
+	                     'diamond_drive.png',
+	                     parent_entity=_entity,
+	                     rotate_by=3)
+	
 	entities.register_event(_entity, 'moved', set_direction)
 	entities.register_event(_entity, 'tick', tick_energy_ship)
 	entities.register_event(_entity, 'tick', tick_flea)

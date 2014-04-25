@@ -36,11 +36,22 @@ CAMERA = {'center_on': [0, 0],
 
 
 class Sprite(pyglet.sprite.Sprite):
-	def set_position_and_rotate(self, x, y, degrees):
+	def set_position_and_rotate_and_scale(self, x, y, degrees, scale):
 		self._x = x
 		self._y = y
 		self._rotation = degrees
+		#self._update_position()
+		self._scale = scale
 		self._update_position()
+	
+	def set_scale(self, scale):
+		self._scale = scale
+		img = self._texture
+		x1 = int(self._x - img.anchor_x * scale)
+		y1 = int(self._y - img.anchor_y * scale)
+		x2 = int(x1 + img.width * scale)
+		y2 = int(y1 + img.height * scale)
+		self._vertex_list.vertices[:] = [x1, y1, x2, y1, x2, y2, x1, y2]
 
 
 @WINDOW.event

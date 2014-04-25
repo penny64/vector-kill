@@ -18,16 +18,20 @@ def register_entity(entity, sprite_group, sprite_name, scale=1, smooth_draw=True
 	entity['last_rotation'] = 0
 	entity['next_rotation'] = 0
 	entity['rotation_speed'] = 0
-	entity['sprite'].scale = scale
+	entity['last_scale'] = scale
+	entity['next_scale'] = scale
 	entity['smooth_draw'] = smooth_draw
+	entity['scale_only'] = False
 	
 	entities.create_event(entity, 'redraw')
+	entities.create_event(entity, 'set_scale')
 	entities.create_event(entity, 'set_rotation')
 	entities.create_event(entity, 'rotate_by')
 	entities.create_event(entity, 'fade_by')
 	entities.register_event(entity, 'tick', tick)
 	entities.register_event(entity, 'redraw', lambda _entity: entities.register_event(_entity, 'loop', loop))
 	entities.register_event(entity, 'delete', display.delete_sprite)
+	entities.register_event(entity, 'set_scale', set_scale)
 	entities.register_event(entity, 'set_rotation', set_rotation)
 	entities.register_event(entity, 'rotate_by', rotate_by)
 	entities.register_event(entity, 'fade_by', fade_by)
@@ -44,24 +48,18 @@ def draw():
 	display.draw_sprite_group('effects_foreground')
 
 def loop(entity):
-	#if not entity['_id'] in entities.ENTITIES:
-	#	return False
-	
 	if not entity['smooth_draw']:
-		entity['sprite'].set_position_and_rotate(entity['position'][0],
-		                              display.get_window_size()[1]+entity['position'][1],
-		                              entity['next_rotation'])
+		entity['sprite'].set_position_and_rotate_and_scale(entity['position'][0],
+		                                                   display.get_window_size()[1]+entity['position'][1],
+		                                                   entity['next_rotation'],
+		                                                   entity['next_scale'])
 		
-		entities.unregister_event(entity, 'loop', loop)
+		if not entity['last_scale'] and not entity['next_scale']:
+			entities.unregister_event(entity, 'loop', loop)
 		
 		return False
 	
 	_dt = worlds.get_interp()
-	
-	#entity['sprite'].set_position(int(round(numbers.interp(entity['last_position'][0], entity['position'][0], _dt))),
-	#                              numbers.interp(display.get_window_size()[1]+entity['last_position'][1],
-	#                                             display.get_window_size()[1]+entity['position'][1],
-	#                                             _dt))
 	
 	if not display.RABBYT:
 		_rot = numbers.interp(entity['last_rotation'], entity['next_rotation'], _dt)
@@ -71,11 +69,12 @@ def loop(entity):
 		elif _rot<-1:
 			_rot = 359-_rot
 
-	entity['sprite'].set_position_and_rotate(int(round(numbers.interp(entity['last_position'][0], entity['position'][0], _dt))),
-	                                         numbers.interp(display.get_window_size()[1]+entity['last_position'][1],
-	                                                        display.get_window_size()[1]+entity['position'][1],
-	                                                        _dt),
-	                                         _rot)
+	entity['sprite'].set_position_and_rotate_and_scale(int(round(numbers.interp(entity['last_position'][0], entity['position'][0], _dt))),
+	                                                   numbers.interp(display.get_window_size()[1]+entity['last_position'][1],
+	                                                                  display.get_window_size()[1]+entity['position'][1],
+	                                                                  _dt),
+	                                                   _rot,
+	                                                   numbers.interp(entity['last_scale'], entity['next_scale'], _dt))
 
 def tick(entity):
 	if not display.RABBYT:
@@ -84,6 +83,10 @@ def tick(entity):
 ########
 #Events#
 ########
+
+def set_scale(entity, scale):
+	entity['last_scale'] = scale
+	entity['next_scale'] = scale
 
 def set_rotation(entity, degrees):
 	if display.RABBYT:
