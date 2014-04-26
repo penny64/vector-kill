@@ -56,6 +56,20 @@ def loop(entity):
 		
 		if not entity['last_scale'] and not entity['next_scale']:
 			entities.unregister_event(entity, 'loop', loop)
+		else:
+			_dt = worlds.get_interp()
+			img = entity['sprite']._texture
+			_scale = numbers.interp(entity['last_scale'], entity['next_scale'], _dt)
+			x1 = int(entity['sprite']._x - img.anchor_x * _scale)
+			y1 = int(entity['sprite']._y - img.anchor_y * _scale)
+			x2 = int(x1 + img.width * _scale)
+			y2 = int(y1 + img.height * _scale)
+			entity['sprite']._scale = _scale
+			
+			if not entity['sprite']._visible:
+				entity['sprite']._vertex_list.vertices[:] = [0, 0, 0, 0, 0, 0, 0, 0]
+			else:
+				entity['sprite']._vertex_list.vertices[:] = [x1, y1, x2, y1, x2, y2, x1, y2]
 		
 		return False
 	

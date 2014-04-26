@@ -219,11 +219,7 @@ def delete_sprite(entity):
 		entity['sprite'].delete()
 
 def draw_sprite_group(group_name):
-	if RABBYT:
-		pass
-		#rabbyt.render_unsorted(SPRITE_GROUPS[group_name]['sprites'])
-	else:
-		SPRITE_GROUPS[group_name]['batch'].draw()
+	SPRITE_GROUPS[group_name]['batch'].draw()
 
 def print_text(x, y, text, text_group=None, font_name=None, font_size=None, color=(255, 0, 255, 0), fade_in_speed=255, show_for=3, fade_out_speed=2, center=False):
 	global LABEL_ID
