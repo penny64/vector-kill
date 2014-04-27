@@ -116,7 +116,21 @@ def create_missile_turret(x=0, y=0):
 	entities.register_event(_entity, 'shoot', lambda entity: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot'))
 	entities.register_event(_entity, 'tick', tick_turret)
 	
-	#entities.add_entity_to_group('hazards', _entity)
+	return _entity
+
+def create_gun_turret(x=0, y=0):
+	_entity = create(x=x, y=y, group='hazards', sprite_name='eyemine_body.png', speed=5, acceleration=1, max_velocity=0)
+	_entity['weapon_id'] = weapons.create(_entity['_id'],
+	                                      rounds=10,
+	                                      recoil_time=2,
+	                                      reload_time=40,
+	                                      damage_radius=40,
+	                                      speed=140,
+	                                      missile=False,
+	                                      bullet=True)['_id']
+	
+	entities.register_event(_entity, 'shoot', lambda entity: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot'))
+	entities.register_event(_entity, 'tick', tick_turret)
 	
 	return _entity
 
@@ -213,15 +227,15 @@ def destroy(entity):
 		                                  scale_rate=1.1)
 		entities.delete_entity(entity)
 	
-	if not random.randint(0, 7):
-		_effect = effects.create_particle(entity['position'][0]+random.randint(-50, 50),
-		                                  entity['position'][1]+random.randint(-50, 50),
-		                                  'smoke.png',
-		                                  background=True,
-		                                  scale=random.uniform(.5, 1.1),
-		                                  scale_min=0.05,
-		                                  scale_rate=.9,
-		                                  friction=0.3)
+	#if not random.randint(0, 7):
+	#	_effect = effects.create_particle(entity['position'][0]+random.randint(-50, 50),
+	#	                                  entity['position'][1]+random.randint(-50, 50),
+	#	                                  'smoke.png',
+	#	                                  background=True,
+	#	                                  scale=random.uniform(.5, 1.1),
+	#	                                  scale_min=0.05,
+	#	                                  scale_rate=.9,
+	#	                                  friction=0.3)
 	
 	if random.randint(0, 3):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
@@ -235,17 +249,17 @@ def destroy(entity):
 		                                  speed=entity['current_speed']*.9)
 
 def explode(entity):
-	if not random.randint(0, 3):
-		_effect = effects.create_particle(entity['position'][0]+random.randint(-50, 50),
-		                                  entity['position'][1]+random.randint(-50, 50),
-		                                  'smoke.png',
-		                                  background=True,
-		                                  scale=random.uniform(.5, 1.3),
-		                                  scale_min=0.1,
-		                                  scale_rate=.9,
-		                                  fade_rate=.9,
-		                                  friction=0.1,
-		                                  streamer=True)
+	#if not random.randint(0, 3):
+	#	_effect = effects.create_particle(entity['position'][0]+random.randint(-50, 50),
+	#	                                  entity['position'][1]+random.randint(-50, 50),
+	#	                                  'smoke.png',
+	#	                                  background=True,
+	#	                                  scale=random.uniform(.5, 1.3),
+	#	                                  scale_min=0.1,
+	#	                                  scale_rate=.9,
+	#	                                  fade_rate=.9,
+	#	                                  friction=0.1,
+	#	                                  streamer=True)
 	
 	for i in range(random.randint(0, 3)+('player' in entity)*2):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),

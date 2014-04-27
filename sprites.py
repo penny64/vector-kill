@@ -43,9 +43,10 @@ def register_entity(entity, sprite_group, sprite_name, scale=1, smooth_draw=True
 ###############
 
 def draw():
-	display.draw_sprite_group('effects_background')
-	display.draw_sprite_group('ships')
-	display.draw_sprite_group('effects_foreground')
+	for group_name in display.SPRITE_GROUPS_DRAW_ORDER:
+		display.draw_sprite_group(group_name)
+		#display.draw_sprite_group('ships')
+		#display.draw_sprite_group('effects_foreground')
 
 def loop(entity):
 	if not entity['smooth_draw']:

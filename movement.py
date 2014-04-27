@@ -24,6 +24,7 @@ def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, tu
 	entities.create_event(entity, 'turn')
 	entities.create_event(entity, 'thrust')
 	entities.create_event(entity, 'hit_edge')
+	entities.create_event(entity, 'set_position')
 	entities.create_event(entity, 'set_minimum_velocity')
 	entities.create_event(entity, 'set_maximum_velocity')
 	entities.create_event(entity, 'set_acceleration')
@@ -33,6 +34,7 @@ def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, tu
 	entities.register_event(entity, 'turn', turn)
 	entities.register_event(entity, 'thrust', thrust)
 	entities.register_event(entity, 'accelerate', accelerate)
+	entities.register_event(entity, 'set_position', set_position)
 	entities.register_event(entity, 'set_minimum_velocity', set_minimum_velocity)
 	entities.register_event(entity, 'set_maximum_velocity', set_maximum_velocity)
 	entities.register_event(entity, 'set_acceleration', set_acceleration)
@@ -56,6 +58,10 @@ def set_direction(entity, direction):
 
 def set_speed(entity, speed):
 	entity['speed'] = speed
+
+def set_position(entity, x, y):
+	entity['position'][0] = x
+	entity['position'][1] = y
 
 def set_minimum_velocity(entity, velocity):
 	entity['min_velocity'] = list(velocity)

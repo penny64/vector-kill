@@ -108,6 +108,17 @@ def spawn_enemies():
 			entities.trigger_event(_turret, 'set_maximum_velocity', velocity=[5, 5])
 			entities.trigger_event(_turret, 'thrust')
 	
+	if LEVEL >= 3:
+		for i in range(random.randint(1, 2)*(int(round(LEVEL*.25)))):
+			_x, _y = random.randint(worlds.get_size()[0]*.25, worlds.get_size()[0]*.75), random.randint(worlds.get_size()[1]*.25, worlds.get_size()[1]*.75)
+			_turret = ships.create_gun_turret(x=_x, y=_y)
+			
+			if _move:
+				entities.trigger_event(_turret, 'set_direction', direction=_move_direction)
+				entities.trigger_event(_turret, 'set_minimum_velocity', velocity=[-5, -5])
+				entities.trigger_event(_turret, 'set_maximum_velocity', velocity=[5, 5])
+				entities.trigger_event(_turret, 'thrust')
+	
 	if 1*(LEVEL-1):
 		display.print_text(display.get_window_size()[0]/2,
 		                   display.get_window_size()[1]*.95,

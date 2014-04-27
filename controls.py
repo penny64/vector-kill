@@ -1,4 +1,4 @@
-from pyglet.window import key
+from pyglet.window import key, mouse
 
 import entities
 import display
@@ -22,7 +22,18 @@ ENTER = key.ENTER
 KEYS_HELD = None
 KEYS_PRESSED = {}
 KEYS_RELEASED = []
+MOUSE_PRESSED = set()
+#MOUSE_HELD = set()
+#MOUSE_RELEASED = set()
 
+
+#@display.WINDOW.event
+#def on_mouse_press(x, y, button, modifiers):
+#	MOUSE_PRESSED.add(int(button))
+
+#@display.WINDOW.event
+#def on_mouse_release(x, y, button, modifiers):
+#	MOUSE_PRESSED.remove(int(button))
 
 def boot(window):
 	global KEYS_HELD
@@ -70,6 +81,9 @@ def key_released(char):
 
 def key_held(char):
 	return KEYS_HELD.get(ord(char))
+
+def mouse_pressed(button):
+	return button in MOUSE_PRESSED
 
 
 def system_input():

@@ -19,6 +19,7 @@ else:
 
 LOADED_IMAGES = {}
 SPRITE_GROUPS = {}
+SPRITE_GROUPS_DRAW_ORDER = []
 LABELS = {}
 TEXT_GROUPS = {}
 LABEL_ID = 1
@@ -72,21 +73,23 @@ def on_draw():
 	CAMERA['center_on'] = numbers.interp_velocity(CAMERA['center_on'], CAMERA['next_center_on'], CAMERA['camera_move_speed'])
 	CAMERA['zoom'] = numbers.interp(CAMERA['zoom'], CAMERA['next_zoom'], CAMERA['zoom_speed'])
 	
-	glOrtho(CAMERA['center_on'][0]-(_window_width*(.5*CAMERA['zoom']*.9)),
-	        CAMERA['center_on'][0]+(_window_width*(.5*CAMERA['zoom']*.9)),
-	        CAMERA['center_on'][1]+(_window_height*(.5*CAMERA['zoom']*.9))+_window_height,
-	        CAMERA['center_on'][1]-(_window_height*(.5*CAMERA['zoom']*.9))+_window_height, 0.0, 1.0)
+	#glOrtho(CAMERA['center_on'][0]-(_window_width*(.5*CAMERA['zoom']*.9)),
+	#        CAMERA['center_on'][0]+(_window_width*(.5*CAMERA['zoom']*.9)),
+	#        CAMERA['center_on'][1]+(_window_height*(.5*CAMERA['zoom']*.9))+_window_height,
+	#        CAMERA['center_on'][1]-(_window_height*(.5*CAMERA['zoom']*.9))+_window_height, 0.0, 1.0)
 	
-	pyglet.graphics.draw(len(LEVEL_GRID)/2, GL_LINES,
-	                     ('v2f', LEVEL_GRID),
-	                     ('c4f', (.07, .07, .07, 1.0) * (len(LEVEL_GRID)/2)))
 	#events.trigger_event('draw')
-	glPopMatrix()
-	glPushMatrix()
+	#glPopMatrix()
+	#glPushMatrix()
+	
 	glOrtho(CAMERA['center_on'][0]-(_window_width*(.5*CAMERA['zoom'])),
 	        CAMERA['center_on'][0]+(_window_width*(.5*CAMERA['zoom'])),
 	        CAMERA['center_on'][1]+(_window_height*(.5*CAMERA['zoom']))+_window_height,
 	        CAMERA['center_on'][1]-(_window_height*(.5*CAMERA['zoom']))+_window_height, 0.0, 1.0)
+	
+	pyglet.graphics.draw(len(LEVEL_GRID)/2, GL_LINES,
+	                     ('v2f', LEVEL_GRID),
+	                     ('c4f', (.07, .07, .07, 1.0) * (len(LEVEL_GRID)/2)))
 	
 	if RABBYT:
 		lib2d.render()
@@ -111,14 +114,17 @@ def boot():
 	events.register_event('tick', tick)
 	pyglet.font.add_file('thin_design.ttf')
 
-def load():
+def load(level_editor=False):
+	if level_editor:
+		return True
+	
 	global LEVEL_GRID
 	
-	for i in range((worlds.get_size()[0]/64)+1):
-		LEVEL_GRID.extend((64*i, 0, 64*i, worlds.get_size()[1]))
+	for i in range((worlds.get_size()[0]/100)+1):
+		LEVEL_GRID.extend((100*i, 0, 100*i, worlds.get_size()[1]))
 	
-	for i in range((worlds.get_size()[1]/64)+1):
-		LEVEL_GRID.extend((0, 64*i, worlds.get_size()[1], 64*i))
+	for i in range((worlds.get_size()[1]/100)+1):
+		LEVEL_GRID.extend((0, 100*i, worlds.get_size()[1], 100*i))
 
 def shutdown():
 	pyglet.app.exit()
@@ -192,6 +198,8 @@ def clear_text_group(group_name):
 def create_sprite_group(group_name):
 	SPRITE_GROUPS[group_name] = {'batch': pyglet.graphics.Batch(),
 	                             'sprites': []}
+	
+	SPRITE_GROUPS_DRAW_ORDER.append(group_name)
 
 def create_sprite(image, x, y, group_name):
 	_group = SPRITE_GROUPS[group_name]

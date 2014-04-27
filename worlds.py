@@ -30,7 +30,6 @@ def create(world_name):
 	if not ACTIVE_WORLD:
 		ACTIVE_WORLD = world_name
 		
-		#Dirty hack...
 		events.register_event('draw', sprites.draw)
 
 def get_interp():
