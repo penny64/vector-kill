@@ -23,7 +23,7 @@ SPRITE_GROUPS_DRAW_ORDER = []
 LABELS = {}
 TEXT_GROUPS = {}
 LABEL_ID = 1
-WINDOW = pyglet.window.Window(width=800, height=600, vsync=False)
+WINDOW = pyglet.window.Window(width=1280, height=720, vsync=False)
 DT = 1.0
 FPS = 120
 TPS = 120
@@ -113,6 +113,7 @@ def boot():
 	set_tps(TPS)
 	events.register_event('tick', tick)
 	pyglet.font.add_file('thin_design.ttf')
+	WINDOW.set_exclusive_mouse()
 
 def load(level_editor=False):
 	if level_editor:

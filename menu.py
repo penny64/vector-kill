@@ -4,6 +4,7 @@ import entities
 import display
 import events
 import worlds
+import levels
 
 import random
 
@@ -46,6 +47,7 @@ def setup_menu():
 	display.create_text_group('menu')
 	
 	MENU = [{'text': 'Career', 'callback': start_career},
+	        {'text': 'Arena', 'callback': start_arena},
 	        {'text': 'Quit', 'callback': shutdown}]
 	
 	_title_text = 'VECTOR:KILL'
@@ -119,6 +121,18 @@ def draw_menu():
 		_i += 1
 
 def start_career():
+	display.clear_text_group('menu')
+	display.clear_text_group('logo')
+	display.clear_text_group('bot_center')
+	events.unregister_event('input', control)
+	events.unregister_event('loop', battlefield.loop_attract)
+	events.unregister_event('camera', action_camera)
+	events.register_event('loop', levels.loop)
+	battlefield.clean()
+	levels.load_level()
+	display.CAMERA['camera_move_speed'] = 0.05
+
+def start_arena():
 	display.clear_text_group('menu')
 	display.clear_text_group('logo')
 	display.clear_text_group('bot_center')

@@ -24,6 +24,11 @@ def boot():
 	entities.create_entity_group('effects')
 	entities.create_entity_group('bullets')
 	entities.create_entity_group('weapons')
+	
+	entities.create_entity_group('cursor')
+	entities.create_entity_group('tiles_foreground')
+	display.create_sprite_group('tiles_foreground')
+	display.create_sprite_group('ui_foreground')
 
 def clean():
 	global LEVEL

@@ -58,11 +58,16 @@ def create_particle(x, y, sprite_name, background=True, scale=1, rotation=0, fri
 
 def create_image(x, y, sprite_name, parent_entity=None, rotate_by=0, rotate_with_parent=False, background=False, scale=1):
 	_entity = entities.create_entity(group='effects')
-	_entity['parent_entity'] = parent_entity['_id']
+	
+	if parent_entity:
+		_entity['parent_entity'] = parent_entity['_id']
+	else:
+		_entity['parent_entity'] = None
+	
 	_entity['rotate_by'] = rotate_by
 	_entity['rotate_with_parent'] = rotate_with_parent
 	
-	movement.register_entity(_entity, x=x, y=y)
+	movement.register_entity(_entity, x=x, y=y, no_tick=True)
 	entities.register_event(_entity, 'tick', tick_image)
 	
 	if parent_entity:

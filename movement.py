@@ -3,9 +3,10 @@ import entities
 import numbers
 import events
 import worlds
+import levels
 
 
-def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, turn_rate=0.1, offload=False):
+def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, turn_rate=0.1, offload=False, no_tick=False):
 	entity['position'] = [x, y]
 	entity['last_position'] = [x, y]
 	entity['velocity'] = [0, 0]
@@ -44,7 +45,7 @@ def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, tu
 
 	if offload:
 		threads.register_entity(entity)
-	else:
+	elif not no_tick:
 		entities.register_event(entity, 'tick', tick)
 
 def set_acceleration(entity, acceleration):
@@ -118,6 +119,16 @@ def tick(entity):
 		entity['velocity'][1] = -entity['velocity'][1]
 		
 		entities.trigger_event(entity, 'hit_edge')
+	
+	if levels.is_solid(int(round(entity['position'][0]))+50, int(round(entity['position'][1]))):
+		entity['velocity'][0] = -entity['velocity'][0]
+	elif levels.is_solid(int(round(entity['position'][0]-50)), int(round(entity['position'][1]))):
+		entity['velocity'][0] = -entity['velocity'][0]
+	
+	if levels.is_solid(int(round(entity['position'][0])), int(round(entity['position'][1]))+50):
+		entity['velocity'][1] = -entity['velocity'][1]
+	elif levels.is_solid(int(round(entity['position'][0])), int(round(entity['position'][1]))-50):
+		entity['velocity'][1] = -entity['velocity'][1]
 	
 	_position_change = [entity['position'][0]-entity['last_position'][0],
 	                    entity['position'][1]-entity['last_position'][1]]

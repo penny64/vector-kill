@@ -29,7 +29,7 @@ def create(x, y, direction, speed, sprite_name, owner_id, damage=3, life=30, tur
 	_entity['owner_id'] = owner_id
 	_entity['damage'] = damage
 	_entity['damage_radius'] = radius
-	_entity['enemy_sprite_groups'] = [name for name in entities.GROUPS if not name in entities.get_entity(_entity['owner_id'])['_groups'] and not name in ['effects', 'bullets', 'weapons']]
+	_entity['enemy_sprite_groups'] = [name for name in entities.GROUPS if not name in entities.get_entity(_entity['owner_id'])['_groups'] and not name in ['effects', 'bullets', 'weapons', 'tiles_foreground']]
 	
 	return _entity
 

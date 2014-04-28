@@ -59,6 +59,13 @@ def delete_entity(entity):
 	
 	ENTITIES_TO_DELETE.add(entity['_id'])
 
+def delete_entity_via_id(entity_id):
+	if not entity_id in ENTITIES:
+		
+		return False
+	
+	ENTITIES_TO_DELETE.add(entity_id)
+
 def get_entity(entity_id):
 	return ENTITIES[entity_id]
 
