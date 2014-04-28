@@ -52,7 +52,7 @@ def on_mouse_press(x, y, button, modifiers):
 	if button == 1 and not MAP[_chunk_key]['solid']:
 		_tile = entities.create_entity('tiles_foreground')
 		sprites.register_entity(_tile, 'tiles_foreground', 'wall_full.png')
-		movement.register_entity(_tile, x=(_x/100)*100, y=(_y/100)*100)
+		movement.register_entity(_tile, x=(_y/100)*100, y=(_x/100)*100)
 		_tile['sprite'].image.anchor_x = 0
 		_tile['sprite'].image.anchor_y = 0
 		

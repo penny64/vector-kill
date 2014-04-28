@@ -122,13 +122,26 @@ def tick(entity):
 	
 	if levels.is_solid(int(round(entity['position'][0]))+50, int(round(entity['position'][1]))):
 		entity['velocity'][0] = -entity['velocity'][0]
+		entities.trigger_event(entity, 'hit_edge')
 	elif levels.is_solid(int(round(entity['position'][0]-50)), int(round(entity['position'][1]))):
 		entity['velocity'][0] = -entity['velocity'][0]
+		entities.trigger_event(entity, 'hit_edge')
+	
+	#if levels.is_solid(int(round(entity['position'][0]))+50, int(round(entity['position'][1])))+50:
+	#	entity['velocity'][0] = -entity['velocity'][0]
+	#	entity['velocity'][1] = -entity['velocity'][1]
+	#	entities.trigger_event(entity, 'hit_edge')
+	#elif levels.is_solid(int(round(entity['position'][0]))-50, int(round(entity['position'][1])))+50:
+	#	entity['velocity'][0] = -entity['velocity'][0]
+	#	entity['velocity'][1] = -entity['velocity'][1]
+	#	entities.trigger_event(entity, 'hit_edge')
 	
 	if levels.is_solid(int(round(entity['position'][0])), int(round(entity['position'][1]))+50):
 		entity['velocity'][1] = -entity['velocity'][1]
+		entities.trigger_event(entity, 'hit_edge')
 	elif levels.is_solid(int(round(entity['position'][0])), int(round(entity['position'][1]))-50):
 		entity['velocity'][1] = -entity['velocity'][1]
+		entities.trigger_event(entity, 'hit_edge')
 	
 	_position_change = [entity['position'][0]-entity['last_position'][0],
 	                    entity['position'][1]-entity['last_position'][1]]
