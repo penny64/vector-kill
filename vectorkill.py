@@ -35,6 +35,7 @@ def main():
 	events.register_event('boot', ui.boot)
 	events.register_event('boot', menu.boot)
 	events.register_event('boot', battlefield.boot)
+	events.register_event('boot', clock.boot)
 	events.register_event('load', display.load)
 	events.register_event('load', display.load)
 	events.register_event('load', levels.load)

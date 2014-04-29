@@ -34,7 +34,6 @@ def create(world_name):
 		events.register_event('draw', sprites.draw)
 
 def get_interp():
-	print clock.get_dt('world_loop')
 	return clock.get_dt('world_loop')/.0500059127808
 	#_world = WORLDS[ACTIVE_WORLD]
 	
