@@ -8,6 +8,7 @@ import display
 import events
 import worlds
 import levels
+import clock
 import menu
 import ui
 
@@ -18,7 +19,7 @@ import sys
 def loop(dt):
 	display.set_clock_delta(dt)
 	
-	events.trigger_event('loop')
+	#events.trigger_event('loop')
 
 def window(dt):
 	display.set_caption('%s - %ifps - %stps - %s' % ('vector:kill: SUICIDE SHIPS',
@@ -34,18 +35,21 @@ def main():
 	events.register_event('boot', ui.boot)
 	events.register_event('boot', menu.boot)
 	events.register_event('boot', battlefield.boot)
-	events.register_event('loop', controls.loop)
 	events.register_event('load', display.load)
 	events.register_event('load', display.load)
 	events.register_event('load', levels.load)
+	events.register_event('loop', clock.tick)
+	events.register_event('loop', controls.loop)
 	events.register_event('shutdown', display.shutdown)
 	
 	events.trigger_event('boot')
 	events.trigger_event('load')
 	
-	pyglet.clock.schedule_interval(loop, 1/display.get_max_fps())
-	pyglet.clock.schedule_interval(window, 1/10.0)
-	pyglet.clock.schedule_interval(worlds.loop, 1/display.get_tps())
+	clock.create_scheduled_event('core_loop', loop, 1/display.get_max_fps())
+	clock.create_scheduled_event('world_loop', worlds.loop, 1/display.get_tps())
+	clock.create_scheduled_event('window_loop', window, 1/10.0)
+	#pyglet.clock.schedule_interval(window, 1/10.0)
+	#pyglet.clock.schedule_interval(worlds.loop, 1/display.get_tps())
 	
 	if display.RABBYT:
 		while not display.WINDOW.has_exit:
@@ -54,7 +58,12 @@ def main():
 			display.WINDOW.dispatch_event('on_draw')
 			display.WINDOW.flip()
 	else:
-		pyglet.app.run()
+		#pyglet.app.run()
+		while not display.WINDOW.has_exit:
+			events.trigger_event('loop')
+			display.WINDOW.dispatch_events()
+			display.WINDOW.dispatch_event('on_draw')
+			display.WINDOW.flip()
 
 if __name__ == '__main__':
 	if '--debug' in sys.argv:

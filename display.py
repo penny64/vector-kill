@@ -25,7 +25,7 @@ TEXT_GROUPS = {}
 LABEL_ID = 1
 WINDOW = pyglet.window.Window(width=1280, height=720, vsync=False)
 DT = 1.0
-FPS = 120
+FPS = 60
 TPS = 120
 LEVEL_GRID = []
 CAMERA = {'center_on': [0, 0],

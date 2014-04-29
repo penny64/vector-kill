@@ -2,6 +2,7 @@ import display
 import numbers
 import sprites
 import events
+import clock
 import time
 import os
 
@@ -33,9 +34,11 @@ def create(world_name):
 		events.register_event('draw', sprites.draw)
 
 def get_interp():
-	_world = WORLDS[ACTIVE_WORLD]
+	print clock.get_dt('world_loop')
+	return clock.get_dt('world_loop')/.0500059127808
+	#_world = WORLDS[ACTIVE_WORLD]
 	
-	return numbers.clip((get_time()-_world['last_tick'])/float(_world['next_tick']-_world['last_tick']), 0, 1.0)
+	#return numbers.clip((get_time()-_world['last_tick'])/float(_world['next_tick']-_world['last_tick']), 0, 1.0)
 
 def get_size():
 	return WORLDS[ACTIVE_WORLD]['size']
