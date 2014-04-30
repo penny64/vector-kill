@@ -71,6 +71,7 @@ def on_draw():
 	events.trigger_event('camera')
 	
 	CAMERA['center_on'] = numbers.interp_velocity(CAMERA['center_on'], CAMERA['next_center_on'], CAMERA['camera_move_speed'])
+	CAMERA['next_zoom'] = numbers.clip(CAMERA['next_zoom'], .4, 40)
 	CAMERA['zoom'] = numbers.interp(CAMERA['zoom'], CAMERA['next_zoom'], CAMERA['zoom_speed'])
 	
 	#glOrtho(CAMERA['center_on'][0]-(_window_width*(.5*CAMERA['zoom']*.9)),

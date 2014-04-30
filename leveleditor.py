@@ -73,7 +73,10 @@ def on_mouse_drag(x, y, dx, dy, button, modifiers):
 
 @display.WINDOW.event
 def on_mouse_motion(x, y, dx, dy):
-	entities.trigger_event(CURSOR, 'set_position', x=CURSOR['position'][0]+dx, y=CURSOR['position'][1]-dy)
+	entities.trigger_event(CURSOR,
+	                       'set_position',
+	                       x=CURSOR['position'][0]+(dx*display.CAMERA['zoom']),
+	                       y=CURSOR['position'][1]-(dy*display.CAMERA['zoom']))
 
 def cursor():
 	global CURSOR
