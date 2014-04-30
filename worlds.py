@@ -34,7 +34,6 @@ def create(world_name):
 		events.register_event('draw', sprites.draw)
 
 def get_interp():
-	#return clock.get_dt('world_loop')/.0500059127808
 	_world = WORLDS[ACTIVE_WORLD]
 	
 	return numbers.clip((get_time()-_world['last_tick'])/float(_world['next_tick']-_world['last_tick']), 0, 1.0)
@@ -47,8 +46,7 @@ def register_entity(entity):
 	
 	#WORLDS[ACTIVE_WORLD]['entities'].append(entity['_id'])
 
-def loop(dt):
-	#TODO: time.time() on Linux!
+def logic():
 	_time = get_time()
 	_world = WORLDS[ACTIVE_WORLD]
 	_world['last_tick'] = _time
