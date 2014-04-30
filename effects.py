@@ -8,7 +8,7 @@ import events
 import random
 
 
-def create_particle(x, y, sprite_name, background=True, scale=1, rotation=0, friction=0, scale_min=0.15, scale_max=5, direction=0, speed=0, scale_rate=1.0, fade_rate=1.0, spin=0, flashes=-1, flash_chance=0, streamer=False, streamer_chance=0.3, swerve_rate=0, swerve_speed=25):
+def create_particle(x, y, sprite_name, background=True, scale=1, rotation=0, friction=0, scale_min=0.15, scale_max=5, direction=0, speed=0, scale_rate=1.0, fade_rate=1.0, spin=0, flashes=-1, flash_chance=0, streamer=False, streamer_chance=0.3, swerve_rate=0, swerve_speed=25, force_smooth_draw=False):
 	_entity = entities.create_entity()
 	_entity['scale_rate'] = scale_rate
 	_entity['scale_min'] = scale_min
@@ -33,7 +33,7 @@ def create_particle(x, y, sprite_name, background=True, scale=1, rotation=0, fri
 	entities.trigger_event(_entity, 'set_speed', speed=speed)
 	entities.trigger_event(_entity, 'thrust')
 	
-	if _entity['speed']:
+	if _entity['speed'] or force_smooth_draw:
 		_smooth_draw = True
 	else:
 		_smooth_draw = False
@@ -68,7 +68,7 @@ def create_image(x, y, sprite_name, parent_entity=None, rotate_by=0, rotate_with
 	_entity['rotate_with_parent'] = rotate_with_parent
 	
 	movement.register_entity(_entity, x=x, y=y, no_tick=True)
-	entities.register_event(_entity, 'tick', tick_image)
+	entities.register_event(_entity, 'loop', tick_image)
 	
 	if parent_entity:
 		entities.register_event(parent_entity, 'delete', lambda parent_entity: entities.delete_entity(_entity))
@@ -140,7 +140,7 @@ def tick_particle(particle):
 def tick_image(image):
 	if image['parent_entity']:
 		_parent_entity = entities.get_entity(image['parent_entity'])
-		image['position'] = _parent_entity['position']
+		entities.trigger_event(image, 'set_position', x=_parent_entity['position'][0], y=_parent_entity['position'][1])
 		
 		if image['rotate_with_parent']:
 			entities.trigger_event(image, 'set_rotation', degrees=_parent_entity['direction'])

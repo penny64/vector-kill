@@ -43,7 +43,7 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	return _soldier
 
 def create_energy_ship():
-	_entity = create(group='players', sprite_name='ball.png', acceleration=.05, turn_rate=0.3, death_time=35, hp=30)
+	_entity = create(group='players', sprite_name='ball.png', acceleration=.05, max_velocity=30, turn_rate=0.3, death_time=35, hp=30)
 	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, tracking=True)['_id']
 	#_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=2, recoil_time=0, reload_time=1, speed=125, missile=False, bullet=True, damage_radius=150)['_id']
 	
@@ -53,7 +53,7 @@ def create_energy_ship():
 	return _entity
 
 def create_flea(x=0, y=0):
-	_entity = create(sprite_name='diamond_body.png', group='enemies', x=x, y=y, acceleration=.2, speed=5, turn_rate=0.8)
+	_entity = create(sprite_name='diamond_body.png', group='enemies', x=x, y=y, acceleration=.4, speed=30, max_velocity=30, turn_rate=0.8)
 	_entity['current_target'] = None
 	_entity['fire_rate'] = 0
 	_entity['fire_rate_max'] = 20
@@ -78,7 +78,7 @@ def create_flea(x=0, y=0):
 	return _entity
 
 def create_eyemine(x=0, y=0):
-	_entity = create(x=x, y=y, group='hazards', sprite_name='eyemine_body.png', speed=25, acceleration=0.1, max_velocity=25)
+	_entity = create(x=x, y=y, group='hazards', sprite_name='eyemine_body.png', speed=35, acceleration=0.1, max_velocity=35)
 	effects.create_image(_entity['position'][0],
 	                     _entity['position'][1],
 	                     'eyemine_subbody.png',
@@ -159,7 +159,7 @@ def tick_energy_ship(entity):
 		effects.create_particle(entity['position'][0]+_displace[0],
 		                        entity['position'][1]+_displace[1],
 		                        'streamer.png',
-		                        scale_rate=.9,
+		                        scale_rate=.75,
 		                        speed=-entity['current_speed'],
 		                        friction=0.1,
 		                        direction=_effect_direction+random.randint(-5, 5),

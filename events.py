@@ -6,7 +6,8 @@ EVENTS = {'BOOT': {'events': {}, 'id': 1, 'banned': set()},
           'TICK': {'events': {}, 'id': 1, 'banned': set()},
           'DRAW': {'events': {}, 'id': 1, 'banned': set()},
           'CLEANUP': {'events': {}, 'id': 1, 'banned': set()},
-          'SHUTDOWN': {'events': {}, 'id': 1, 'banned': set()}}
+          'SHUTDOWN': {'events': {}, 'id': 1, 'banned': set()},
+          'FRAME': {'events': {}, 'id': 1, 'banned': set()}}
 
 
 def register_event(event_name, callback, *args, **kargs):

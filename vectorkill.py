@@ -16,12 +16,7 @@ import cProfile
 import sys
 
 
-def loop(dt):
-	display.set_clock_delta(dt)
-	
-	#events.trigger_event('loop')
-
-def window(dt):
+def window():
 	display.set_caption('%s - %ifps - %stps - %s' % ('vector:kill: SUICIDE SHIPS',
 	                                                 round(display.get_fps()),
 	                                                 entities.TICKS_PER_SECOND,
@@ -41,12 +36,12 @@ def main():
 	events.register_event('load', levels.load)
 	events.register_event('loop', clock.tick)
 	events.register_event('loop', controls.loop)
+	events.register_event('frame', window)
 	events.register_event('shutdown', display.shutdown)
 	
 	events.trigger_event('boot')
 	events.trigger_event('load')
 	
-	clock.create_scheduled_event('core_loop', loop, 1/display.get_max_fps())
 	clock.create_scheduled_event('world_loop', worlds.loop, 1/display.get_tps())
 	clock.create_scheduled_event('window_loop', window, 1/10.0)
 	#pyglet.clock.schedule_interval(window, 1/10.0)

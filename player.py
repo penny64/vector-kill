@@ -25,31 +25,32 @@ def handle_input(entity_id):
 		
 		return False
 	
+	_move_speed = 17
 	_entity = entities.get_entity(entity_id)
 	
 	if controls.key_pressed_ord(controls.NUM_1) or controls.key_held_ord(controls.NUM_1):
-		entities.trigger_event(_entity, 'accelerate', velocity=[-8, 8])
+		entities.trigger_event(_entity, 'accelerate', velocity=[-_move_speed, _move_speed])
 	
 	if controls.key_pressed_ord(controls.NUM_2) or controls.key_held_ord(controls.NUM_2):
-		entities.trigger_event(_entity, 'accelerate', velocity=[0, 8])
+		entities.trigger_event(_entity, 'accelerate', velocity=[0, _move_speed])
 	
 	if controls.key_pressed_ord(controls.NUM_3) or controls.key_held_ord(controls.NUM_3):
-		entities.trigger_event(_entity, 'accelerate', velocity=[8, 8])
+		entities.trigger_event(_entity, 'accelerate', velocity=[_move_speed, _move_speed])
 	
 	if controls.key_pressed_ord(controls.NUM_4) or controls.key_held_ord(controls.NUM_4):
-		entities.trigger_event(_entity, 'accelerate', velocity=[-8, 0])
+		entities.trigger_event(_entity, 'accelerate', velocity=[-_move_speed, 0])
 	
 	if controls.key_pressed_ord(controls.NUM_6) or controls.key_held_ord(controls.NUM_6):
-		entities.trigger_event(_entity, 'accelerate', velocity=[8, 0])
+		entities.trigger_event(_entity, 'accelerate', velocity=[_move_speed, 0])
 	
 	if controls.key_pressed_ord(controls.NUM_7) or controls.key_held_ord(controls.NUM_7):
-		entities.trigger_event(_entity, 'accelerate', velocity=[-8, -8])
+		entities.trigger_event(_entity, 'accelerate', velocity=[-_move_speed, -_move_speed])
 	
 	if controls.key_pressed_ord(controls.NUM_8) or controls.key_held_ord(controls.NUM_8):
-		entities.trigger_event(_entity, 'accelerate', velocity=[0, -8])
+		entities.trigger_event(_entity, 'accelerate', velocity=[0, -_move_speed])
 	
 	if controls.key_pressed_ord(controls.NUM_9) or controls.key_held_ord(controls.NUM_9):
-		entities.trigger_event(_entity, 'accelerate', velocity=[8, -8])
+		entities.trigger_event(_entity, 'accelerate', velocity=[_move_speed, -_move_speed])
 	
 	if controls.key_held('q'):
 		entities.trigger_event(_entity, 'shoot')
