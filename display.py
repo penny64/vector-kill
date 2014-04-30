@@ -122,10 +122,10 @@ def load(level_editor=False):
 	global LEVEL_GRID
 	
 	for i in range((worlds.get_size()[0]/100)+1):
-		LEVEL_GRID.extend((100*i, 0, 100*i, worlds.get_size()[1]))
+		LEVEL_GRID.extend((100*i, (100*7), 100*i, (100*7)+worlds.get_size()[1]))
 	
 	for i in range((worlds.get_size()[1]/100)+1):
-		LEVEL_GRID.extend((0, 100*i, worlds.get_size()[1], 100*i))
+		LEVEL_GRID.extend((0, (100*7)+100*i, worlds.get_size()[1], (100*7)+100*i))
 
 def shutdown():
 	pyglet.app.exit()

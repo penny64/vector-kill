@@ -44,7 +44,7 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 
 def create_energy_ship():
 	_entity = create(group='players', sprite_name='ball.png', acceleration=.05, max_velocity=30, turn_rate=0.3, death_time=35, hp=30)
-	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, tracking=True)['_id']
+	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, speed=60, tracking=True)['_id']
 	#_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=2, recoil_time=0, reload_time=1, speed=125, missile=False, bullet=True, damage_radius=150)['_id']
 	
 	entities.register_event(_entity, 'tick', tick_energy_ship)
@@ -57,7 +57,7 @@ def create_flea(x=0, y=0):
 	_entity['current_target'] = None
 	_entity['fire_rate'] = 0
 	_entity['fire_rate_max'] = 20
-	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=3, recoil_time=15, tracking=False)['_id']
+	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=3, recoil_time=15, speed=30, tracking=False)['_id']
 	
 	effects.create_image(_entity['position'][0],
 	                     _entity['position'][1],

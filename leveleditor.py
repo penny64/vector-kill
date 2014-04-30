@@ -29,10 +29,6 @@ def boot():
 	display.create_sprite_group('ui_foreground')
 	cursor()
 
-def loop(dt):
-	display.set_clock_delta(dt)
-	events.trigger_event('loop')
-
 def commands():
 	global MAP
 	
@@ -52,7 +48,7 @@ def on_mouse_press(x, y, button, modifiers):
 	if button == 1 and not MAP[_chunk_key]['solid']:
 		_tile = entities.create_entity('tiles_foreground')
 		sprites.register_entity(_tile, 'tiles_foreground', 'wall_full.png')
-		movement.register_entity(_tile, x=(_y/100)*100, y=(_x/100)*100)
+		movement.register_entity(_tile, x=(_x/100)*100, y=(_y/100)*100)
 		_tile['sprite'].image.anchor_x = 0
 		_tile['sprite'].image.anchor_y = 0
 		
@@ -77,7 +73,6 @@ def on_mouse_drag(x, y, dx, dy, button, modifiers):
 
 @display.WINDOW.event
 def on_mouse_motion(x, y, dx, dy):
-	#pass
 	entities.trigger_event(CURSOR, 'set_position', x=CURSOR['position'][0]+dx, y=CURSOR['position'][1]-dy)
 
 def cursor():
@@ -110,17 +105,15 @@ def main():
 	events.register_event('boot', boot)
 	events.register_event('boot', ui.boot)
 	events.register_event('boot', controls.boot, display.get_window())
+	events.register_event('load', display.load, level_editor=False)
 	events.register_event('input', commands)
 	events.register_event('loop', controls.loop)
-	events.register_event('load', display.load, level_editor=False)
+	events.register_event('logic', worlds.logic)
+	events.register_event('frame', window)
 	events.register_event('shutdown', display.shutdown)
 	
 	events.trigger_event('boot')
 	events.trigger_event('load')
-	
-	pyglet.clock.schedule_interval(loop, 1/display.get_max_fps())
-	pyglet.clock.schedule_interval(window, 1/10.0)
-	pyglet.clock.schedule_interval(worlds.loop, 1/display.get_tps())
 	
 	if display.RABBYT:
 		while not display.WINDOW.has_exit:
@@ -129,7 +122,11 @@ def main():
 			display.WINDOW.dispatch_event('on_draw')
 			display.WINDOW.flip()
 	else:
-		pyglet.app.run()
+		while not display.WINDOW.has_exit:
+			events.trigger_event('loop')
+			display.WINDOW.dispatch_events()
+			display.WINDOW.dispatch_event('on_draw')
+			display.WINDOW.flip()
 
 if __name__ == '__main__':
 	if '--debug' in sys.argv:
