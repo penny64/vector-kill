@@ -120,6 +120,7 @@ def tick_particle(particle):
 		                          _image,
 		                          background=particle['background'],
 		                          direction=particle['direction'],
+		                          rotation=particle['direction'],
 		                          scale=particle['sprite'].scale,
 		                          scale_min=particle['scale_min'],
 		                          scale_rate=particle['scale_rate'])

@@ -133,20 +133,16 @@ def tick_drunk(bullet):
 
 def tick_track(bullet):
 	if bullet['target_id']:
-		_target_pos = entities.get_entity(bullet['target_id'])['position']
-		_direction_to = numbers.direction_to(bullet['position'], _target_pos)
-		_degrees_to = abs(bullet['direction']-_direction_to)
+		_target = entities.get_entity(bullet['target_id'])
+		_direction_to = numbers.direction_to(bullet['position'], _target['position'])
+		_degrees_to = bullet['direction']-_direction_to
 		
 		if _degrees_to>=180:
 			_direction_to += 360
 		
 		_new_direction = numbers.interp(bullet['direction'], _direction_to, bullet['turn_rate'])
-		_direction_difference = abs(bullet['direction']-_new_direction)
-		_speed = 60*numbers.clip(1-(numbers.distance(bullet['position'], _target_pos)/1100), 0.3, 1.0)
-		
 		bullet['direction'] = _new_direction
-		bullet['velocity'] = numbers.velocity(bullet['direction'], _speed)
-		entities.trigger_event(bullet, 'set_rotation', degrees=bullet['direction'])
+		entities.trigger_event(bullet, 'thrust')
 
 def hit_missile(bullet, target_id):
 	for i in range(random.randint(2, 3)):
