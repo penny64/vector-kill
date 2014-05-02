@@ -74,15 +74,6 @@ def on_draw():
 	CAMERA['next_zoom'] = numbers.clip(CAMERA['next_zoom'], .4, 40)
 	CAMERA['zoom'] = numbers.interp(CAMERA['zoom'], CAMERA['next_zoom'], CAMERA['zoom_speed'])
 	
-	#glOrtho(CAMERA['center_on'][0]-(_window_width*(.5*CAMERA['zoom']*.9)),
-	#        CAMERA['center_on'][0]+(_window_width*(.5*CAMERA['zoom']*.9)),
-	#        CAMERA['center_on'][1]+(_window_height*(.5*CAMERA['zoom']*.9))+_window_height,
-	#        CAMERA['center_on'][1]-(_window_height*(.5*CAMERA['zoom']*.9))+_window_height, 0.0, 1.0)
-	
-	#events.trigger_event('draw')
-	#glPopMatrix()
-	#glPushMatrix()
-	
 	glOrtho(CAMERA['center_on'][0]-(_window_width*(.5*CAMERA['zoom'])),
 	        CAMERA['center_on'][0]+(_window_width*(.5*CAMERA['zoom'])),
 	        CAMERA['center_on'][1]+(_window_height*(.5*CAMERA['zoom']))+_window_height,
@@ -224,9 +215,10 @@ def delete_sprite(entity):
 	
 	SPRITE_GROUPS[entity['sprite_group']]['sprites'].remove(entity['sprite'])
 	entity['sprite_group'] = None
+	entity['sprite'].delete()
 	
-	if not RABBYT:
-		entity['sprite'].delete()
+	#if not RABBYT:
+	#	entity['sprite'].delete()
 
 def draw_sprite_group(group_name):
 	SPRITE_GROUPS[group_name]['batch'].draw()

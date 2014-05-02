@@ -1,5 +1,6 @@
 import movement
 import entities
+import display
 import weapons
 import numbers
 import sprites
@@ -30,6 +31,7 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	entities.create_event(_soldier, 'hit')
 	entities.create_event(_soldier, 'kill')
 	entities.create_event(_soldier, 'score')
+	entities.create_event(_soldier, 'dying')
 	entities.create_event(_soldier, 'explode')
 	entities.register_event(_soldier, 'tick', tick)
 	entities.register_event(_soldier, 'kill', destroy)
@@ -43,7 +45,7 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	return _soldier
 
 def create_energy_ship():
-	_entity = create(group='players', sprite_name='ball.png', acceleration=.05, max_velocity=30, turn_rate=0.3, death_time=35, hp=30)
+	_entity = create(group='players', sprite_name='ball.png', acceleration=.1, max_velocity=30, turn_rate=0.3, death_time=35, hp=30)
 	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, speed=60, tracking=True)['_id']
 	#_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=2, recoil_time=0, reload_time=1, speed=125, missile=False, bullet=True, damage_radius=150)['_id']
 	
@@ -131,6 +133,31 @@ def create_gun_turret(x=0, y=0):
 	
 	entities.register_event(_entity, 'shoot', lambda entity: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot'))
 	entities.register_event(_entity, 'tick', tick_turret)
+	
+	return _entity
+
+def create_ivan(x=0, y=0):
+	_entity = create(sprite_name='boss1.png', group='enemies', x=x, y=y, acceleration=.4, speed=3, max_velocity=3, turn_rate=0.8, death_time=40)
+	_entity['current_target'] = None
+	_entity['fire_rate'] = 0
+	_entity['fire_rate_max'] = 20
+	_entity['weapon_id'] = weapons.create(_entity['_id'],
+	                                      rounds=25,
+	                                      recoil_time=1,
+	                                      reload_time=30,
+	                                      damage_radius=40,
+	                                      speed=140,
+	                                      missile=False,
+	                                      bullet=True)['_id']
+	
+	entities.register_event(_entity, 'moved', set_direction)
+	entities.register_event(_entity, 'tick', tick_energy_ship)
+	entities.register_event(_entity, 'tick', tick_flea)
+	entities.register_event(_entity, 'tick', tick_turret)
+	entities.register_event(_entity, 'kill', boss_victory)
+	entities.register_event(_entity, 'dying', boss_dying)
+	entities.register_event(_entity, 'explode', boss_explode)
+	entities.register_event(_entity, 'shoot', lambda entity: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot'))
 	
 	return _entity
 
@@ -227,15 +254,7 @@ def destroy(entity):
 		                                  scale_rate=1.1)
 		entities.delete_entity(entity)
 	
-	#if not random.randint(0, 7):
-	#	_effect = effects.create_particle(entity['position'][0]+random.randint(-50, 50),
-	#	                                  entity['position'][1]+random.randint(-50, 50),
-	#	                                  'smoke.png',
-	#	                                  background=True,
-	#	                                  scale=random.uniform(.5, 1.1),
-	#	                                  scale_min=0.05,
-	#	                                  scale_rate=.9,
-	#	                                  friction=0.3)
+	entities.trigger_event(entity, 'dying')
 	
 	if random.randint(0, 3):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
@@ -249,18 +268,6 @@ def destroy(entity):
 		                                  speed=entity['current_speed']*.9)
 
 def explode(entity):
-	#if not random.randint(0, 3):
-	#	_effect = effects.create_particle(entity['position'][0]+random.randint(-50, 50),
-	#	                                  entity['position'][1]+random.randint(-50, 50),
-	#	                                  'smoke.png',
-	#	                                  background=True,
-	#	                                  scale=random.uniform(.5, 1.3),
-	#	                                  scale_min=0.1,
-	#	                                  scale_rate=.9,
-	#	                                  fade_rate=.9,
-	#	                                  friction=0.1,
-	#	                                  streamer=True)
-	
 	for i in range(random.randint(0, 3)+('player' in entity)*2):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
 		                                  entity['position'][1]+random.randint(-20, 20),
@@ -275,6 +282,69 @@ def explode(entity):
 		                                  streamer=True,
 		                                  streamer_chance=.8,
 		                                  swerve_rate=15)
+
+def boss_dying(entity):
+	if random.randint(0, 3):
+		_effect = effects.create_particle(entity['position'][0]+random.randint(-190, 190),
+			                              entity['position'][1]+random.randint(-190, 190),
+			                              'explosion.png',
+			                              background=False,
+			                              scale=random.uniform(.5, 1.3),
+			                              flashes=random.randint(10, 15),
+			                              flash_chance=0.85,
+			                              direction=entity['direction']+random.randint(-90, 90),
+			                              speed=entity['current_speed']*.9)
+	
+	if not random.randint(0, 5):
+		_effect = effects.create_particle(entity['position'][0]+random.randint(-50, 50),
+		                                  entity['position'][1]+random.randint(-50, 50),
+		                                  'explosion.png',
+		                                  background=True,
+		                                  scale=random.uniform(1.0, 1.3),
+		                                  scale_min=0.05,
+		                                  scale_rate=.91,
+		                                  friction=0,
+		                                  speed=80,
+		                                  direction=random.randint(0, 359),
+		                                  streamer=True,
+		                                  streamer_chance=.8,
+		                                  swerve_rate=15)
+
+def boss_explode(entity):
+	for i in range(random.randint(3, 6)):
+		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
+		                                  entity['position'][1]+random.randint(-20, 20),
+		                                  'explosion.png',
+		                                  background=False,
+		                                  scale=random.uniform(.5, 1.3),
+		                                  flashes=random.randint(10, 15),
+		                                  flash_chance=0.85,
+		                                  direction=entity['direction']+random.randint(-90, 90),
+		                                  speed=entity['current_speed']*.9)
+	
+	for i in range(random.randint(6, 8)):
+		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),
+		                                  entity['position'][1]+random.randint(-20, 20),
+		                                  'explosion.png',
+		                                  background=True,
+		                                  scale=random.uniform(1.0, 1.3),
+		                                  scale_min=0.05,
+		                                  scale_rate=.91,
+		                                  friction=0,
+		                                  speed=80,
+		                                  direction=random.randint(0, 359),
+		                                  streamer=True,
+		                                  streamer_chance=.8,
+		                                  swerve_rate=15)
+
+def boss_victory(entity, victory_text='Boss Defeated'):
+	display.print_text(display.get_window_size()[0]/2,
+	                   display.get_window_size()[1]*.6,
+	                   victory_text,
+	                   color=(255, 255, 255, 255),
+	                   show_for=1.5,
+	                   font_size=42,
+	                   center=True)
 
 def damage(entity, damage, target_id):
 	entity['hp'] -= damage

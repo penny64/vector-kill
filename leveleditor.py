@@ -46,7 +46,7 @@ def on_mouse_press(x, y, button, modifiers):
 	MOUSE_BUTTONS[button] = 1
 	
 	if button == 1 and not MAP[_chunk_key]['solid']:
-		_tile = entities.create_entity('tiles_foreground')
+		_tile = entities.create_entity(group='tiles_foreground')
 		sprites.register_entity(_tile, 'tiles_foreground', 'wall_full.png')
 		movement.register_entity(_tile, x=(_x/100)*100, y=(_y/100)*100)
 		_tile['sprite'].image.anchor_x = 0
@@ -57,6 +57,7 @@ def on_mouse_press(x, y, button, modifiers):
 	elif button == 4 and MAP[_chunk_key]['solid']:
 		MAP[_chunk_key]['solid'] = False
 		entities.delete_entity(entities.get_entity(MAP[_chunk_key]['tile']))
+		del MAP[_chunk_key]['tile']
 
 @display.WINDOW.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):

@@ -79,6 +79,13 @@ def create_player():
 def spawn_enemies():
 	global LEVEL
 	
+	if LEVEL == 5:
+		ships.create_ivan(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
+		
+		LEVEL += 1
+		
+		return False
+	
 	if not LEVEL % 4:
 		for i in range(1*(LEVEL-1)):
 			ships.create_flea(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
