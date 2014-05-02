@@ -10,6 +10,8 @@ import random
 
 LEVEL = 1
 NOTERIETY = 0
+TRANSITION_PAUSE = 0
+ANNOUNCE = True
 
 
 def boot():
@@ -77,11 +79,13 @@ def create_player():
 	entities.register_event(_player, 'delete', player.delete)
 
 def spawn_enemies():
-	global LEVEL
+	global TRANSITION_PAUSE, ANNOUNCE, LEVEL
 	
 	if LEVEL == 5:
 		ships.create_ivan(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
 		
+		TRANSITION_PAUSE = 240
+		ANNOUNCE = True
 		LEVEL += 1
 		
 		return False
@@ -90,6 +94,8 @@ def spawn_enemies():
 		for i in range(1*(LEVEL-1)):
 			ships.create_flea(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
 		
+		TRANSITION_PAUSE = 120
+		ANNOUNCE = True
 		LEVEL += 1
 		
 		return False
@@ -132,6 +138,7 @@ def spawn_enemies():
 				entities.trigger_event(_turret, 'thrust')
 	
 	if 1*(LEVEL-1):
+		display.clear_text_group('bot_center')
 		display.print_text(display.get_window_size()[0]/2,
 		                   display.get_window_size()[1]*.95,
 		                   'ENEMY FIGHTERS INBOUND',
@@ -141,11 +148,29 @@ def spawn_enemies():
 		                   center=True)
 	
 	LEVEL += 1
+	ANNOUNCE = True
+	TRANSITION_PAUSE = 120
 
 def loop():
-	global NOTERIETY
+	global TRANSITION_PAUSE, ANNOUNCE, NOTERIETY
 	
 	if entities.get_entity_group('players') and not entities.get_entity_group('enemies') and not entities.get_entity_group('hazards'):
+		if TRANSITION_PAUSE:
+			if ANNOUNCE:
+				ANNOUNCE = False
+				
+				display.print_text(display.get_window_size()[0]/2,
+				                   display.get_window_size()[1]*.95,
+				                   'WAVE CLEARED',
+				                   color=(200, 200, 200, 255),
+				                   text_group='bot_center',
+				                   show_for=2,
+				                   center=True)
+			
+			TRANSITION_PAUSE -= 1
+			
+			return False
+		
 		NOTERIETY += LEVEL
 		spawn_enemies()
 
