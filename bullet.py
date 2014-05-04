@@ -143,13 +143,6 @@ def tick_track(bullet):
 		elif (_degrees_to > 0 and abs(_degrees_to) > 180) or (_degrees_to < 0 and abs(_degrees_to) <= 180):
 			bullet['direction'] += 12
 		
-		#if float(_degrees_to)>0 ^ abs(_degrees_to) > 180:
-		#	bullet['direction'] -= 30
-		#else:
-		#	bullet['direction'] += 30
-		#_new_direction = numbers.interp(_current_direction, _direction_to, bullet['turn_rate'])
-		
-		#bullet['direction'] = _new_direction
 		entities.trigger_event(bullet, 'thrust')
 
 def hit_missile(bullet, target_id):

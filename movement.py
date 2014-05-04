@@ -61,6 +61,8 @@ def set_speed(entity, speed):
 	entity['speed'] = speed
 
 def set_position(entity, x, y):
+	entity['last_position'][0] = x
+	entity['last_position'][1] = y
 	entity['position'][0] = x
 	entity['position'][1] = y
 

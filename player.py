@@ -5,6 +5,7 @@ import display
 import numbers
 import bullet
 import events
+import clock
 import menu
 import ai
 
@@ -66,6 +67,9 @@ def handle_camera(entity_id):
 		display.CAMERA['zoom_speed'] = .005
 		display.CAMERA['next_zoom'] = 4.5
 		
+		return False
+	
+	if not clock.is_ticking():
 		return False
 	
 	_player = entities.get_entity(entity_id)

@@ -103,7 +103,7 @@ def boot():
 	
 	set_fps(FPS)
 	set_tps(TPS)
-	events.register_event('tick', tick)
+	events.register_event('loop', loop)
 	pyglet.font.add_file('thin_design.ttf')
 	WINDOW.set_exclusive_mouse()
 
@@ -250,7 +250,14 @@ def print_text(x, y, text, text_group=None, font_name=None, font_size=None, colo
 	LABELS[str(LABEL_ID)] = _label
 	LABEL_ID += 1
 
-def tick():
+def camera_focus_on(position):
+	CAMERA['next_center_on'][0] = position[0]
+	CAMERA['next_center_on'][1] = position[1]
+
+def camera_zoom(zoom):
+	CAMERA['next_zoom'] = zoom
+
+def loop():
 	_remove_labels = []
 	
 	for label in LABELS.values():

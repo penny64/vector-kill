@@ -4,6 +4,7 @@ import player
 import events
 import worlds
 import ships
+import clock
 
 import random
 
@@ -82,7 +83,13 @@ def spawn_enemies():
 	global TRANSITION_PAUSE, ANNOUNCE, LEVEL
 	
 	if LEVEL == 5:
-		ships.create_ivan(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
+		_boss = ships.create_ivan(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
+		
+		display.camera_zoom(1.5)
+		display.camera_focus_on(_boss['position'])
+		display.clear_text_group('bot_center')
+		display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.75, 'CRAZY IVAN', font_size=42, text_group='bot_center', center=True, color=(0, 240, 0, 50), fade_in_speed=24, show_for=3)
+		clock.hang_for(180)
 		
 		TRANSITION_PAUSE = 240
 		ANNOUNCE = True
@@ -175,9 +182,13 @@ def loop():
 		spawn_enemies()
 
 def loop_attract():
-	global LEVEL
+	global TRANSITION_PAUSE, LEVEL
 	
 	if not entities.get_entity_group('enemies') or not entities.get_entity_group('hazards'):
-		clean()
-		LEVEL = 3
-		spawn_enemies()
+		if TRANSITION_PAUSE:
+			TRANSITION_PAUSE -= 1
+		else:
+			TRANSITION_PAUSE = 80
+			clean()
+			LEVEL = 3
+			spawn_enemies()
