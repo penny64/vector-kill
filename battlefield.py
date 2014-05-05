@@ -79,7 +79,6 @@ def create_player():
 	events.register_event('camera', player.handle_camera, _player['_id'])
 	entities.register_event(_player, 'score', player.score)
 	entities.register_event(_player, 'delete', player.delete)
-	entities.register_event(_player, 'kill', lambda entity: events.unregister_event(_player, 'input', player.handle_input))
 
 def spawn_enemies():
 	global TRANSITION_PAUSE, ANNOUNCE, LEVEL

@@ -7,4 +7,5 @@ def unlock_chaingun():
 					   'Unlocked: Ivan\'s Chaingun',
 	                   color=(255, 255, 255, 150),
 	                   font_size=18,
-					   center=True)
+					   center=True,
+	                   show_for=2)
