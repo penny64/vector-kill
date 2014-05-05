@@ -22,6 +22,7 @@ def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, tu
 	
 	entities.create_event(entity, 'moved')
 	entities.create_event(entity, 'accelerate')
+	entities.create_event(entity, 'push')
 	entities.create_event(entity, 'turn')
 	entities.create_event(entity, 'thrust')
 	entities.create_event(entity, 'hit_edge')
@@ -35,6 +36,7 @@ def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, tu
 	entities.register_event(entity, 'turn', turn)
 	entities.register_event(entity, 'thrust', thrust)
 	entities.register_event(entity, 'accelerate', accelerate)
+	entities.register_event(entity, 'push', push)
 	entities.register_event(entity, 'set_position', set_position)
 	entities.register_event(entity, 'set_minimum_velocity', set_minimum_velocity)
 	entities.register_event(entity, 'set_maximum_velocity', set_maximum_velocity)
@@ -77,6 +79,10 @@ def accelerate(entity, velocity):
 	
 	entity['velocity'][0] = numbers.clip(entity['velocity'][0]+_n_vol[0], entity['min_velocity'][0], entity['max_velocity'][0])
 	entity['velocity'][1] = numbers.clip(entity['velocity'][1]+_n_vol[1], entity['min_velocity'][1], entity['max_velocity'][1])
+
+def push(entity, velocity):
+	entity['velocity'][0] = numbers.clip(entity['velocity'][0]+velocity[0], entity['min_velocity'][0], entity['max_velocity'][0])
+	entity['velocity'][1] = numbers.clip(entity['velocity'][1]+velocity[1], entity['min_velocity'][1], entity['max_velocity'][1])
 
 def turn(entity, degrees):
 	entity['direction'] += degrees

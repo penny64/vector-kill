@@ -1,11 +1,12 @@
 import entities
 import display
+import numbers
 import bullet
 
 import random
 
 
-def create(owner_id, rounds=1, recoil_time=16, reload_time=35, turn_rate=.15, speed=30, bullet=False, missile=True, hitscan=False, tracking=False, damage_radius=50):
+def create(owner_id, rounds=1, recoil_time=16, reload_time=35, kickback=0, spray=8, turn_rate=.15, speed=30, bullet=False, missile=True, hitscan=False, tracking=False, damage_radius=50):
 	_entity = entities.create_entity(group='weapons')
 	_entity['owner_id'] = owner_id
 	_entity['rounds'] = rounds
@@ -22,6 +23,8 @@ def create(owner_id, rounds=1, recoil_time=16, reload_time=35, turn_rate=.15, sp
 	_entity['turn_rate'] = turn_rate
 	_entity['speed'] = speed
 	_entity['damage_radius'] = damage_radius
+	_entity['kickback'] = kickback
+	_entity['spray'] = spray
 	
 	entities.create_event(_entity, 'shoot')
 	entities.register_event(_entity, 'shoot', shoot)
@@ -74,6 +77,9 @@ def tick(entity):
 	else:
 		_direction = _owner['direction']
 	
+	if entity['kickback']:
+		entities.trigger_event(entities.get_entity(entity['owner_id']), 'push', velocity=numbers.velocity(_direction+180, entity['kickback']))
+	
 	if entity['missile']:
 		bullet.create_missile(_owner['position'][0],
 		                      _owner['position'][1],
@@ -88,7 +94,7 @@ def tick(entity):
 	if entity['bullet']:
 		bullet.create_bullet(_owner['position'][0],
 		                     _owner['position'][1],
-		                     _direction+random.randint(-8, 8),
+		                     _direction+random.randint(-entity['spray'], entity['spray']),
 		                     entity['speed'],
 		                     'bullet.png',
 		                     entity['owner_id'],

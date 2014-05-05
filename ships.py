@@ -35,7 +35,7 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	entities.create_event(_soldier, 'dying')
 	entities.create_event(_soldier, 'explode')
 	entities.register_event(_soldier, 'tick', tick)
-	entities.register_event(_soldier, 'kill', destroy)
+	entities.register_event(_soldier, 'dying', destroy)
 	entities.register_event(_soldier, 'explode', explode)
 	entities.register_event(_soldier, 'hit', damage)
 	entities.trigger_event(_soldier, 'set_minimum_velocity', velocity=[-max_velocity, -max_velocity])
@@ -49,10 +49,12 @@ def create_energy_ship():
 	_entity = create(group='players', sprite_name='ball.png', acceleration=.1, max_velocity=30, turn_rate=0.3, death_time=35, hp=30)
 	_entity['weapon_id'] = weapons.create(_entity['_id'],
 	                                      rounds=35,
-	                                      recoil_time=1,
+	                                      recoil_time=0,
 	                                      reload_time=48,
-	                                      damage_radius=50,
-	                                      speed=150,
+	                                      kickback=3,
+	                                      damage_radius=65,
+	                                      spray=3,
+	                                      speed=200,
 	                                      missile=False,
 	                                      bullet=True)['_id']
 	_entity['alt_weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, reload_time=28, speed=60, tracking=True)['_id']
@@ -172,7 +174,12 @@ def create_ivan(x=0, y=0):
 
 def tick(entity):
 	if entity['hp']<=0:
-		entities.trigger_event(entity, 'kill')
+		if not '_dead' in entity:
+			entities.trigger_event(entity, 'kill')
+			
+			entity['_dead'] = True
+		
+		entities.trigger_event(entity, 'dying')
 
 def tick_flea(entity):
 	if not entity['current_target']:
@@ -204,6 +211,7 @@ def tick_energy_ship(entity):
 def tick_eyemine(entity):
 	if entity['current_speed']>=35:
 		entities.trigger_event(entity, 'kill')
+		entities.trigger_event(entity, 'explode')
 		
 		return entities.delete_entity(entity)
 	
@@ -262,8 +270,6 @@ def destroy(entity):
 		                                  scale_max=8,
 		                                  scale_rate=1.1)
 		entities.delete_entity(entity)
-	
-	entities.trigger_event(entity, 'dying')
 	
 	if random.randint(0, 3):
 		_effect = effects.create_particle(entity['position'][0]+random.randint(-20, 20),

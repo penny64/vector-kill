@@ -174,7 +174,7 @@ def hit_laser(bullet, target_id):
 		_effect['velocity'] = numbers.interp_velocity(bullet['velocity'], entities.get_entity(target_id)['velocity'], .1)
 		_effect['velocity'][0] = numbers.clip(_effect['velocity'][0], -6, 6)
 		_effect['velocity'][1] = numbers.clip(_effect['velocity'][1], -6, 6)
-		
+	
 	entities.trigger_event(entities.get_entity(target_id), 'accelerate', velocity=numbers.interp_velocity(entities.get_entity(target_id)['velocity'], bullet['velocity'], .4))
 
 def tick_bullet(bullet):
@@ -190,6 +190,16 @@ def tick(bullet):
 		
 		if numbers.distance(bullet['position'], entities.get_entity(soldier_id)['position'], old=True)>bullet['damage_radius']:
 			continue
+		
+		if bullet['owner_id'] in entities.ENTITIES and 'player' in entities.get_entity(bullet['owner_id']):
+			effects.create_particle(bullet['position'][0],
+				                   bullet['position'][1],
+				                   'hitmarker.png',
+				                   direction=random.randint(0, 359),
+				                   speed=random.randint(25, 30),
+				                   background=False,
+				                   fade_rate=0.8,
+			                        scale_rate=1.02)
 		
 		entities.trigger_event(bullet, 'hit', target_id=soldier_id)
 		entities.trigger_event(entities.get_entity(soldier_id), 'hit', damage=bullet['damage'], target_id=bullet['owner_id'])

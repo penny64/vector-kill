@@ -94,7 +94,7 @@ def handle_camera(entity_id):
 			if 'player' in _enemy:
 				continue
 			
-			if numbers.distance(_player['position'], _enemy['position'])>=1200:
+			if numbers.distance(_player['position'], _enemy['position'])>=2400:
 				continue
 			
 			_center_pos = numbers.interp_velocity(_center_pos, _enemy['position'], 0.5)
@@ -109,7 +109,7 @@ def handle_camera(entity_id):
 		_distance_to_nearest_enemy = numbers.distance(_player['position'], _enemy['position'], old=True)
 		_min_zoom = 3.5
 		_max_zoom = 4.5
-		display.CAMERA['next_zoom'] = numbers.clip(_distance_to_nearest_enemy/300.0, _min_zoom, _max_zoom)
+		display.CAMERA['next_zoom'] = numbers.clip(_distance_to_nearest_enemy/600.0, _min_zoom, _max_zoom)
 	else:
 		display.CAMERA['zoom_speed'] = .05
 		display.CAMERA['next_zoom'] = 1.5
@@ -136,7 +136,6 @@ def delete(entity):
 	
 	#NOTERIETY -= entities.get_entity_group('enemies')
 	
-	events.unregister_event('input', handle_input)
 	events.unregister_event('camera', handle_camera)
 	menu.setup_main_menu()
 	

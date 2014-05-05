@@ -79,17 +79,50 @@ def create_player():
 	events.register_event('camera', player.handle_camera, _player['_id'])
 	entities.register_event(_player, 'score', player.score)
 	entities.register_event(_player, 'delete', player.delete)
+	entities.register_event(_player, 'kill', lambda entity: events.unregister_event('input', player.handle_input))
+	entities.register_event(_player, 'kill', lambda entity: display.print_text(display.get_window_size()[0]/2,
+	                                                                           display.get_window_size()[1]*.75,
+	                                                                           'Awarded medal:',
+	                                                                           color=(255, 0, 0, 50),
+	                                                                           font_size=18,
+	                                                                           show_for=3.5,
+	                                                                           fade_in_speed=6,
+	                                                                           center=True))
 
 def spawn_enemies():
 	global TRANSITION_PAUSE, ANNOUNCE, LEVEL
 	
-	if LEVEL == 1:
+	if LEVEL == 5:
 		_boss = ships.create_ivan(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
+		_details = ['<b>Stolovitzky, Ivan</b>',
+		            '<i>Suicidal maniac</i>',
+		            'Wanted for: <b>Intergalactic Manslaughter</b>']
 		
 		display.camera_zoom(1.5)
 		display.camera_focus_on(_boss['position'])
 		display.clear_text_group('bot_center')
-		display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.75, 'CRAZY IVAN', font_size=42, text_group='bot_center', center=True, color=(0, 240, 0, 50), fade_in_speed=24, show_for=3)
+		display.print_text(display.get_window_size()[0]/2,
+		                   display.get_window_size()[1]*.75,
+		                   'CRAZY IVAN',
+		                   font_size=42,
+		                   text_group='bot_center',
+		                   center=True,
+		                   color=(0, 240, 0, 50),
+		                   fade_in_speed=24,
+		                   show_for=3)
+		
+		_i = 0
+		for detail_text in _details:
+			display.print_text(display.get_window_size()[0]*.6,
+			                   display.get_window_size()[1]*.65-(24*_i),
+			                   detail_text,
+			                   font_size=20,
+			                   text_group='bot_center',
+			                   color=(240, 240, 240, 0),
+			                   fade_in_speed=(len(_details)-_i)*2,
+			                   show_for=3)
+			_i += 1
+		
 		clock.hang_for(180)
 		entities.register_event(_boss, 'kill', lambda entity: progress.unlock_chaingun())
 		
