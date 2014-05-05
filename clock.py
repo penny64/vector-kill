@@ -29,7 +29,7 @@ def tick():
 	CURRENT_TIME = _new_time	
 	ACCU = numbers.clip(ACCU+_frame_time, 0, DT)
 	
-	while ACCU >= DT+.5:
+	while ACCU >= DT:
 		events.trigger_event('logic')
 		
 		ACCU -= DT

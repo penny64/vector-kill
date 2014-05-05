@@ -28,6 +28,7 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	movement.register_entity(_soldier, x=x, y=y)
 	sprites.register_entity(_soldier, 'ships', sprite_name)
 	entities.create_event(_soldier, 'shoot')
+	entities.create_event(_soldier, 'shoot_alt')
 	entities.create_event(_soldier, 'hit')
 	entities.create_event(_soldier, 'kill')
 	entities.create_event(_soldier, 'score')
@@ -46,11 +47,19 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 
 def create_energy_ship():
 	_entity = create(group='players', sprite_name='ball.png', acceleration=.1, max_velocity=30, turn_rate=0.3, death_time=35, hp=30)
-	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, speed=60, tracking=True)['_id']
-	#_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=2, recoil_time=0, reload_time=1, speed=125, missile=False, bullet=True, damage_radius=150)['_id']
+	_entity['weapon_id'] = weapons.create(_entity['_id'],
+	                                      rounds=35,
+	                                      recoil_time=1,
+	                                      reload_time=48,
+	                                      damage_radius=50,
+	                                      speed=150,
+	                                      missile=False,
+	                                      bullet=True)['_id']
+	_entity['alt_weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, reload_time=28, speed=60, tracking=True)['_id']
 	
 	entities.register_event(_entity, 'tick', tick_energy_ship)
-	entities.register_event(_entity, 'shoot', lambda entity: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot'))
+	entities.register_event(_entity, 'shoot', lambda entity, direction=0: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot', direction=direction))
+	entities.register_event(_entity, 'shoot_alt', lambda entity: entities.trigger_event(entities.get_entity(_entity['alt_weapon_id']), 'shoot'))
 	
 	return _entity
 
@@ -137,7 +146,7 @@ def create_gun_turret(x=0, y=0):
 	return _entity
 
 def create_ivan(x=0, y=0):
-	_entity = create(sprite_name='boss1.png', group='enemies', x=x, y=y, acceleration=.4, speed=3, max_velocity=3, turn_rate=0.8, death_time=40)
+	_entity = create(sprite_name='boss1.png', group='enemies', x=x, y=y, acceleration=.4, speed=3, max_velocity=3, turn_rate=0.8, death_time=40, hp=175)
 	_entity['current_target'] = None
 	_entity['fire_rate'] = 0
 	_entity['fire_rate_max'] = 20

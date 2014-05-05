@@ -1,4 +1,5 @@
 import entities
+import progress
 import display
 import player
 import events
@@ -78,11 +79,12 @@ def create_player():
 	events.register_event('camera', player.handle_camera, _player['_id'])
 	entities.register_event(_player, 'score', player.score)
 	entities.register_event(_player, 'delete', player.delete)
+	entities.register_event(_player, 'kill', lambda entity: events.unregister_event(_player, 'input', player.handle_input))
 
 def spawn_enemies():
 	global TRANSITION_PAUSE, ANNOUNCE, LEVEL
 	
-	if LEVEL == 5:
+	if LEVEL == 1:
 		_boss = ships.create_ivan(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
 		
 		display.camera_zoom(1.5)
@@ -90,6 +92,7 @@ def spawn_enemies():
 		display.clear_text_group('bot_center')
 		display.print_text(display.get_window_size()[0]/2, display.get_window_size()[1]*.75, 'CRAZY IVAN', font_size=42, text_group='bot_center', center=True, color=(0, 240, 0, 50), fade_in_speed=24, show_for=3)
 		clock.hang_for(180)
+		entities.register_event(_boss, 'kill', lambda entity: progress.unlock_chaingun())
 		
 		TRANSITION_PAUSE = 240
 		ANNOUNCE = True

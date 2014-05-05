@@ -17,7 +17,7 @@ CAMERA_MODE = random.choice(CAMERA_MODES)
 
 
 def boot():
-	setup_menu()
+	setup_main_menu()
 
 def control():
 	global MENU_INDEX
@@ -36,7 +36,7 @@ def control():
 		MENU[MENU_INDEX]['callback']()
 
 
-def setup_menu():
+def setup_main_menu():
 	global MENU
 	
 	events.register_event('input', control)
@@ -47,13 +47,48 @@ def setup_menu():
 	display.create_text_group('menu')
 	
 	MENU = [{'text': 'Career', 'callback': start_career},
-	        {'text': 'Arena', 'callback': start_arena},
+	        {'text': 'Arena', 'callback': weapon_selection},
 	        {'text': 'Quit', 'callback': shutdown}]
 	
-	_title_text = 'VECTOR:KILL'
 	display.print_text(display.get_window_size()[0]/2,
 	                   display.get_window_size()[1]*.8,
-	                   _title_text,
+	                   'VECTOR:KILL',
+	                   color=(0, 255, 0, 100),
+	                   font_name='Thin Design',
+	                   font_size=42,
+	                   center=True,
+	                   show_for=-1,
+	                   text_group='logo')
+	
+	display.print_text(display.get_window_size()[0]/2,
+	                   display.get_window_size()[1]*.20,
+	                   'Next unlock:',
+	                   text_group='bot_center',
+	                   color=(238, 221, 130, 255),
+	                   show_for=-1,
+	                   center=True)
+	
+	display.print_text(display.get_window_size()[0]/2,
+	                   display.get_window_size()[1]*.15,
+	                   'Ivan\'s Chaingun',
+	                   text_group='bot_center',
+	                   color=(255, 215, 0, 255),
+	                   show_for=-1,
+	                   center=True)
+	
+	draw_menu()
+
+def weapon_selection():
+	global MENU_INDEX, MENU
+	
+	MENU_INDEX = 0
+	MENU = [{'text': 'None', 'callback': start_arena},
+	        {'text': 'Chaingun', 'callback': lambda: start_arena(weapon='chaingun')},
+	        {'text': 'Back', 'callback': setup_main_menu}]
+	
+	display.print_text(display.get_window_size()[0]/2,
+	                   display.get_window_size()[1]*.8,
+	                   'VECTOR:KILL',
 	                   color=(0, 255, 0, 100),
 	                   font_name='Thin Design',
 	                   font_size=42,
@@ -132,7 +167,7 @@ def start_career():
 	levels.load_level()
 	display.CAMERA['camera_move_speed'] = 0.05
 
-def start_arena():
+def start_arena(weapon=None):
 	display.clear_text_group('menu')
 	display.clear_text_group('logo')
 	display.clear_text_group('bot_center')

@@ -26,38 +26,50 @@ def handle_input(entity_id):
 		
 		return False
 	
+	if not clock.is_ticking() and controls.key_pressed(' '):
+		clock.hang_for(0)
+	
 	_move_speed = 17
 	_entity = entities.get_entity(entity_id)
 	
-	if controls.key_pressed_ord(controls.NUM_1) or controls.key_held_ord(controls.NUM_1):
-		entities.trigger_event(_entity, 'accelerate', velocity=[-_move_speed, _move_speed])
-	
-	if controls.key_pressed_ord(controls.NUM_2) or controls.key_held_ord(controls.NUM_2):
+	if controls.key_held('s'):
 		entities.trigger_event(_entity, 'accelerate', velocity=[0, _move_speed])
 	
-	if controls.key_pressed_ord(controls.NUM_3) or controls.key_held_ord(controls.NUM_3):
-		entities.trigger_event(_entity, 'accelerate', velocity=[_move_speed, _move_speed])
-	
-	if controls.key_pressed_ord(controls.NUM_4) or controls.key_held_ord(controls.NUM_4):
+	if controls.key_held('a'):
 		entities.trigger_event(_entity, 'accelerate', velocity=[-_move_speed, 0])
 	
-	if controls.key_pressed_ord(controls.NUM_6) or controls.key_held_ord(controls.NUM_6):
+	if controls.key_held('d'):
 		entities.trigger_event(_entity, 'accelerate', velocity=[_move_speed, 0])
 	
-	if controls.key_pressed_ord(controls.NUM_7) or controls.key_held_ord(controls.NUM_7):
-		entities.trigger_event(_entity, 'accelerate', velocity=[-_move_speed, -_move_speed])
-	
-	if controls.key_pressed_ord(controls.NUM_8) or controls.key_held_ord(controls.NUM_8):
+	if controls.key_held('w'):
 		entities.trigger_event(_entity, 'accelerate', velocity=[0, -_move_speed])
 	
-	if controls.key_pressed_ord(controls.NUM_9) or controls.key_held_ord(controls.NUM_9):
-		entities.trigger_event(_entity, 'accelerate', velocity=[_move_speed, -_move_speed])
+	if controls.key_held_ord(controls.NUM_1):
+		entities.trigger_event(_entity, 'shoot', direction=225)
 	
-	if controls.key_held('q'):
-		entities.trigger_event(_entity, 'shoot')
+	if controls.key_held_ord(controls.NUM_2):
+		entities.trigger_event(_entity, 'shoot', direction=270)
 	
-	if controls.key_pressed('w'):
-		bullet.create_laser(_entity['position'][0], _entity['position'][1], _entity['shoot_direction'], _entity['_id'])
+	if controls.key_held_ord(controls.NUM_3):
+		entities.trigger_event(_entity, 'shoot', direction=315)
+	
+	if controls.key_held_ord(controls.NUM_4):
+		entities.trigger_event(_entity, 'shoot', direction=180)
+	
+	if controls.key_held_ord(controls.NUM_6):
+		entities.trigger_event(_entity, 'shoot', direction=0)
+	
+	if controls.key_held_ord(controls.NUM_7):
+		entities.trigger_event(_entity, 'shoot', direction=135)
+	
+	if controls.key_held_ord(controls.NUM_8):
+		entities.trigger_event(_entity, 'shoot', direction=90)
+	
+	if controls.key_held_ord(controls.NUM_9):
+		entities.trigger_event(_entity, 'shoot', direction=45)
+	
+	if controls.key_held_ord(controls.NUM_5):
+		entities.trigger_event(_entity, 'shoot_alt')
 	
 	if controls.key_held('x'):
 		battlefield.clean()
@@ -126,7 +138,7 @@ def delete(entity):
 	
 	events.unregister_event('input', handle_input)
 	events.unregister_event('camera', handle_camera)
-	menu.setup_menu()
+	menu.setup_main_menu()
 	
 	_enemy_amount = len(entities.get_entity_group('enemies'))
 	

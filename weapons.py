@@ -29,11 +29,15 @@ def create(owner_id, rounds=1, recoil_time=16, reload_time=35, turn_rate=.15, sp
 	
 	return _entity
 
-def shoot(entity):
+def shoot(entity, direction=-1):
 	if entity['firing']:
 		return False
 	
 	entities.register_event(entity, 'tick', tick)
+	
+	if not direction == -1:
+		entity['shoot_direction'] = direction
+	
 	entity['firing'] = True
 
 def tick(entity):
@@ -63,7 +67,9 @@ def tick(entity):
 	
 	_owner = entities.get_entity(entity['owner_id'])
 	
-	if 'shoot_direction' in _owner:
+	if 'shoot_direction' in entity:
+		_direction = entity['shoot_direction']
+	elif 'shoot_direction' in _owner:
 		_direction = _owner['shoot_direction']
 	else:
 		_direction = _owner['direction']

@@ -93,7 +93,7 @@ def system_input():
 		display.CAMERA['next_zoom'] += .1
 	elif key_held('['):
 		display.CAMERA['next_zoom'] = 2.5
-	elif key_pressed('d'):
+	elif key_pressed('p'):
 		_entities = set(entities.ENTITIES.keys())
 		_i = 0
 		for entity_group in entities.GROUPS:
