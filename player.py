@@ -33,22 +33,30 @@ def handle_input(entity_id):
 	_move_speed = _entity['speed']
 	
 	if controls.key_held('s'):
-		entities.trigger_event(_entity, 'accelerate', velocity=[0, _move_speed])
+		#entities.trigger_event(_entity, 'accelerate', velocity=[0, _move_speed])
+		entities.trigger_event(_entity, 'set_direction', direction=270)
+		entities.trigger_event(_entity, 'thrust')
 	
 	if controls.key_held('a'):
-		entities.trigger_event(_entity, 'accelerate', velocity=[-_move_speed, 0])
+		#entities.trigger_event(_entity, 'accelerate', velocity=[-_move_speed, 0])
+		entities.trigger_event(_entity, 'set_direction', direction=180)
+		entities.trigger_event(_entity, 'thrust')
 	
 	if controls.key_held('d'):
-		entities.trigger_event(_entity, 'accelerate', velocity=[_move_speed, 0])
+		#entities.trigger_event(_entity, 'accelerate', velocity=[_move_speed, 0])
+		entities.trigger_event(_entity, 'set_direction', direction=0)
+		entities.trigger_event(_entity, 'thrust')
 	
 	if controls.key_held('w'):
-		entities.trigger_event(_entity, 'accelerate', velocity=[0, -_move_speed])
+		#entities.trigger_event(_entity, 'accelerate', velocity=[0, -_move_speed])
+		entities.trigger_event(_entity, 'set_direction', direction=90)
+		entities.trigger_event(_entity, 'thrust')
 	
 	if controls.key_pressed('q'):
 		entities.trigger_event(_entity,
 		                       'create_timer',
 		                       time=120,
-		                       enter_callback=lambda entity: entities.trigger_event(_entity, 'set_maximum_velocity', velocity=[80, 80]),
+		                       enter_callback=lambda entity: entities.trigger_event(_entity, 'set_maximum_velocity', velocity=[80, 80]) and entities.trigger_event(_entity, 'set_speed', speed=80),
 		                       exit_callback=lambda entity: entities.trigger_event(_entity, 'set_maximum_velocity', velocity=[30, 30]))
 	
 	if controls.key_held_ord(controls.NUM_1):

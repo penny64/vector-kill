@@ -368,7 +368,7 @@ def boss_victory(entity, victory_text='Boss Defeated'):
 	                   font_size=42,
 	                   center=True)
 
-def damage(entity, damage, target_id):
+def damage(entity, damage, target_id=None):
 	entity['hp'] -= damage
 	
 	if entity['hp']<=0 and entity['death_timer'] == -1:

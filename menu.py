@@ -47,8 +47,7 @@ def setup_main_menu():
 	display.create_text_group('logo')
 	display.create_text_group('menu')
 	
-	MENU = [{'text': 'Career', 'callback': start_career},
-	        {'text': 'Planet', 'callback': start_planet},
+	MENU = [{'text': 'Planet', 'callback': start_planet},
 	        {'text': 'Arena', 'callback': weapon_selection},
 	        {'text': 'Quit', 'callback': shutdown}]
 	

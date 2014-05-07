@@ -16,6 +16,8 @@ LEVEL = 1
 NOTERIETY = 0
 TRANSITION_PAUSE = 0
 ANNOUNCE = True
+WAVE_TIMER_MAX = 30*15
+WAVE_TIMER = 0
 
 def create():
 	global LEVEL
@@ -26,6 +28,7 @@ def create():
 	_planet = entities.create_entity(group='planets')
 	sprites.register_entity(_planet, 'effects_foreground', 'planet.png', scale=1.8)
 	movement.register_entity(_planet, x=worlds.get_size()[0]/2, y=worlds.get_size()[0]/2, speed=0)
+	events.register_event('tick', tick)
 	
 	create_player()
 	display.create_grid()
@@ -59,11 +62,31 @@ def create_player():
 	events.register_event('input', player.handle_input, _player['_id'])
 	events.register_event('camera', player.handle_camera, _player['_id'], min_zoom=5, max_zoom=14, max_enemy_distance=10000, center_distance=5000)
 	entities.register_event(_player, 'delete', player.delete)
+	entities.register_event(_player, 'hit_edge', lambda entity: entity['current_speed']>40 and entities.trigger_event(entity, 'hit', damage=entity['current_speed']-40))
 
 def spawn_enemies():
 	global TRANSITION_PAUSE, ANNOUNCE, LEVEL
 	
 	_i = random.choice([0, 1, 2, 3])
+	
+	if _i == 1:
+		_xrange = random.choice([(100, worlds.get_size()[0]*.25),
+		                         (worlds.get_size()[0]*.25, worlds.get_size()[0]*.5),
+		                         (worlds.get_size()[0]*.5, worlds.get_size()[0]*.75),
+		                         (worlds.get_size()[0]*.75, worlds.get_size()[0]-100)])
+		_y = 100
+	elif _i == 2:
+		_x = worlds.get_size()[0]-100
+		_y = random.choice([(100, worlds.get_size()[1]*.25),
+		                         (worlds.get_size()[1]*.25, worlds.get_size()[1]*.5),
+		                         (worlds.get_size()[1]*.5, worlds.get_size()[1]*.75),
+		                         (worlds.get_size()[1]*.75, worlds.get_size()[1]-100)])
+	elif _i == 3:
+		_x = 100
+		_y = random.randint(100, worlds.get_size()[1]-100)
+	else:
+		_x = random.randint(100, worlds.get_size()[0]-100)
+		_y = worlds.get_size()[1]-100
 	
 	if LEVEL == 5:
 		_boss = ships.create_ivan(x=random.randint(0, worlds.get_size()[0]), y=random.randint(0, worlds.get_size()[1]))
@@ -215,6 +238,15 @@ def spawn_enemies():
 	TRANSITION_PAUSE = 120
 
 
+def tick():
+	global WAVE_TIMER
+	
+	if WAVE_TIMER:
+		WAVE_TIMER -= 1
+
 def loop():
-	if entities.get_entity_group('players') and not entities.get_entity_group('enemies') and not entities.get_entity_group('hazards'):
+	global WAVE_TIMER
+	
+	if entities.get_entity_group('players') and not WAVE_TIMER:
 		spawn_enemies()
+		WAVE_TIMER = WAVE_TIMER_MAX+(10*LEVEL)

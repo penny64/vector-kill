@@ -63,9 +63,13 @@ def set_direction(entity, direction):
 
 def set_speed(entity, speed):
 	entity['speed'] = speed
+	
+	return True
 
 def set_turn_rate(entity, rate):
 	entity['turn_rate'] = rate
+	
+	return True
 
 def set_position(entity, x, y):
 	entity['last_position'][0] = x
@@ -76,8 +80,12 @@ def set_position(entity, x, y):
 def set_minimum_velocity(entity, velocity):
 	entity['min_velocity'] = list(velocity)
 	
+	return True
+	
 def set_maximum_velocity(entity, velocity):
 	entity['max_velocity'] = list(velocity)
+	
+	return True
 
 def accelerate(entity, velocity):
 	_n_vol = numbers.interp_velocity((0, 0), velocity, entity['acceleration'])
