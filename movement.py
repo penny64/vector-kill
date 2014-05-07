@@ -33,6 +33,7 @@ def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, tu
 	entities.create_event(entity, 'set_friction')
 	entities.create_event(entity, 'set_direction')
 	entities.create_event(entity, 'set_speed')
+	entities.create_event(entity, 'set_turn_rate')
 	entities.register_event(entity, 'turn', turn)
 	entities.register_event(entity, 'thrust', thrust)
 	entities.register_event(entity, 'accelerate', accelerate)
@@ -44,6 +45,7 @@ def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, tu
 	entities.register_event(entity, 'set_friction', set_friction)
 	entities.register_event(entity, 'set_direction', set_direction)
 	entities.register_event(entity, 'set_speed', set_speed)
+	entities.register_event(entity, 'set_turn_rate', set_turn_rate)
 
 	if offload:
 		threads.register_entity(entity)
@@ -61,6 +63,9 @@ def set_direction(entity, direction):
 
 def set_speed(entity, speed):
 	entity['speed'] = speed
+
+def set_turn_rate(entity, rate):
+	entity['turn_rate'] = rate
 
 def set_position(entity, x, y):
 	entity['last_position'][0] = x

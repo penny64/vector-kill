@@ -105,7 +105,7 @@ def boot():
 	set_tps(TPS)
 	events.register_event('loop', loop)
 	pyglet.font.add_file('thin_design.ttf')
-	WINDOW.set_exclusive_mouse()
+	#WINDOW.set_exclusive_mouse()
 
 def load(level_editor=False):
 	if level_editor:

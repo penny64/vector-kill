@@ -57,7 +57,7 @@ def create_player():
 	
 	player.register_entity(_player)
 	events.register_event('input', player.handle_input, _player['_id'])
-	events.register_event('camera', player.handle_camera, _player['_id'], min_zoom=7, max_zoom=14, max_enemy_distance=10000, center_distance=600)
+	events.register_event('camera', player.handle_camera, _player['_id'], min_zoom=5, max_zoom=14, max_enemy_distance=10000, center_distance=5000)
 	entities.register_event(_player, 'delete', player.delete)
 
 def spawn_enemies():

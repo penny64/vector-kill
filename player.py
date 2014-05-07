@@ -29,8 +29,8 @@ def handle_input(entity_id):
 	if not clock.is_ticking() and controls.key_pressed(' '):
 		clock.hang_for(0)
 	
-	_move_speed = 17
 	_entity = entities.get_entity(entity_id)
+	_move_speed = _entity['speed']
 	
 	if controls.key_held('s'):
 		entities.trigger_event(_entity, 'accelerate', velocity=[0, _move_speed])
@@ -43,6 +43,13 @@ def handle_input(entity_id):
 	
 	if controls.key_held('w'):
 		entities.trigger_event(_entity, 'accelerate', velocity=[0, -_move_speed])
+	
+	if controls.key_pressed('q'):
+		entities.trigger_event(_entity,
+		                       'create_timer',
+		                       time=120,
+		                       enter_callback=lambda entity: entities.trigger_event(_entity, 'set_maximum_velocity', velocity=[80, 80]),
+		                       exit_callback=lambda entity: entities.trigger_event(_entity, 'set_maximum_velocity', velocity=[30, 30]))
 	
 	if controls.key_held_ord(controls.NUM_1):
 		entities.trigger_event(_entity, 'shoot', direction=225)
@@ -108,7 +115,7 @@ def handle_camera(entity_id, min_zoom=3.5, max_zoom=14.5, max_enemy_distance=240
 		_distance_to_nearest_enemy = sum(_median_distance)/len(_median_distance)
 		_min_zoom = min_zoom
 		_max_zoom = max_zoom
-		display.CAMERA['next_zoom'] = numbers.clip(_distance_to_nearest_enemy/center_distance, _min_zoom, _max_zoom)
+		display.CAMERA['next_zoom'] = numbers.clip(_max_zoom*(_distance_to_nearest_enemy/float(center_distance)), _min_zoom, _max_zoom)
 	else:
 		display.CAMERA['zoom_speed'] = .05
 		display.CAMERA['next_zoom'] = 1.5

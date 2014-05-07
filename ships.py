@@ -6,6 +6,7 @@ import numbers
 import sprites
 import effects
 import bullet
+import timers
 import events
 import ai
 
@@ -46,7 +47,7 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	return _soldier
 
 def create_energy_ship():
-	_entity = create(group='players', sprite_name='ball.png', acceleration=.1, max_velocity=30, turn_rate=0.3, death_time=35, hp=30)
+	_entity = create(group='players', sprite_name='ball.png', speed=17, acceleration=.1, max_velocity=30, turn_rate=0.3, death_time=35, hp=30)
 	_entity['weapon_id'] = weapons.create(_entity['_id'],
 	                                      rounds=35,
 	                                      recoil_time=0,
@@ -59,6 +60,7 @@ def create_energy_ship():
 	                                      bullet=True)['_id']
 	_entity['alt_weapon_id'] = weapons.create(_entity['_id'], rounds=6, recoil_time=5, reload_time=28, speed=60, tracking=True)['_id']
 	
+	timers.register_entity(_entity)
 	entities.register_event(_entity, 'tick', tick_energy_ship)
 	entities.register_event(_entity, 'shoot', lambda entity, direction=0: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot', direction=direction))
 	entities.register_event(_entity, 'shoot_alt', lambda entity: entities.trigger_event(entities.get_entity(_entity['alt_weapon_id']), 'shoot'))
