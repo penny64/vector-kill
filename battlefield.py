@@ -28,6 +28,7 @@ def boot():
 	entities.create_entity_group('effects')
 	entities.create_entity_group('bullets')
 	entities.create_entity_group('weapons')
+	entities.create_entity_group('planets')
 	
 	entities.create_entity_group('cursor')
 	entities.create_entity_group('tiles_foreground')

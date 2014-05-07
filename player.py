@@ -74,7 +74,7 @@ def handle_input(entity_id):
 	if controls.key_held('x'):
 		battlefield.clean()
 
-def handle_camera(entity_id):
+def handle_camera(entity_id, min_zoom=3.5, max_zoom=14.5, max_enemy_distance=2400, center_distance=600.0):
 	if not entity_id in entities.ENTITIES:
 		display.CAMERA['zoom_speed'] = .005
 		display.CAMERA['next_zoom'] = 4.5
@@ -86,30 +86,29 @@ def handle_camera(entity_id):
 	
 	_player = entities.get_entity(entity_id)
 	_center_pos = _player['position'][:]
+	_median_distance = []
 	
 	if _player['death_timer'] == -1:
-		for enemy_id in entities.get_entity_group('enemies'):
+		for enemy_id in entities.get_sprite_groups(['enemies', 'hazards']):
 			_enemy = entities.get_entity(enemy_id)
 			
 			if 'player' in _enemy:
 				continue
 			
-			if numbers.distance(_player['position'], _enemy['position'])>=2400:
+			_dist = numbers.distance(_player['position'], _enemy['position'])
+			if _dist>=max_enemy_distance:
 				continue
 			
+			_median_distance.append(_dist)
 			_center_pos = numbers.interp_velocity(_center_pos, _enemy['position'], 0.5)
 		
-		_enemy_id = ai.find_target(_player)
+		if not _median_distance:
+			_median_distance = [0]
 		
-		if _enemy_id:
-			_enemy = entities.get_entity(_enemy_id)
-		else:
-			_enemy = _player
-		
-		_distance_to_nearest_enemy = numbers.distance(_player['position'], _enemy['position'], old=True)
-		_min_zoom = 3.5
-		_max_zoom = 4.5
-		display.CAMERA['next_zoom'] = numbers.clip(_distance_to_nearest_enemy/600.0, _min_zoom, _max_zoom)
+		_distance_to_nearest_enemy = sum(_median_distance)/len(_median_distance)
+		_min_zoom = min_zoom
+		_max_zoom = max_zoom
+		display.CAMERA['next_zoom'] = numbers.clip(_distance_to_nearest_enemy/center_distance, _min_zoom, _max_zoom)
 	else:
 		display.CAMERA['zoom_speed'] = .05
 		display.CAMERA['next_zoom'] = 1.5

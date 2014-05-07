@@ -111,7 +111,12 @@ def load(level_editor=False):
 	if level_editor:
 		return True
 	
+	create_grid()
+
+def create_grid():
 	global LEVEL_GRID
+	
+	LEVEL_GRID = []
 	
 	for i in range((worlds.get_size()[0]/100)+1):
 		LEVEL_GRID.extend((100*i, (100*7), 100*i, (100*7)+worlds.get_size()[1]))

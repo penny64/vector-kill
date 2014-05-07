@@ -65,8 +65,13 @@ def create_energy_ship():
 	
 	return _entity
 
-def create_flea(x=0, y=0):
-	_entity = create(sprite_name='diamond_body.png', group='enemies', x=x, y=y, acceleration=.4, speed=30, max_velocity=30, turn_rate=0.8)
+def create_flea(x=0, y=0, hazard=False):
+	if hazard:
+		_group = 'hazards'
+	else:
+		_group = 'enemies'
+	
+	_entity = create(sprite_name='diamond_body.png', group=_group, x=x, y=y, acceleration=.4, speed=30, max_velocity=30, turn_rate=0.8)
 	_entity['current_target'] = None
 	_entity['fire_rate'] = 0
 	_entity['fire_rate_max'] = 20

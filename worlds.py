@@ -21,17 +21,17 @@ def _check_active_world():
 	if not ACTIVE_WORLD:
 		raise Exception('ACTIVE_WORLD not set.')
 
-def create(world_name):
+def create(world_name, width=4500, height=4500):
 	global ACTIVE_WORLD
 	
-	WORLDS[world_name] = {'size': (4500, 4500),
+	WORLDS[world_name] = {'size': (width, height),
 	                      'last_tick': get_time(),
 	                      'next_tick': get_time()+.000001}
 	
-	if not ACTIVE_WORLD:
-		ACTIVE_WORLD = world_name
-		
-		events.register_event('draw', sprites.draw)
+	#if not ACTIVE_WORLD:
+	ACTIVE_WORLD = world_name
+	
+	events.register_event('draw', sprites.draw)
 
 def get_interp():
 	_world = WORLDS[ACTIVE_WORLD]

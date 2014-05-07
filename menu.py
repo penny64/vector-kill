@@ -5,6 +5,7 @@ import display
 import events
 import worlds
 import levels
+import planet
 
 import random
 
@@ -47,6 +48,7 @@ def setup_main_menu():
 	display.create_text_group('menu')
 	
 	MENU = [{'text': 'Career', 'callback': start_career},
+	        {'text': 'Planet', 'callback': start_planet},
 	        {'text': 'Arena', 'callback': weapon_selection},
 	        {'text': 'Quit', 'callback': shutdown}]
 	
@@ -165,6 +167,18 @@ def start_career():
 	events.register_event('loop', levels.loop)
 	battlefield.clean()
 	levels.load_level()
+	display.CAMERA['camera_move_speed'] = 0.05
+
+def start_planet():
+	display.clear_text_group('menu')
+	display.clear_text_group('logo')
+	display.clear_text_group('bot_center')
+	events.unregister_event('input', control)
+	events.unregister_event('loop', battlefield.loop_attract)
+	events.unregister_event('camera', action_camera)
+	events.register_event('loop', planet.loop)
+	battlefield.clean()
+	planet.create()
 	display.CAMERA['camera_move_speed'] = 0.05
 
 def start_arena(weapon=None):
