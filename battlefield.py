@@ -17,11 +17,14 @@ ANNOUNCE = True
 
 
 def boot():
+	display.create_sprite_group('effects_background_bottom')
 	display.create_sprite_group('effects_background')
+	display.create_sprite_group('items')
 	display.create_sprite_group('ships')
 	display.create_sprite_group('effects_foreground')
 	display.create_text_group('bot_center')
 	
+	entities.create_entity_group('items')
 	entities.create_entity_group('players')
 	entities.create_entity_group('enemies')
 	entities.create_entity_group('hazards')

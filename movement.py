@@ -101,6 +101,9 @@ def turn(entity, degrees):
 	entity['direction'] += degrees
 
 def thrust(entity):
+	if 'in_space' in entity and entity['in_space']:
+		return False
+	
 	_thrust_velocity = numbers.velocity(entity['direction'], entity['speed'])
 	entity['velocity'][0] += numbers.interp(0, _thrust_velocity[0], entity['acceleration'])
 	entity['velocity'][1] += numbers.interp(0, _thrust_velocity[1], entity['acceleration'])

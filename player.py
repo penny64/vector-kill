@@ -4,6 +4,7 @@ import controls
 import display
 import numbers
 import bullet
+import worlds
 import events
 import clock
 import menu
@@ -103,7 +104,14 @@ def handle_camera(entity_id, min_zoom=3.5, max_zoom=14.5, max_enemy_distance=240
 	_center_pos = _player['position'][:]
 	_median_distance = []
 	
-	if _player['death_timer'] == -1:
+	if 'in_space' in _player and _player['in_space']:
+		_distance_to_center = numbers.distance(_player['position'], (worlds.get_size()[0]/2, worlds.get_size()[1]/2))
+		
+		_min_zoom = 1.0
+		_max_zoom = max_zoom
+		display.CAMERA['next_zoom'] = numbers.clip(_max_zoom*((_distance_to_center/3000.0)-1), _min_zoom, _max_zoom)
+	
+	elif _player['death_timer'] == -1:
 		for enemy_id in entities.get_sprite_groups(['enemies', 'hazards']):
 			_enemy = entities.get_entity(enemy_id)
 			

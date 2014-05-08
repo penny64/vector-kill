@@ -15,6 +15,7 @@ GROUPS = {}
 TICKS_PER_SECOND = 0
 CURRENT_TICKS_PER_SECOND = 0
 LAST_TICK_TIME = time.time()
+IGNORE_ENTITY_GROUPS = ['effects', 'bullets', 'weapons', 'tiles_foreground', 'planets', 'items']
 
 
 def boot():

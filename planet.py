@@ -3,11 +3,13 @@ import entities
 import display
 import sprites
 import numbers
+import effects
 import player
 import events
 import worlds
 import ships
 import clock
+import items
 import maps
 
 import random
@@ -20,18 +22,22 @@ WAVE_TIMER_MAX = 30*15
 WAVE_TIMER = 0
 
 def create():
-	global LEVEL
+	global WAVE_TIMER_MAX, WAVE_TIMER, LEVEL
 	
 	LEVEL = 1
+	WAVE_TIMER = 0
+	WAVE_TIMER_MAX = 30*15
 	
 	worlds.create('planet', width=9000, height=9000)
 	_planet = entities.create_entity(group='planets')
 	sprites.register_entity(_planet, 'effects_foreground', 'planet.png', scale=1.8)
 	movement.register_entity(_planet, x=worlds.get_size()[0]/2, y=worlds.get_size()[0]/2, speed=0)
+	effects.create_image(_planet['position'][0], _planet['position'][1], 'ring.png', background=2)
 	events.register_event('tick', tick)
 	
 	create_player()
 	display.create_grid()
+	items.create_gravity_well(x=worlds.get_size()[0]/2, y=worlds.get_size()[0]/2)
 
 def clean():
 	for ship_id in entities.get_entity_group('players'):
@@ -62,7 +68,7 @@ def create_player():
 	events.register_event('input', player.handle_input, _player['_id'])
 	events.register_event('camera', player.handle_camera, _player['_id'], min_zoom=5, max_zoom=14, max_enemy_distance=10000, center_distance=5000)
 	entities.register_event(_player, 'delete', player.delete)
-	entities.register_event(_player, 'hit_edge', lambda entity: entity['current_speed']>40 and entities.trigger_event(entity, 'hit', damage=entity['current_speed']-40))
+	entities.register_event(_player, 'hit_edge', lambda entity: entities.trigger_event(entity, 'hit', damage=100))
 
 def spawn_enemies():
 	global TRANSITION_PAUSE, ANNOUNCE, LEVEL
@@ -249,4 +255,4 @@ def loop():
 	
 	if entities.get_entity_group('players') and not WAVE_TIMER:
 		spawn_enemies()
-		WAVE_TIMER = WAVE_TIMER_MAX+(10*LEVEL)
+		WAVE_TIMER = WAVE_TIMER_MAX+(60*LEVEL)

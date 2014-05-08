@@ -73,8 +73,10 @@ def create_image(x, y, sprite_name, parent_entity=None, rotate_by=0, rotate_with
 	if parent_entity:
 		entities.register_event(parent_entity, 'delete', lambda parent_entity: entities.delete_entity(_entity))
 	
-	if background:
+	if background == 1:
 		sprites.register_entity(_entity, 'effects_background', sprite_name, scale=scale)
+	elif background == 2:
+		sprites.register_entity(_entity, 'effects_background_bottom', sprite_name, scale=scale)
 	else:
 		sprites.register_entity(_entity, 'effects_foreground', sprite_name, scale=scale)
 	

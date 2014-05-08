@@ -19,6 +19,9 @@ def tick_track(entity):
 	#_target_id = find_target(entity)
 	_target_id = entity['current_target']
 	
+	if 'in_space' in entity and entity['in_space']:
+		return False
+	
 	if entity['hp']<=0 or not _target_id in entities.ENTITIES:
 		entity['current_target'] = None
 		entities.unregister_event(entity, 'tick', tick_track)
@@ -43,6 +46,9 @@ def tick_track(entity):
 	entities.trigger_event(entity, 'thrust')
 
 def tick_guard(entity):
+	if 'in_space' in entity and entity['in_space']:
+		return False
+	
 	if entity['hp']<=0:
 		entities.unregister_event(entity, 'tick', tick_guard)
 		
@@ -57,7 +63,7 @@ def tick_guard(entity):
 
 def find_target(entity, max_distance=-1):
 	_closest_target = {'enemy_id': None, 'distance': 0}
-	_enemy_sprite_groups = [name for name in entities.GROUPS if not name in entity['_groups'] and not name in ['effects', 'bullets', 'weapons', 'tiles_foreground', 'planets']]
+	_enemy_sprite_groups = [name for name in entities.GROUPS if not name in entity['_groups'] and not name in entities.IGNORE_ENTITY_GROUPS]
 	
 	for soldier_id in entities.get_sprite_groups(_enemy_sprite_groups):
 		if entity['_id'] == soldier_id:
