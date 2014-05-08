@@ -34,11 +34,11 @@ def create():
 	
 	worlds.create('planet', width=12000, height=12000)
 	_planet = entities.create_entity(group='planets')
-	sprites.register_entity(_planet, 'effects_foreground', 'planet.png', scale=1.8)
+	sprites.register_entity(_planet, 'effects_foreground', 'planet.png', scale=1.0)
 	movement.register_entity(_planet, x=worlds.get_size()[0]/2, y=worlds.get_size()[0]/2, speed=0)
 	effects.create_image(_planet['position'][0], _planet['position'][1], 'ring.png', background=2, scale=2)
 	events.register_event('tick', tick)
-	create_player(x=2000, y=2000)
+	create_player()
 	display.clear_grid()
 	items.create_gravity_well(x=worlds.get_size()[0]/2, y=worlds.get_size()[0]/2, strength=0.25)
 
@@ -72,6 +72,7 @@ def create_player(x=0, y=0):
 	events.register_event('camera', player.handle_camera, _player['_id'], min_zoom=5, max_zoom=14, max_enemy_distance=10000, center_distance=5000)
 	entities.register_event(_player, 'delete', player.delete)
 	entities.register_event(_player, 'hit_edge', lambda entity: entities.trigger_event(entity, 'hit', damage=100))
+	entities.trigger_event(_player, 'push', velocity=(30, 30))
 
 def spawn_enemies():
 	global TRANSITION_PAUSE, CHANGE_LEVEL_FIRE, CHANGE_LEVEL, ANNOUNCE, LEVEL
@@ -163,37 +164,32 @@ def tick():
 def loop():
 	global CHANGE_LEVEL_FIRE, TRANSITION_PAUSE, CHANGE_LEVEL, WAVE_TIMER, LEVEL
 	
-	print TRANSITION_PAUSE, CHANGE_LEVEL
-	
 	if TRANSITION_PAUSE and CHANGE_LEVEL:
 		_player = entities.get_entity(entities.get_entity_group('players')[0])
 		
 		if not CHANGE_LEVEL_FIRE:
-			events.unregister_event('input', player.handle_input)
 			entities.trigger_event(_player,
 			                       'create_timer',
-			                       time=240,
-			                       callback=lambda entity: entities.trigger_event(entity, 'push', velocity=(5, 5)),
-			                       exit_callback=lambda entity: events.register_event('input', player.handle_input, _player['_id']))
+			                       time=120,
+			                       enter_callback=lambda entity: events.unregister_event('input', player.handle_input),
+			                       callback=lambda entity: entities.trigger_event(entity, 'set_maximum_velocity', velocity=(85, 85)) and entities.trigger_event(entity, 'push', velocity=(3, 3)),
+			                       exit_callback=lambda entity: display.camera_snap((-4000, -4000)) and entities.trigger_event(entity, 'set_maximum_velocity', velocity=(35, 35)) and entities.trigger_event(entity, 'set_position', x=-4000, y=-4000) and events.register_event('input', player.handle_input, _player['_id']))
 			
 			_player['NO_BOUNCE'] = True
 			CHANGE_LEVEL_FIRE = True
 		
+		if TRANSITION_PAUSE:
+			TRANSITION_PAUSE -= 1
+		
 		return False
 	
-	if TRANSITION_PAUSE:
-		TRANSITION_PAUSE -= 1
-		
-		return False
-	else:
-		if CHANGE_LEVEL:
-			LEVEL = 1
-		
+	if CHANGE_LEVEL:
+		LEVEL = 1
 		CHANGE_LEVEL = False
 	
-	if not entities.get_entity_group('enemies') and not entities.get_entity_group('hazards'):
-		WAVE_TIMER = 0
+	if not entities.get_entity_group('enemies') and not entities.get_entity_group('hazards') and WAVE_TIMER:
+		WAVE_TIMER -= 4
 	
-	if entities.get_entity_group('players') and not WAVE_TIMER:
+	if entities.get_entity_group('players') and WAVE_TIMER<=0:
 		spawn_enemies()
 		WAVE_TIMER = WAVE_TIMER_MAX+(60*LEVEL)

@@ -261,12 +261,22 @@ def print_text(x, y, text, text_group=None, font_name=None, font_size=None, colo
 	LABELS[str(LABEL_ID)] = _label
 	LABEL_ID += 1
 
+def camera_snap(position):
+	CAMERA['next_center_on'][0] = position[0]
+	CAMERA['next_center_on'][1] = position[1]
+	CAMERA['center_on'][0] = position[0]
+	CAMERA['center_on'][1] = position[1]
+	
+	return True
+
 def camera_focus_on(position):
 	CAMERA['next_center_on'][0] = position[0]
 	CAMERA['next_center_on'][1] = position[1]
 
 def camera_zoom(zoom):
 	CAMERA['next_zoom'] = zoom
+	
+	return True
 
 def loop():
 	_remove_labels = []

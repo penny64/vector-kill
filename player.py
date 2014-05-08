@@ -60,6 +60,10 @@ def handle_input(entity_id):
 		                       enter_callback=lambda entity: entities.trigger_event(_entity, 'set_maximum_velocity', velocity=[80, 80]) and entities.trigger_event(_entity, 'set_speed', speed=80),
 		                       exit_callback=lambda entity: entities.trigger_event(_entity, 'set_maximum_velocity', velocity=[30, 30]))
 	
+	if controls.key_pressed('v'):
+		for entity_id in entities.get_sprite_groups(['hazards', 'enemies']):
+			entities.delete_entity_via_id(entity_id)
+	
 	if controls.key_held_ord(controls.NUM_1):
 		entities.trigger_event(_entity, 'shoot', direction=225)
 	

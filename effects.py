@@ -21,6 +21,7 @@ def create_particle(x, y, sprite_name, background=True, scale=1, rotation=0, fri
 	_entity['swerve_rate'] = swerve_rate
 	_entity['swerve_speed'] = swerve_speed
 	_entity['swerve_speed_max'] = swerve_speed
+	_entity['NO_BOUNCE'] = True
 	
 	if streamer:
 		_entity['sprite_name'] = sprite_name

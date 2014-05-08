@@ -131,6 +131,7 @@ def unregister_event(entity, event_name, callback):
 
 def trigger_event(entity, event_name, **kwargs):
 	_event_structure = entity['_events'][event_name]
+	
 	for event in _event_structure['events'].values():
 		if event['id'] in _event_structure['banned']:
 			_event_structure['banned'].remove(event['id'])
@@ -138,6 +139,8 @@ def trigger_event(entity, event_name, **kwargs):
 			continue
 		
 		event['callback'](entity, **kwargs)
+	
+	return True
 
 def tick():
 	global LAST_TICK_TIME, TICKS_PER_SECOND, CURRENT_TICKS_PER_SECOND
