@@ -81,6 +81,7 @@ def on_draw():
 	
 	pyglet.graphics.draw(len(LEVEL_GRID)/2, GL_LINES,
 	                     ('v2f', LEVEL_GRID),
+	 
 	                     ('c4f', (.07, .07, .07, 1.0) * (len(LEVEL_GRID)/2)))
 	
 	if RABBYT:
@@ -123,6 +124,11 @@ def create_grid():
 	
 	for i in range((worlds.get_size()[1]/100)+1):
 		LEVEL_GRID.extend((0, (100*7)+100*i, worlds.get_size()[1], (100*7)+100*i))
+
+def clear_grid():
+	global LEVEL_GRID
+	
+	LEVEL_GRID = []
 
 def shutdown():
 	pyglet.app.exit()

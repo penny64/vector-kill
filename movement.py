@@ -122,72 +122,73 @@ def tick(entity):
 	entity['velocity'][1] = numbers.clip(entity['velocity'][1], entity['min_velocity'][1], entity['max_velocity'][1])
 	entity['current_speed'] = numbers.distance((0, 0), (_x, _y))
 	
-	if entity['position'][0] > worlds.get_size()[0]:
-		entity['position'][0] = worlds.get_size()[0]
-		entity['velocity'][0] = -entity['velocity'][0]
-		
-		entities.trigger_event(entity, 'hit_edge')
-	elif entity['position'][0] < 0:
-		entity['position'][0] = 0
-		entity['velocity'][0] = -entity['velocity'][0]
-		
-		entities.trigger_event(entity, 'hit_edge')
-	
-	if entity['position'][1] > worlds.get_size()[1]:
-		entity['position'][1] = worlds.get_size()[1]
-		entity['velocity'][1] = -entity['velocity'][1]
-		
-		entities.trigger_event(entity, 'hit_edge')
-	elif entity['position'][1] < 0:
-		entity['position'][1] = 0
-		entity['velocity'][1] = -entity['velocity'][1]
-		
-		entities.trigger_event(entity, 'hit_edge')
-	
-	_hit = False
-	if levels.is_solid(int(round(entity['position'][0]))+50, int(round(entity['position'][1]))):
-		entity['velocity'][0] = -entity['velocity'][0]
-		entities.trigger_event(entity, 'set_position', x=(((entity['position'][0]+50)/100)*100)-52, y=entity['position'][1])
-		entities.trigger_event(entity, 'hit_edge')
-		_hit = True
-	elif levels.is_solid(int(round(entity['position'][0]-50)), int(round(entity['position'][1]))):
-		entity['velocity'][0] = -entity['velocity'][0]
-		entities.trigger_event(entity, 'set_position', x=(((entity['position'][0]-50)/100)*100)+52, y=entity['position'][1])
-		entities.trigger_event(entity, 'hit_edge')
-		_hit = True
-	
-	if levels.is_solid(int(round(entity['position'][0])), int(round(entity['position'][1]))+50):
-		entity['velocity'][1] = -entity['velocity'][1]
-		entities.trigger_event(entity, 'set_position', x=entity['position'][0], y=(((entity['position'][1]+50)/100)*100)-54)
-		entities.trigger_event(entity, 'hit_edge')
-		_hit = True
-	elif levels.is_solid(int(round(entity['position'][0])), int(round(entity['position'][1]))-50):
-		entity['velocity'][1] = -entity['velocity'][1]
-		entities.trigger_event(entity, 'set_position', x=entity['position'][0], y=(((entity['position'][1]-50)/100)*100)+52)
-		entities.trigger_event(entity, 'hit_edge')
-		_hit = True
-	
-	if not _hit:
-		if levels.is_solid(int(round(entity['position'][0]))+50, int(round(entity['position'][1]))+50):
+	if not 'NO_BOUNCE' in entity or not entity['NO_BOUNCE']:
+		if entity['position'][0] > worlds.get_size()[0]:
+			entity['position'][0] = worlds.get_size()[0]
 			entity['velocity'][0] = -entity['velocity'][0]
-			entity['velocity'][1] = -entity['velocity'][1]
-			entities.trigger_event(entity, 'set_position', x=(((entity['position'][0]+50)/100)*100)-52, y=(((entity['position'][1]+50)/100)*100)-54)
+			
 			entities.trigger_event(entity, 'hit_edge')
-		elif levels.is_solid(int(round(entity['position'][0]))-50, int(round(entity['position'][1]))+50):
+		elif entity['position'][0] < 0:
+			entity['position'][0] = 0
 			entity['velocity'][0] = -entity['velocity'][0]
-			entity['velocity'][1] = -entity['velocity'][1]
-			entities.trigger_event(entity, 'set_position', x=(((entity['position'][0]-50)/100)*100)+52, y=(((entity['position'][1]+50)/100)*100)-54)
+			
 			entities.trigger_event(entity, 'hit_edge')
-		elif levels.is_solid(int(round(entity['position'][0]))-50, int(round(entity['position'][1]))-50):
-			entity['velocity'][0] = -entity['velocity'][0]
+		
+		if entity['position'][1] > worlds.get_size()[1]:
+			entity['position'][1] = worlds.get_size()[1]
 			entity['velocity'][1] = -entity['velocity'][1]
-			entities.trigger_event(entity, 'set_position', x=(((entity['position'][0]-50)/100)*100)+52, y=(((entity['position'][1]-50)/100)*100)+52)
+			
 			entities.trigger_event(entity, 'hit_edge')
-		elif levels.is_solid(int(round(entity['position'][0]))+50, int(round(entity['position'][1]))-50):
-			entity['velocity'][0] = -entity['velocity'][0]
+		elif entity['position'][1] < 0:
+			entity['position'][1] = 0
 			entity['velocity'][1] = -entity['velocity'][1]
-			entities.trigger_event(entity, 'set_position', x=(((entity['position'][0]+50)/100)*100)-52, y=(((entity['position'][1]-50)/100)*100)+52)
+			
 			entities.trigger_event(entity, 'hit_edge')
+	
+	#_hit = False
+	#if levels.is_solid(int(round(entity['position'][0]))+50, int(round(entity['position'][1]))):
+	#	entity['velocity'][0] = -entity['velocity'][0]
+	#	entities.trigger_event(entity, 'set_position', x=(((entity['position'][0]+50)/100)*100)-52, y=entity['position'][1])
+	#	entities.trigger_event(entity, 'hit_edge')
+	#	_hit = True
+	#elif levels.is_solid(int(round(entity['position'][0]-50)), int(round(entity['position'][1]))):
+	#	entity['velocity'][0] = -entity['velocity'][0]
+	#	entities.trigger_event(entity, 'set_position', x=(((entity['position'][0]-50)/100)*100)+52, y=entity['position'][1])
+	#	entities.trigger_event(entity, 'hit_edge')
+	#	_hit = True
+	
+	#if levels.is_solid(int(round(entity['position'][0])), int(round(entity['position'][1]))+50):
+	#	entity['velocity'][1] = -entity['velocity'][1]
+	#	entities.trigger_event(entity, 'set_position', x=entity['position'][0], y=(((entity['position'][1]+50)/100)*100)-54)
+	#	entities.trigger_event(entity, 'hit_edge')
+	#	_hit = True
+	#elif levels.is_solid(int(round(entity['position'][0])), int(round(entity['position'][1]))-50):
+	#	entity['velocity'][1] = -entity['velocity'][1]
+	#	entities.trigger_event(entity, 'set_position', x=entity['position'][0], y=(((entity['position'][1]-50)/100)*100)+52)
+	#	entities.trigger_event(entity, 'hit_edge')
+	#	_hit = True
+	
+	#if not 'NO_BOUNCE' in entity or not entity['NO_BOUNCE']:
+	#	if levels.is_solid(int(round(entity['position'][0]))+50, int(round(entity['position'][1]))+50):
+	#		entity['velocity'][0] = -entity['velocity'][0]
+	#		entity['velocity'][1] = -entity['velocity'][1]
+	#		entities.trigger_event(entity, 'set_position', x=(((entity['position'][0]+50)/100)*100)-52, y=(((entity['position'][1]+50)/100)*100)-54)
+	#		entities.trigger_event(entity, 'hit_edge')
+	#	elif levels.is_solid(int(round(entity['position'][0]))-50, int(round(entity['position'][1]))+50):
+	#		entity['velocity'][0] = -entity['velocity'][0]
+	#		entity['velocity'][1] = -entity['velocity'][1]
+	#		entities.trigger_event(entity, 'set_position', x=(((entity['position'][0]-50)/100)*100)+52, y=(((entity['position'][1]+50)/100)*100)-54)
+	#		entities.trigger_event(entity, 'hit_edge')
+	#	elif levels.is_solid(int(round(entity['position'][0]))-50, int(round(entity['position'][1]))-50):
+	#		entity['velocity'][0] = -entity['velocity'][0]
+	#		entity['velocity'][1] = -entity['velocity'][1]
+	#		entities.trigger_event(entity, 'set_position', x=(((entity['position'][0]-50)/100)*100)+52, y=(((entity['position'][1]-50)/100)*100)+52)
+	#		entities.trigger_event(entity, 'hit_edge')
+	#	elif levels.is_solid(int(round(entity['position'][0]))+50, int(round(entity['position'][1]))-50):
+	#		entity['velocity'][0] = -entity['velocity'][0]
+	#		entity['velocity'][1] = -entity['velocity'][1]
+	#		entities.trigger_event(entity, 'set_position', x=(((entity['position'][0]+50)/100)*100)-52, y=(((entity['position'][1]-50)/100)*100)+52)
+	#		entities.trigger_event(entity, 'hit_edge')
 	
 	_position_change = [entity['position'][0]-entity['last_position'][0],
 	                    entity['position'][1]-entity['last_position'][1]]

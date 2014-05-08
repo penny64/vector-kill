@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="8000"
-   height="8000"
+   width="4000"
+   height="4000"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="New document 1">
+   sodipodi:docname="ring.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -25,17 +25,17 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.04375"
-     inkscape:cx="2761.518"
+     inkscape:cx="-998.482"
      inkscape:cy="2539.5877"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1678"
-     inkscape:window-height="1034"
-     inkscape:window-x="1920"
-     inkscape:window-y="14"
-     inkscape:window-maximized="0" />
+     inkscape:window-width="1366"
+     inkscape:window-height="721"
+     inkscape:window-x="-4"
+     inkscape:window-y="-4"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -44,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -52,7 +52,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,6947.6378)">
+     transform="translate(0,2947.6378)">
     <path
        sodipodi:type="arc"
        style="fill:#666666;fill-opacity:1;stroke:#4d4d4d;stroke-width:357.36306763;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
@@ -62,6 +62,6 @@
        sodipodi:rx="1760"
        sodipodi:ry="1760"
        d="m 7680,5725.7144 a 1760,1760 0 1 1 -3520,0 1760,1760 0 1 1 3520,0 z"
-       transform="matrix(2.0322938,0,0,2.0322938,-8031.1793,-14583.972)" />
+       transform="matrix(1.0161469,0,0,1.0161469,-4015.5896,-6765.8047)" />
   </g>
 </svg>

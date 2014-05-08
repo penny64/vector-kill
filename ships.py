@@ -46,8 +46,8 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	
 	return _soldier
 
-def create_energy_ship():
-	_entity = create(group='players', sprite_name='ball.png', speed=17, acceleration=.1, max_velocity=30, turn_rate=0.3, death_time=35, hp=30)
+def create_energy_ship(x=0, y=0):
+	_entity = create(x=x, y=y, group='players', sprite_name='ball.png', speed=17, acceleration=.1, max_velocity=30, turn_rate=0.3, death_time=35, hp=60)
 	_entity['weapon_id'] = weapons.create(_entity['_id'],
 	                                      rounds=35,
 	                                      recoil_time=0,

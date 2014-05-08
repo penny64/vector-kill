@@ -88,6 +88,9 @@ def get_sprite_groups(group_names):
 	return [entity_id for entity_id in _entities if entity_id in ENTITIES]
 
 def add_entity_to_group(group_name, entity):
+	if entity['_id'] in GROUPS[group_name]:
+		return False
+	
 	entity['_groups'].append(group_name)
 	entity['_groups_orig'].append(group_name)
 	GROUPS[group_name].append(entity['_id'])
