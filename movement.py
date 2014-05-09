@@ -94,8 +94,8 @@ def accelerate(entity, velocity):
 	entity['velocity'][1] = numbers.clip(entity['velocity'][1]+_n_vol[1], entity['min_velocity'][1], entity['max_velocity'][1])
 
 def push(entity, velocity):
-	entity['velocity'][0] = numbers.clip(entity['velocity'][0]+velocity[0], entity['min_velocity'][0], entity['max_velocity'][0])
-	entity['velocity'][1] = numbers.clip(entity['velocity'][1]+velocity[1], entity['min_velocity'][1], entity['max_velocity'][1])
+	entity['velocity'][0] = entity['velocity'][0]+velocity[0]
+	entity['velocity'][1] = entity['velocity'][1]+velocity[1]
 
 def turn(entity, degrees):
 	entity['direction'] += degrees
@@ -105,8 +105,22 @@ def thrust(entity):
 		return False
 	
 	_thrust_velocity = numbers.velocity(entity['direction'], entity['speed'])
-	entity['velocity'][0] += numbers.interp(0, _thrust_velocity[0], entity['acceleration'])
-	entity['velocity'][1] += numbers.interp(0, _thrust_velocity[1], entity['acceleration'])
+	_next_xv = entity['velocity'][0] + numbers.interp(0, _thrust_velocity[0], entity['acceleration'])
+	_next_yv = entity['velocity'][1] + numbers.interp(0, _thrust_velocity[1], entity['acceleration'])
+	
+	if _next_xv > entity['max_velocity'][0]:
+		entity['velocity'][0] += numbers.clip(entity['max_velocity'][0]-entity['velocity'][0], 0, 1000)
+	elif _next_xv < entity['min_velocity'][0]:
+		entity['velocity'][0] -= numbers.clip(entity['min_velocity'][0]+entity['velocity'][0], 0, 1000)
+	else:
+		entity['velocity'][0] = _next_xv
+	
+	if _next_yv > entity['max_velocity'][1]:
+		entity['velocity'][1] += numbers.clip(entity['max_velocity'][1]-entity['velocity'][1], 0, 1000)
+	elif _next_yv < entity['min_velocity'][1]:
+		entity['velocity'][1] -= numbers.clip(entity['min_velocity'][1]+entity['velocity'][1], 0, 1000)
+	else:
+		entity['velocity'][1] = _next_yv
 
 def tick(entity):
 	entity['last_position'] = entity['position'][:]
@@ -118,8 +132,16 @@ def tick(entity):
 	_x = entity['position'][0]-entity['last_position'][0]
 	_y = entity['position'][1]-entity['last_position'][1]
 	
-	entity['velocity'][0] = numbers.clip(entity['velocity'][0], entity['min_velocity'][0], entity['max_velocity'][0])
-	entity['velocity'][1] = numbers.clip(entity['velocity'][1], entity['min_velocity'][1], entity['max_velocity'][1])
+	if entity['velocity'][0] > entity['max_velocity'][0]:
+		entity['velocity'][0] = numbers.clip(entity['velocity'][0]*.95, entity['max_velocity'][0], 1000)
+	elif entity['velocity'][0] < entity['min_velocity'][0]:
+		entity['velocity'][0] = numbers.clip(entity['velocity'][0]*.95, -1000, -entity['min_velocity'][0])
+	
+	if entity['velocity'][1] > entity['max_velocity'][1]:
+		entity['velocity'][1] = numbers.clip(entity['velocity'][1]*.95, entity['max_velocity'][1], 1000)
+	elif entity['velocity'][1] < entity['min_velocity'][1]:
+		entity['velocity'][1] = numbers.clip(entity['velocity'][1]*.95, -1000, -entity['min_velocity'][1])
+	
 	entity['current_speed'] = numbers.distance((0, 0), (_x, _y))
 	
 	if not 'NO_BOUNCE' in entity or not entity['NO_BOUNCE']:

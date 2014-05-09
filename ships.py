@@ -130,7 +130,7 @@ def create_eyemine(x=0, y=0):
 	return _entity
 
 def create_missile_turret(x=0, y=0):
-	_entity = create(x=x, y=y, group='hazards', sprite_name='eyemine_body.png', speed=5, acceleration=1, max_velocity=0)
+	_entity = create(x=x, y=y, group='hazards', sprite_name='eyemine_body.png', speed=5, acceleration=1, max_velocity=5)
 	_entity['weapon_id'] = weapons.create(_entity['_id'], rounds=3, recoil_time=20, tracking=True, turn_rate=.02)['_id']
 	
 	entities.register_event(_entity, 'shoot', lambda entity: entities.trigger_event(entities.get_entity(_entity['weapon_id']), 'shoot'))
@@ -139,7 +139,7 @@ def create_missile_turret(x=0, y=0):
 	return _entity
 
 def create_gun_turret(x=0, y=0):
-	_entity = create(x=x, y=y, group='hazards', sprite_name='eyemine_body.png', speed=5, acceleration=1, max_velocity=0)
+	_entity = create(x=x, y=y, group='hazards', sprite_name='eyemine_body.png', speed=5, acceleration=1, max_velocity=5)
 	_entity['weapon_id'] = weapons.create(_entity['_id'],
 	                                      rounds=10,
 	                                      recoil_time=2,

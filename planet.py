@@ -16,19 +16,20 @@ import random
 
 
 LEVEL = 1
+WAVE = 1
 NOTERIETY = 0
 TRANSITION_PAUSE = 0
-CHANGE_LEVEL = False
-CHANGE_LEVEL_FIRE = False
+CHANGE_WAVE = False
+CHANGE_WAVE_FIRE = False
 ANNOUNCE = True
 WAVE_TIMER_MAX = 30*45
 WAVE_TIMER = 240
 
 
 def create():
-	global WAVE_TIMER_MAX, WAVE_TIMER, LEVEL
+	global WAVE_TIMER_MAX, WAVE_TIMER, WAVE
 	
-	LEVEL = 1
+	WAVE = 1
 	WAVE_TIMER = 240
 	WAVE_TIMER_MAX = 30*45
 	
@@ -75,14 +76,14 @@ def create_player(x=0, y=0):
 	entities.trigger_event(_player, 'push', velocity=(30, 30))
 
 def spawn_enemies():
-	global TRANSITION_PAUSE, CHANGE_LEVEL_FIRE, CHANGE_LEVEL, ANNOUNCE, LEVEL
+	global TRANSITION_PAUSE, CHANGE_WAVE_FIRE, CHANGE_WAVE, ANNOUNCE, WAVE
 	
 	_i = random.choice([0, 1, 2, 3])
 	
-	if LEVEL == 3:
+	if WAVE == 3:
 		TRANSITION_PAUSE = 30*30
-		CHANGE_LEVEL = True
-		CHANGE_LEVEL_FIRE = False
+		CHANGE_WAVE = True
+		CHANGE_WAVE_FIRE = False
 		
 		return False
 	
@@ -105,10 +106,11 @@ def spawn_enemies():
 		_x = random.randint(100, worlds.get_size()[0]-100)
 		_y = worlds.get_size()[1]-100
 	
-	_missile_turrets = numbers.clip(LEVEL, 1, 5)
-	_gun_turrets = numbers.clip(LEVEL, 1, 3)
+	_missile_turrets = int(round(10*((WAVE+1)/5.0)))
+	_gun_turrets = int(round(10*(WAVE/5.0)))
+	_fleas = int(round(5*(WAVE/5.0)))
 	
-	for i in range(_gun_turrets):
+	for i in range(_fleas):
 		if _i == 1:
 			_x = random.randint(100, worlds.get_size()[0]-100)
 			_y = 100
@@ -122,14 +124,29 @@ def spawn_enemies():
 			_x = random.randint(100, worlds.get_size()[0]-100)
 			_y = worlds.get_size()[1]-100
 		
+		_entity = ships.create_flea(x=_x, y=_y, hazard=True)
+		_move_direction = numbers.direction_to((_x, _y,), (worlds.get_size()[0]/2, worlds.get_size()[1]/2))
+		
+		entities.trigger_event(_entity, 'push', velocity=numbers.velocity(_move_direction, 20))
+	
+	for i in range(_gun_turrets):
+		if _i == 1:
+			_x = random.randint(200, worlds.get_size()[0]-200)
+			_y = 200
+		elif _i == 2:
+			_x = worlds.get_size()[0]-200
+			_y = random.randint(200, worlds.get_size()[1]-200)
+		elif _i == 3:
+			_x = 200
+			_y = random.randint(200, worlds.get_size()[1]-200)
+		else:
+			_x = random.randint(200, worlds.get_size()[0]-200)
+			_y = worlds.get_size()[1]-200
+		
 		_entity = ships.create_gun_turret(x=_x, y=_y)
 		_move_direction = numbers.direction_to((_x, _y,), (worlds.get_size()[0]/2, worlds.get_size()[1]/2))
 		
-		entities.trigger_event(_entity, 'set_direction', direction=_move_direction)
-		entities.trigger_event(_entity, 'set_speed', speed=2)
-		entities.trigger_event(_entity, 'set_minimum_velocity', velocity=[-5, -5])
-		entities.trigger_event(_entity, 'set_maximum_velocity', velocity=[5, 5])
-		entities.trigger_event(_entity, 'thrust')
+		entities.trigger_event(_entity, 'push', velocity=numbers.velocity(_move_direction, 20))
 	
 	for i in range(_missile_turrets):
 		if _i == 1:
@@ -145,14 +162,12 @@ def spawn_enemies():
 			_x = random.randint(100, worlds.get_size()[0]-100)
 			_y = worlds.get_size()[1]-100
 		
-		_entity = ships.create_missile_turret(x=_x, y=_y)	
-		entities.trigger_event(_entity, 'set_direction', direction=_move_direction)
-		entities.trigger_event(_entity, 'set_speed', speed=2)
-		entities.trigger_event(_entity, 'set_minimum_velocity', velocity=[-5, -5])
-		entities.trigger_event(_entity, 'set_maximum_velocity', velocity=[5, 5])
-		entities.trigger_event(_entity, 'thrust')
+		_entity = ships.create_missile_turret(x=_x, y=_y)
+		_move_direction = numbers.direction_to((_x, _y,), (worlds.get_size()[0]/2, worlds.get_size()[1]/2))
+		
+		entities.trigger_event(_entity, 'push', velocity=numbers.velocity(_move_direction, 20))
 	
-	LEVEL += 1
+	WAVE += 1
 	ANNOUNCE = True
 
 def tick():
@@ -162,34 +177,35 @@ def tick():
 		WAVE_TIMER -= 1
 
 def loop():
-	global CHANGE_LEVEL_FIRE, TRANSITION_PAUSE, CHANGE_LEVEL, WAVE_TIMER, LEVEL
+	global CHANGE_WAVE_FIRE, TRANSITION_PAUSE, CHANGE_WAVE, WAVE_TIMER, LEVEL, WAVE
 	
-	if TRANSITION_PAUSE and CHANGE_LEVEL:
+	if TRANSITION_PAUSE and CHANGE_WAVE:
 		_player = entities.get_entity(entities.get_entity_group('players')[0])
 		
-		if not CHANGE_LEVEL_FIRE:
+		if not CHANGE_WAVE_FIRE:
 			entities.trigger_event(_player,
 			                       'create_timer',
 			                       time=120,
 			                       enter_callback=lambda entity: events.unregister_event('input', player.handle_input),
-			                       callback=lambda entity: entities.trigger_event(entity, 'set_maximum_velocity', velocity=(85, 85)) and entities.trigger_event(entity, 'push', velocity=(3, 3)),
-			                       exit_callback=lambda entity: display.camera_snap((-4000, -4000)) and entities.trigger_event(entity, 'set_maximum_velocity', velocity=(35, 35)) and entities.trigger_event(entity, 'set_position', x=-4000, y=-4000) and events.register_event('input', player.handle_input, _player['_id']))
+			                       callback=lambda entity: entities.trigger_event(entity, 'push', velocity=(6, 6)),
+			                       exit_callback=lambda entity: display.camera_snap((-4000, -4000)) and entities.trigger_event(entity, 'set_position', x=-4000, y=-4000) and events.register_event('input', player.handle_input, _player['_id']))
 			
+			LEVEL += 1
 			_player['NO_BOUNCE'] = True
-			CHANGE_LEVEL_FIRE = True
+			CHANGE_WAVE_FIRE = True
 		
 		if TRANSITION_PAUSE:
 			TRANSITION_PAUSE -= 1
 		
 		return False
 	
-	if CHANGE_LEVEL:
-		LEVEL = 1
-		CHANGE_LEVEL = False
+	if CHANGE_WAVE:
+		WAVE = 1
+		CHANGE_WAVE = False
 	
 	if not entities.get_entity_group('enemies') and not entities.get_entity_group('hazards') and WAVE_TIMER:
 		WAVE_TIMER -= 4
 	
 	if entities.get_entity_group('players') and WAVE_TIMER<=0:
 		spawn_enemies()
-		WAVE_TIMER = WAVE_TIMER_MAX+(60*LEVEL)
+		WAVE_TIMER = WAVE_TIMER_MAX+(60*WAVE)
