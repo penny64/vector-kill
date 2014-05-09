@@ -13,13 +13,14 @@ import ai
 import random
 
 
-def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, acceleration=0.5, max_velocity=15, death_time=10, hp=10):
+def create(sprite_name, x=0, y=0, group=None, speed=10, scale=1, turn_rate=0.1, acceleration=0.5, max_velocity=15, death_time=10, hp=10):
 	_soldier = entities.create_entity()
 	_soldier['hp'] = hp
 	_soldier['death_timer'] = -1
 	_soldier['death_timer_max'] = death_time
 	_soldier['speed'] = speed
 	_soldier['turn_rate'] = turn_rate
+	_soldier['collision_radius'] = 0
 	
 	if group:
 		entities.add_entity_to_group(group, _soldier)
@@ -27,7 +28,7 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 		print 'WARNING: Entity has no group!'
 	
 	movement.register_entity(_soldier, x=x, y=y)
-	sprites.register_entity(_soldier, 'ships', sprite_name)
+	sprites.register_entity(_soldier, 'ships', sprite_name, scale=scale)
 	entities.create_event(_soldier, 'shoot')
 	entities.create_event(_soldier, 'shoot_alt')
 	entities.create_event(_soldier, 'hit')
@@ -47,7 +48,7 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, turn_rate=0.1, accelerat
 	return _soldier
 
 def create_energy_ship(x=0, y=0):
-	_entity = create(x=x, y=y, group='players', sprite_name='ball.png', speed=17, acceleration=.1, max_velocity=30, turn_rate=0.3, death_time=35, hp=60)
+	_entity = create(x=x, y=y, group='players', sprite_name='ball.png', speed=19, acceleration=.1, max_velocity=30, turn_rate=0.3, death_time=35, hp=60)
 	_entity['weapon_id'] = weapons.create(_entity['_id'],
 	                                      rounds=35,
 	                                      recoil_time=0,
@@ -97,8 +98,10 @@ def create_flea(x=0, y=0, hazard=False):
 	
 	return _entity
 
-def create_eyemine(x=0, y=0):
+def create_eyemine(x=0, y=0, max_explode_velocity=40):
 	_entity = create(x=x, y=y, group='hazards', sprite_name='eyemine_body.png', speed=35, acceleration=0.1, max_velocity=35)
+	_entity['max_explode_velocity'] = max_explode_velocity
+	
 	effects.create_image(_entity['position'][0],
 	                     _entity['position'][1],
 	                     'eyemine_subbody.png',
@@ -179,6 +182,94 @@ def create_ivan(x=0, y=0):
 	
 	return _entity
 
+def create_ivan_large(x=0, y=0):
+	_entity = create(sprite_name='boss3.png', group='hazards', scale=2.0, x=x, y=y, acceleration=.4, speed=0, max_velocity=0, turn_rate=0.8, death_time=40, hp=1500)
+	_entity['current_target'] = None
+	_entity['fire_rate'] = 0
+	_entity['fire_rate_max'] = 20
+	_entity['collision_radius'] = 1000
+	_entity['cycle'] = 'shoot'
+	_entity['shoot_cycle_max'] = 3
+	_entity['shoot_cycle'] = 3
+	_entity['spawn_cycle_max'] = 5
+	_entity['spawn_cycle'] = 5
+	_entity['warmup_cycles'] = 3
+	
+	_entity['weapon_id'] = weapons.create(_entity['_id'],
+	                                      rounds=25,
+	                                      recoil_time=1,
+	                                      reload_time=30,
+	                                      damage_radius=40,
+	                                      speed=140,
+	                                      missile=False,
+	                                      bullet=True)['_id']
+	timers.register_entity(_entity)
+	effects.create_image(_entity['position'][0],
+	                     _entity['position'][1],
+	                     'boss3_core.png',
+	                     scale=2.0,
+	                     parent_entity=_entity,
+	                     background=False)
+	effects.create_image(_entity['position'][0],
+	                     _entity['position'][1],
+	                     'boss3_shield1.png',
+	                     scale=2.0,
+	                     rotate_by=1,
+	                     parent_entity=_entity,
+	                     background=False)
+	effects.create_image(_entity['position'][0],
+	                     _entity['position'][1],
+	                     'boss3_shield2.png',
+	                     scale=2.0,
+	                     rotate_by=0.5,
+	                     parent_entity=_entity,
+	                     background=False)
+	entities.trigger_event(_entity,
+	                       'create_timer',
+	                       repeat=-1,
+	                       time=100,
+	                       repeat_callback=lambda entity: entities.trigger_event(_entity, 'shoot'))
+	entities.register_event(_entity, 'moved', set_direction)
+	entities.register_event(_entity, 'kill', boss_victory)
+	entities.register_event(_entity, 'dying', boss_dying)
+	entities.register_event(_entity, 'explode', boss_explode)
+	entities.register_event(_entity, 'shoot', ivan_cycles)
+	
+	return _entity
+
+def ivan_cycles(entity):
+	if entity['warmup_cycles']:
+		entity['warmup_cycles'] -= 1
+		
+		return False
+	
+	if entity['cycle'] == 'shoot':
+		entity['shoot_cycle'] -= 1
+		
+		if not entity['shoot_cycle']:
+			entity['shoot_cycle'] = entity['shoot_cycle_max']
+			entity['cycle'] = 'spawn'
+		
+		for direction in range(0, 360, 15):
+			for i in range(4):
+				bullet.create_bullet(entity['position'][0],
+					                entity['position'][1],
+					                direction+4*i,
+					                60+(i*10),
+					                'boss3_core.png',
+					                entity['_id'],
+					                damage=15)
+	else:
+		entity['spawn_cycle'] -= 1
+		
+		if not entity['spawn_cycle']:
+			entity['spawn_cycle'] = entity['shoot_cycle_max']
+			entity['cycle'] = 'shoot'
+		
+		for i in range(5):
+			_mine = create_eyemine(x=entity['position'][0], y=entity['position'][1], max_explode_velocity=90)
+			entities.trigger_event(_mine, 'push', velocity=numbers.velocity(random.randint(0, 359), 65))
+
 def tick(entity):
 	if entity['hp']<=0:
 		if not '_dead' in entity:
@@ -216,7 +307,7 @@ def tick_energy_ship(entity):
 		                        rotation=_effect_direction)
 
 def tick_eyemine(entity):
-	if entity['current_speed']>=35:
+	if 'max_explode_velocity' in entity and entity['current_speed']>=entity['max_explode_velocity']:
 		entities.trigger_event(entity, 'kill')
 		entities.trigger_event(entity, 'explode')
 		

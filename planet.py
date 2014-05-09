@@ -27,21 +27,18 @@ WAVE_TIMER = 240
 
 
 def create():
-	global WAVE_TIMER_MAX, WAVE_TIMER, WAVE
+	global WAVE_TIMER_MAX, WAVE_TIMER, WAVE, LEVEL
 	
+	LEVEL = 1
 	WAVE = 1
 	WAVE_TIMER = 240
 	WAVE_TIMER_MAX = 30*45
 	
 	worlds.create('planet', width=12000, height=12000)
-	_planet = entities.create_entity(group='planets')
-	sprites.register_entity(_planet, 'effects_foreground', 'planet.png', scale=1.0)
-	movement.register_entity(_planet, x=worlds.get_size()[0]/2, y=worlds.get_size()[0]/2, speed=0)
-	effects.create_image(_planet['position'][0], _planet['position'][1], 'ring.png', background=2, scale=2)
 	events.register_event('tick', tick)
 	create_player()
 	display.clear_grid()
-	items.create_gravity_well(x=worlds.get_size()[0]/2, y=worlds.get_size()[0]/2, strength=0.25)
+	create_planet()
 
 def clean():
 	for ship_id in entities.get_entity_group('players'):
@@ -75,6 +72,23 @@ def create_player(x=0, y=0):
 	entities.register_event(_player, 'hit_edge', lambda entity: entities.trigger_event(entity, 'hit', damage=100))
 	entities.trigger_event(_player, 'push', velocity=(30, 30))
 
+def create_planet():
+	for entity_id in entities.get_sprite_groups(['items', 'planets']):
+		entities.delete_entity(entities.ENTITIES[entity_id])
+	
+	if LEVEL == 1:
+		_planet = entities.create_entity(group='planets')
+		sprites.register_entity(_planet, 'effects_foreground', 'planet.png', scale=1.0)
+		movement.register_entity(_planet, x=worlds.get_size()[0]/2, y=worlds.get_size()[1]/2, speed=0)
+		effects.create_image(_planet['position'][0], _planet['position'][1], 'ring.png', background=2, scale=2, parent_entity=_planet)
+		items.create_gravity_well(x=worlds.get_size()[0]/2, y=worlds.get_size()[1]/2, strength=0.25)
+	
+	elif LEVEL == 2:
+		ships.create_ivan_large(x=worlds.get_size()[0]/2, y=worlds.get_size()[1]/2)
+		items.create_gravity_well(x=worlds.get_size()[0]/2, y=worlds.get_size()[1]/2, min_distance=1000, kill_engines=False, strength=0.75)
+	
+	return True
+
 def spawn_enemies():
 	global TRANSITION_PAUSE, CHANGE_WAVE_FIRE, CHANGE_WAVE, ANNOUNCE, WAVE
 	
@@ -85,6 +99,9 @@ def spawn_enemies():
 		CHANGE_WAVE = True
 		CHANGE_WAVE_FIRE = False
 		
+		return False
+	
+	if LEVEL == 2:
 		return False
 	
 	if _i == 1:
@@ -188,7 +205,7 @@ def loop():
 			                       time=120,
 			                       enter_callback=lambda entity: events.unregister_event('input', player.handle_input),
 			                       callback=lambda entity: entities.trigger_event(entity, 'push', velocity=(6, 6)),
-			                       exit_callback=lambda entity: display.camera_snap((-4000, -4000)) and entities.trigger_event(entity, 'set_position', x=-4000, y=-4000) and events.register_event('input', player.handle_input, _player['_id']))
+			                       exit_callback=lambda entity: display.camera_snap((-4000, -4000)) and entities.trigger_event(entity, 'set_position', x=-4000, y=-4000) and events.register_event('input', player.handle_input, _player['_id']) and create_planet())
 			
 			LEVEL += 1
 			_player['NO_BOUNCE'] = True
@@ -206,6 +223,6 @@ def loop():
 	if not entities.get_entity_group('enemies') and not entities.get_entity_group('hazards') and WAVE_TIMER:
 		WAVE_TIMER -= 4
 	
-	if entities.get_entity_group('players') and WAVE_TIMER<=0:
+	if entities.get_entity_group('players') and WAVE_TIMER<=0 or (LEVEL == 2 and not entities.get_entity_group('enemies')):
 		spawn_enemies()
 		WAVE_TIMER = WAVE_TIMER_MAX+(60*WAVE)

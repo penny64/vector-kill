@@ -24,6 +24,8 @@ def register_event(event_name, callback, *args, **kargs):
 	_event_structure = EVENTS[event_name.upper()]
 	_event_structure['events'][str(_event_structure['id'])] = _event
 	_event_structure['id'] += 1
+	
+	return True
 
 def unregister_event(event_name, callback, *args, **kargs):
 	for event in EVENTS[event_name.upper()]['events'].values():

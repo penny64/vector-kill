@@ -33,8 +33,8 @@ def create(x, y, direction, speed, sprite_name, owner_id, damage=3, life=30, tur
 	
 	return _entity
 
-def create_bullet(x, y, direction, speed, sprite_name, owner_id, life=3000, scale=.2, radius=50):
-	_bullet = create(x, y, direction, speed, sprite_name, owner_id, life=life)
+def create_bullet(x, y, direction, speed, sprite_name, owner_id, damage=3, life=3000, scale=.2, radius=50):
+	_bullet = create(x, y, direction, speed, sprite_name, owner_id, damage=damage, life=life)
 	_owner = entities.get_entity(_bullet['owner_id'])
 	_bullet['sprite'].anchor_x = 0
 	_bullet['sprite'].anchor_y = sprites.get_size(_bullet['sprite'])[1]/2
@@ -188,7 +188,9 @@ def tick(bullet):
 		if bullet['owner_id'] == soldier_id:
 			continue
 		
-		if numbers.distance(bullet['position'], entities.get_entity(soldier_id)['position'], old=True)>bullet['damage_radius']:
+		_entity = entities.get_entity(soldier_id)
+		
+		if numbers.distance(bullet['position'], _entity['position'], old=True)-_entity['collision_radius']>bullet['damage_radius']:
 			continue
 		
 		if bullet['owner_id'] in entities.ENTITIES and 'player' in entities.get_entity(bullet['owner_id']):
@@ -202,5 +204,5 @@ def tick(bullet):
 			                        scale_rate=1.02)
 		
 		entities.trigger_event(bullet, 'hit', target_id=soldier_id)
-		entities.trigger_event(entities.get_entity(soldier_id), 'hit', damage=bullet['damage'], target_id=bullet['owner_id'])
+		entities.trigger_event(_entity, 'hit', damage=bullet['damage'], target_id=bullet['owner_id'])
 		entities.delete_entity(bullet)

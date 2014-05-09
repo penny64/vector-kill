@@ -75,14 +75,7 @@ def loop(entity):
 		return False
 	
 	_dt = worlds.get_interp()
-	
-	if not display.RABBYT:
-		_rot = numbers.interp(entity['last_rotation'], entity['next_rotation'], _dt)
-		
-		if _rot>359:
-			_rot = _rot-359
-		elif _rot<-1:
-			_rot = 359-_rot
+	_rot = numbers.interp(entity['last_rotation'], entity['next_rotation'], _dt)
 
 	entity['sprite'].set_position_and_rotate_and_scale(int(round(numbers.interp(entity['last_position'][0], entity['position'][0], _dt))),
 	                                                   numbers.interp(display.get_window_size()[1]+entity['last_position'][1],
