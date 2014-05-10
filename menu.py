@@ -8,6 +8,7 @@ import levels
 import planet
 
 import random
+import numpy
 
 
 MENU_INDEX = 0
@@ -119,7 +120,7 @@ def action_camera():
 	global CAMERA_TIME, CAMERA_MODE
 	
 	if CAMERA_MODE == 'hover':
-		display.CAMERA['next_center_on'] = [worlds.get_size()[0]/2, worlds.get_size()[1]/2]
+		display.CAMERA['next_center_on'] = numpy.array([worlds.get_size()[0]/2, worlds.get_size()[1]/2])
 		display.CAMERA['next_zoom'] = 5.0
 	
 	elif CAMERA_MODE == 'follow':
@@ -128,7 +129,7 @@ def action_camera():
 		if not _focus_on:
 			_focus_on = entities.get_entity_group('hazards')
 		
-		display.CAMERA['next_center_on'] = entities.get_entity(_focus_on[0])['position'][:]
+		display.CAMERA['next_center_on'] = entities.get_entity(_focus_on[0])['position'].copy()
 		display.CAMERA['next_zoom'] = 2.5
 	
 	CAMERA_TIME -= 1

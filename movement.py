@@ -5,11 +5,14 @@ import events
 import worlds
 import levels
 
+import numpy
+
 
 def register_entity(entity, x=0, y=0, acceleration=.5, direction=0, speed=10, turn_rate=0.1, offload=False, no_tick=False):
-	entity['position'] = [x, y]
+	entity['position'] = numpy.zeros(2)
+	entity['position'] += (x, y)
 	entity['last_position'] = [x, y]
-	entity['velocity'] = [0, 0]
+	entity['velocity'] = numpy.zeros(2)
 	entity['acceleration'] = acceleration
 	entity['friction'] = 0.5
 	entity['turn_rate'] = turn_rate
@@ -123,12 +126,10 @@ def thrust(entity):
 		entity['velocity'][1] = _next_yv
 
 def tick(entity):
-	entity['last_position'] = entity['position'][:]
+	entity['last_position'] = entity['position'].copy()
 	entity['velocity'][1] += entity['gravity'][0]*entity['gravity'][1]
-	entity['position'][0] += entity['velocity'][0]
-	entity['position'][1] += entity['velocity'][1]
-	entity['velocity'][0] *= 1-entity['friction']
-	entity['velocity'][1] *= 1-entity['friction']
+	entity['position'] += entity['velocity']
+	entity['velocity'] *= 1-entity['friction']
 	_x = entity['position'][0]-entity['last_position'][0]
 	_y = entity['position'][1]-entity['last_position'][1]
 	
@@ -142,7 +143,7 @@ def tick(entity):
 	elif entity['velocity'][1] < entity['min_velocity'][1]:
 		entity['velocity'][1] = numbers.clip(entity['velocity'][1]*.95, -1000, -entity['min_velocity'][1])
 	
-	entity['current_speed'] = numbers.distance((0, 0), (_x, _y))
+	entity['current_speed'] = numbers.distance(entity['last_position'], entity['position'])
 	
 	if not 'NO_BOUNCE' in entity or not entity['NO_BOUNCE']:
 		if entity['position'][0] > worlds.get_size()[0]:
@@ -215,7 +216,7 @@ def tick(entity):
 	_position_change = [entity['position'][0]-entity['last_position'][0],
 	                    entity['position'][1]-entity['last_position'][1]]
 	
-	if not entity['position'] == entity['last_position']:
+	if not (entity['position']==entity['last_position']).all():
 		entities.trigger_event(entity,
 			                  'moved',
 			                  last_position=entity['last_position'],

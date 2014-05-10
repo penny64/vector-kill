@@ -105,7 +105,7 @@ def handle_camera(entity_id, min_zoom=3.5, max_zoom=14.5, max_enemy_distance=240
 		return False
 	
 	_player = entities.get_entity(entity_id)
-	_center_pos = _player['position'][:]
+	_center_pos = _player['position'].copy()
 	_median_distance = []
 	
 	if 'in_space' in _player and _player['in_space']:
@@ -143,7 +143,7 @@ def handle_camera(entity_id, min_zoom=3.5, max_zoom=14.5, max_enemy_distance=240
 	if display.CAMERA['next_zoom'] < 5:
 		display.CAMERA['next_center_on'] = _center_pos
 	else:
-		display.CAMERA['next_center_on'] = _player['position'][:]	
+		display.CAMERA['next_center_on'] = _player['position'].copy()
 
 def score(entity, target_id, amount=0, text=''):
 	display.print_text(0, 10+(len(display.LABELS)*15), '%s (<b>+%s</b>)' % (text, amount), color=(0, 240, 0, 255), show_for=1.5)

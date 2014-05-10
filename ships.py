@@ -48,7 +48,7 @@ def create(sprite_name, x=0, y=0, group=None, speed=10, scale=1, turn_rate=0.1, 
 	return _soldier
 
 def create_energy_ship(x=0, y=0):
-	_entity = create(x=x, y=y, group='players', sprite_name='ball.png', speed=19, acceleration=.1, max_velocity=30, turn_rate=0.3, death_time=35, hp=60)
+	_entity = create(x=x, y=y, group='players', sprite_name='ball.png', speed=19, acceleration=.3, max_velocity=30, turn_rate=0.5, death_time=35, hp=60)
 	_entity['weapon_id'] = weapons.create(_entity['_id'],
 	                                      rounds=35,
 	                                      recoil_time=0,
@@ -158,7 +158,7 @@ def create_gun_turret(x=0, y=0):
 	return _entity
 
 def create_ivan(x=0, y=0):
-	_entity = create(sprite_name='boss1.png', group='enemies', x=x, y=y, acceleration=.4, speed=3, max_velocity=3, turn_rate=0.8, death_time=40, hp=175)
+	_entity = create(sprite_name='boss1.png', group='enemies', x=x, y=y, acceleration=.4, speed=3, max_velocity=3, turn_rate=0.8, death_time=40, hp=100)
 	_entity['current_target'] = None
 	_entity['fire_rate'] = 0
 	_entity['fire_rate_max'] = 20
@@ -183,7 +183,7 @@ def create_ivan(x=0, y=0):
 	return _entity
 
 def create_ivan_large(x=0, y=0):
-	_entity = create(sprite_name='boss3.png', group='hazards', scale=2.0, x=x, y=y, acceleration=.4, speed=0, max_velocity=0, turn_rate=0.8, death_time=40, hp=1500)
+	_entity = create(sprite_name='boss3.png', group='hazards', scale=2.0, x=x, y=y, acceleration=.4, speed=0, max_velocity=0, turn_rate=0.8, death_time=40, hp=1000)
 	_entity['current_target'] = None
 	_entity['fire_rate'] = 0
 	_entity['fire_rate_max'] = 20
@@ -193,7 +193,7 @@ def create_ivan_large(x=0, y=0):
 	_entity['shoot_cycle'] = 3
 	_entity['spawn_cycle_max'] = 5
 	_entity['spawn_cycle'] = 5
-	_entity['warmup_cycles'] = 3
+	_entity['warmup_cycles'] = 1
 	
 	_entity['weapon_id'] = weapons.create(_entity['_id'],
 	                                      rounds=25,
@@ -214,7 +214,7 @@ def create_ivan_large(x=0, y=0):
 	                     _entity['position'][1],
 	                     'boss3_shield1.png',
 	                     scale=2.0,
-	                     rotate_by=1,
+	                     rotate_by=-1,
 	                     parent_entity=_entity,
 	                     background=False)
 	effects.create_image(_entity['position'][0],
@@ -244,6 +244,10 @@ def ivan_cycles(entity):
 		return False
 	
 	if entity['cycle'] == 'shoot':
+		#if entity['shoot_cycle'] == entity['shoot_cycle_max']:
+		#	for i in range(8):
+		#		bullet.create_laser(entity['position'][0], entity['position'][0], 45*(i+1), entity['_id'], damage=30, length=90)
+		
 		entity['shoot_cycle'] -= 1
 		
 		if not entity['shoot_cycle']:

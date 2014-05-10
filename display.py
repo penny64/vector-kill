@@ -6,6 +6,7 @@ import numbers
 import events
 import worlds
 
+import numpy
 import time
 import sys
 
@@ -28,8 +29,8 @@ DT = 1.0
 FPS = 60
 TPS = 120
 LEVEL_GRID = []
-CAMERA = {'center_on': [0, 0],
-          'next_center_on': [400, 400],
+CAMERA = {'center_on': numpy.array([0, 0]),
+          'next_center_on': numpy.array([400, 400]),
           'camera_move_speed': 0.05,
           'zoom': 0,
           'next_zoom': 2.5,
@@ -62,7 +63,7 @@ def on_draw():
 	if RABBYT:
 		lib2d.clear(100)
 	else:
-		gl.glClearColor(.1, .1, .1, 1)
+		gl.glClearColor(36/255.0, 33/255.0, 30/255.0, 1)
 	
 	WINDOW.clear()
 	glMatrixMode(GL_PROJECTION)
@@ -81,7 +82,6 @@ def on_draw():
 	
 	pyglet.graphics.draw(len(LEVEL_GRID)/2, GL_LINES,
 	                     ('v2f', LEVEL_GRID),
-	 
 	                     ('c4f', (.07, .07, .07, 1.0) * (len(LEVEL_GRID)/2)))
 	
 	if RABBYT:

@@ -10,7 +10,7 @@ def interp_velocity(velocity_1, velocity_2, interp_by):
 	        interp(velocity_1[1], velocity_2[1], interp_by)]
 
 def clip(number, start, end):
-	return max(start, min(number, end))
+	return numpy.array(number).clip(start, end)
 
 def velocity(direction, speed):
 	rad = direction*(math.pi/180)
@@ -19,6 +19,9 @@ def velocity(direction, speed):
 	return [velocity[0], -velocity[1]]
 
 def distance(pos_1, pos_2, old=False):
+	return math.sqrt((pos_2[0] - pos_1[0]) ** 2 +
+                     (pos_2[1] - pos_1[1]) ** 2)
+
 	if old:
 		return abs(pos_1[0]-pos_2[0])+abs(pos_1[1]-pos_2[1])
 

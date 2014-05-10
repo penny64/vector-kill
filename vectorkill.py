@@ -63,7 +63,7 @@ def main():
 			display.WINDOW.flip()
 
 if __name__ == '__main__':
-	if '--debug' in sys.argv:
+	if '--profile' in sys.argv:
 		cProfile.run('main()','profile.dat')
 	else:
 		main()
